@@ -468,7 +468,7 @@
       <div class="feed-title">全部文章</div>
 
       <!-- 1. FEATURED NEW_PROXY POST -->
-      <a href="/new_proxy_architecture.html" class="post-card">
+      <a href="/new_proxy_architecture.html" class="post-card" data-dynamic="true">
         <div class="featured-badge">Featured</div>
         <div class="tag-container">
           <span class="post-tag">Rust</span>
@@ -561,5 +561,78 @@
 
   <!-- Scripts for Visit Counting -->
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  <!-- Client-side Dynamic Metadata Sync -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const dynamicCards = document.querySelectorAll('a.post-card[data-dynamic="true"]');
+      const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+      dynamicCards.forEach(card => {
+        const url = card.getAttribute('href');
+        if (!url) return;
+
+        const titleEl = card.querySelector('.post-title');
+        const descEl = card.querySelector('.post-desc');
+        const cacheKey = `post_meta_cache_${url}`;
+        
+        // Try reading from cache for instant rendering
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            if (Date.now() - parsed.timestamp < CACHE_EXPIRY) {
+              if (parsed.title && titleEl) titleEl.innerText = parsed.title;
+              if (parsed.desc && descEl) descEl.innerText = parsed.desc;
+              return; // Cache valid
+            }
+          } catch (e) {
+            localStorage.removeItem(cacheKey);
+          }
+        }
+
+        // Fetch post content in the background
+        fetch(url)
+          .then(res => {
+            if (!res.ok) throw new Error("Fetch failed");
+            return res.text();
+          })
+          .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Extract the Visual H1 Article Title
+            let fetchedTitle = "";
+            const h1El = doc.querySelector('h1.article-title');
+            if (h1El) {
+              fetchedTitle = h1El.innerText.trim();
+            } else {
+              const docTitle = doc.querySelector('title');
+              if (docTitle) fetchedTitle = docTitle.innerText.replace(/ \| duanxiongchun.*/i, "").trim();
+            }
+
+            // Extract the Meta SEO Description
+            let fetchedDesc = "";
+            const metaDesc = doc.querySelector('meta[name="description"]');
+            if (metaDesc) fetchedDesc = metaDesc.getAttribute('content').trim();
+
+            // Update DOM dynamically
+            if (fetchedTitle && titleEl) titleEl.innerText = fetchedTitle;
+            if (fetchedDesc && descEl) descEl.innerText = fetchedDesc;
+
+            // Cache the results
+            const dataToCache = {
+              title: fetchedTitle || (titleEl ? titleEl.innerText : ""),
+              desc: fetchedDesc || (descEl ? descEl.innerText : ""),
+              timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+          })
+          .catch(err => {
+            console.warn("Failed to dynamically fetch post metadata for " + url, err);
+          });
+      });
+    });
+  </script>
 </body>
 </html>
