@@ -476,9 +476,9 @@
           <span class="post-tag">QUIC</span>
           <span class="post-tag">Systems</span>
         </div>
-        <h2 class="post-title">突破 TCP-over-VPN 队头阻塞：探索混合安全网关 new_proxy 的架构与设计</h2>
+        <h2 class="post-title">高性能网关</h2>
         <p class="post-desc">
-          传统的内核态三层 VPN（如 WireGuard）在处理大量并发或丢包网络的 TCP 流量时，会产生严重的队头阻塞（HOL Blocking）问题。为了彻底击碎这一瓶颈，我设计并用 Rust 实现了混合安全网关 new_proxy。本文深度剖析其双轨数据面设计、多物理连接池路由，以及高并发下的全局 Buffer 池调优。
+          探索基于 QUIC 和 Rust 构建的高性能安全网关的设计与核心原理。本文深度剖析其在广域网（WAN）下的分段代理设计以打断 TCP “长细管道”限制，并详细阐述其利用 QUIC 独立多 Stream 实现极速可靠传输与精细化的流级拥塞控制隔离，榨干物理网口带宽。
         </p>
         <div class="post-meta">
           <div class="post-meta-item">
