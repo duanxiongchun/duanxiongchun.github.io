@@ -87,8 +87,6 @@
 
     /* Layout & Container */
     header {
-      background-color: rgba(var(--bg-dark), 0.85);
-      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -98,10 +96,10 @@
 
     /* Supporting translucency for header bg */
     @media (prefers-color-scheme: dark) {
-      header { background-color: rgba(10, 12, 16, 0.85); }
+      header { background-color: rgba(10, 12, 16, 0.85); backdrop-filter: blur(12px); }
     }
     @media (prefers-color-scheme: light) {
-      header { background-color: rgba(248, 250, 252, 0.85); }
+      header { background-color: rgba(248, 250, 252, 0.85); backdrop-filter: blur(12px); }
     }
 
     .nav-container {
@@ -800,9 +798,9 @@
           <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
           约 4500 字 / 15 分钟阅读
         </div>
-        <div class="meta-item">
+        <div class="meta-item" id="busuanzi_container_page_pv" style="display: inline;">
           <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-          本文阅读量: <span id="article-views">0</span> 次
+          阅读量: <span id="busuanzi_value_page_pv">...</span> 次
         </div>
       </div>
     </div>
@@ -811,7 +809,7 @@
     <article class="content" id="article-body">
       <p>在现代安全网络隧道与 VPN 技术中，<strong>内核态的三层（L3）VPN（如 WireGuard）</strong>以其极简的设计、极低的延迟和极佳的吞吐量成为了业界新宠。然而，当物理网络遭遇恶劣的丢包环境，或者面对大规模的 TCP 业务流传输时，传统的 L3 VPN 会遭遇一个经典的技术梦魇——<strong>TCP-over-VPN 队头阻塞（Head-of-Line Blocking）与 TCP 熔断（TCP Meltdown）</strong>。</p>
 
-      <p>为了彻底打破这一性能瓶颈，我设计并实现了我的第一个高性能网关项目：<code>new_proxy</code>。这是一个<strong>基于 Rust 编写的混合 L3/L4 高性能安全代理网关</strong>。它将系统内核态的 WireGuard 通道与用户态的多路复用 QUIC 连接池进行深度融合，实现了“双轨数据面”的革命性设计。</p>
+      <p>为了彻底打破这一性能瓶颈，我 design 并实现了我的第一个高性能网关项目：<code>new_proxy</code>。这是一个<strong>基于 Rust 编写的混合 L3/L4 高性能安全代理网关</strong>。它将系统内核态的 WireGuard 通道与用户态的多路复用 QUIC 连接池进行深度融合，实现了“双轨数据面”的革命性设计。</p>
 
       <p>本文将深入拆解 <code>new_proxy</code> 的技术架构、设计原理以及在追求极限性能方面所做的核心优化。</p>
 
@@ -977,13 +975,16 @@ impl BufferPool {
       <div class="sidebar-widget stats-card">
         <div class="sidebar-title">
           <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path fill="var(--accent)" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-          文章热度仪表盘
+          本篇数据遥测
         </div>
-        <div class="stats-value" id="stats-pageviews">1,248</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);">本篇累计阅读人次</div>
-        
-        <div class="stats-value" style="color:var(--primary);margin-top:1rem;" id="stats-active-users">6</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);">当前实时在线读者 (模拟)</div>
+        <div id="busuanzi_container_page_pv" style="display: block;">
+          <div class="stats-value" id="local-page-views">...</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">本文实际阅读量 (PV)</div>
+        </div>
+        <div id="busuanzi_container_site_uv" style="display: block; margin-top:1rem;">
+          <div class="stats-value" style="color:var(--primary);" id="busuanzi_value_site_uv">...</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">全站累计访客数 (UV)</div>
+        </div>
       </div>
 
       <div class="sidebar-widget">
@@ -1010,21 +1011,28 @@ impl BufferPool {
   </footer>
 
   <!-- Scripts for Counter & Animations -->
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <script>
-    // 1. Dynamic Page View Counter using localStorage
+    // 1. Sync Busuanzi real PV count to other elements on the page dynamically
     document.addEventListener("DOMContentLoaded", function() {
-      let views = localStorage.getItem("new_proxy_pageviews") || "1248";
-      let viewCount = parseInt(views);
-      viewCount += 1;
-      localStorage.setItem("new_proxy_pageviews", viewCount.toString());
-      document.getElementById("stats-pageviews").innerText = viewCount.toLocaleString();
-      document.getElementById("article-views").innerText = viewCount;
-
-      // Mock live readers
-      setInterval(() => {
-        let active = Math.floor(Math.random() * 8) + 4; // 4 to 11
-        document.getElementById("stats-active-users").innerText = active;
-      }, 4000);
+      const target = document.getElementById("busuanzi_value_page_pv");
+      if (target) {
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === "childList" || mutation.type === "characterData") {
+              const val = target.innerText;
+              if (val && val !== "..." && val !== "") {
+                const otherVal = document.getElementById("local-page-views");
+                if (otherVal) otherVal.innerText = parseInt(val).toLocaleString();
+                
+                const articleViews = document.getElementById("article-views");
+                if (articleViews) articleViews.innerText = val;
+              }
+            }
+          });
+        });
+        observer.observe(target, { childList: true, characterData: true, subtree: true });
+      }
     });
 
     // 2. Scroll Progress Bar & TOC Active State
