@@ -609,11 +609,7 @@
       padding: 0 4rem;
     }
 
-    @media (max-width: 600px) {
-      .pool-canvas {
-        padding: 0 1rem;
-      }
-    }
+    /* Responsive pool styles merged in the unified media query below */
 
     .pool-node {
       width: 80px;
@@ -693,8 +689,50 @@
     }
 
     @media (max-width: 600px) {
+      .main-wrapper {
+        padding: 0 0.8rem;
+        margin: 1rem auto;
+      }
+      .track-title {
+        font-size: 0.7rem !important;
+        left: 8px !important;
+        letter-spacing: 0 !important;
+      }
+      .status-overlay {
+        font-size: 0.65rem !important;
+        right: 8px !important;
+        padding: 2px 6px !important;
+      }
+      .pool-canvas {
+        padding: 0 0.8rem !important;
+        height: 260px !important;
+      }
+      .pool-node {
+        width: 65px !important;
+        height: 95px !important;
+        font-size: 0.75rem !important;
+      }
+      .pool-node-label {
+        font-size: 0.55rem !important;
+        margin-top: 2px !important;
+      }
+      .pool-center {
+        width: 44px !important;
+        height: 44px !important;
+        left: calc(50% - 22px) !important;
+        top: calc(50% - 22px) !important;
+      }
+      .pool-arrow {
+        width: 16px !important;
+        height: 16px !important;
+      }
       .port-pair {
-        right: 1rem;
+        right: 0.8rem !important;
+        gap: 6px !important;
+      }
+      .port-item {
+        font-size: 0.65rem !important;
+        padding: 3px 6px !important;
       }
     }
 
@@ -1122,15 +1160,16 @@ impl BufferPool {
         }
 
         update() {
+          const bottleneckX = canvas.clientWidth * 0.45;
           if (this.type === 'vpn') {
-            if (vpnBlocked && this.x >= 280) {
+            if (vpnBlocked && this.x >= bottleneckX) {
               // Packets block behind the bottleneck
               return;
             }
             this.x += this.speed;
           } else {
             // QUIC streams
-            if (quicTrack2Blocked && this.track === 2 && this.x >= 280) {
+            if (quicTrack2Blocked && this.track === 2 && this.x >= bottleneckX) {
               return;
             }
             this.x += this.speed;
@@ -1175,12 +1214,14 @@ impl BufferPool {
       function gameLoop() {
         spawnPackets();
 
+        const bottleneckX = canvas.clientWidth * 0.45;
+
         for (let i = packets.length - 1; i >= 0; i--) {
           let p = packets[i];
           p.update();
 
           // Check if packet hits loss point
-          if (p.isLost && p.x >= 280) {
+          if (p.isLost && p.x >= bottleneckX) {
             p.isLost = false; // Triggered
             p.destroy();
             packets.splice(i, 1);
@@ -1205,7 +1246,8 @@ impl BufferPool {
 
       function triggerVpnBlock() {
         vpnBlocked = true;
-        vpnStatus.innerText = "整条通道卡顿 (丢包引发全局重传)";
+        const isMobile = window.innerWidth < 600;
+        vpnStatus.innerText = isMobile ? "单管阻塞 (全局重传)" : "整条通道卡顿 (丢包引发全局重传)";
         vpnStatus.className = "status-overlay vpn-status status-stalled";
         
         // Recover after 3 seconds
@@ -1218,7 +1260,8 @@ impl BufferPool {
 
       function triggerQuicBlock() {
         quicTrack2Blocked = true;
-        quicStatus.innerText = "Stream 2 独立重传 (其他 Stream 零干扰并发)";
+        const isMobile = window.innerWidth < 600;
+        quicStatus.innerText = isMobile ? "Stream 2 阻塞 (隔离)" : "Stream 2 独立重传 (其他 Stream 零干扰并发)";
         quicStatus.className = "status-overlay quic-status status-stalled";
         quicStatus.style.borderColor = "rgba(245, 158, 11, 0.4)";
         quicStatus.style.color = "var(--warning)";
@@ -1297,19 +1340,27 @@ impl BufferPool {
 
         // Position packet at Client Node (left)
         let clientNode = document.getElementById("client-node");
-        let startX = clientNode.offsetLeft + 50;
-        let startY = clientNode.offsetTop + 60;
+        let targetPortEl = portElements[currentPortIndex];
+
+        // Robust viewport-adaptive coordinate calculations using getBoundingClientRect
+        const canvasRect = canvas.getBoundingClientRect();
+        const clientRect = clientNode.getBoundingClientRect();
+        const targetRect = targetPortEl.getBoundingClientRect();
+
+        // Start from Client Node center (accounting for offset layout scales on mobile)
+        let startX = clientRect.left - canvasRect.left + clientRect.width / 2 - 5;
+        let startY = clientRect.top - canvasRect.top + clientRect.height / 2 - 5;
+
+        // End at Target Port center
+        let endX = targetRect.left - canvasRect.left + targetRect.width / 2 - 5;
+        let endY = targetRect.top - canvasRect.top + targetRect.height / 2 - 5;
+
         pkt.style.left = startX + "px";
         pkt.style.top = startY + "px";
 
-        // Coordinates of the selected port element
-        let targetPortEl = portElements[currentPortIndex];
-        let endX = targetPortEl.offsetLeft + 10;
-        let endY = targetPortEl.offsetTop + 15;
-
         // Path midpoint (Dispatcher)
-        let midX = canvas.clientWidth / 2;
-        let midY = canvas.clientHeight / 2;
+        let midX = canvas.clientWidth / 2 - 5;
+        let midY = canvas.clientHeight / 2 - 5;
 
         // Animation steps using simple linear interpolation
         let progress = 0;
