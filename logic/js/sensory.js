@@ -24,7 +24,10 @@ function launchSensory(type) {
           <!-- ADDED TRIANGLE DRAGGABLE -->
           <div id="drag-triangle" class="drag-item" draggable="true" style="width:80px; height:80px; background:linear-gradient(135deg, #10b981, #34d399); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(16,185,129,0.45); font-size:1em; padding-top:25px;">角积木</div>
         </div>
-        <button class="mock-button" onclick="loadErbaoHUD()" style="margin-top:35px; width:100%;">🔙 返回启蒙舱大厅</button>
+        <div style="display:flex; gap:15px; margin-top:35px;">
+          <button class="mock-button glow-erbao" onclick="launchSensory('shape')" style="flex:1; margin-top:0;">🔄 一键重置重新选择</button>
+          <button class="mock-button" onclick="loadErbaoHUD()" style="flex:1; margin-top:0;">🔙 返回启蒙舱大厅</button>
+        </div>
       </div>
     `;
     setupSensoryDragDrop('shape');
@@ -53,7 +56,10 @@ function launchSensory(type) {
           <!-- ADDED YELLOW DRAGGABLE -->
           <div id="drag-yellow" class="drag-item" draggable="true" style="width:65px; height:65px; background:#eab308; border-radius:50%; cursor:grab; border:3px solid #facc15; box-shadow: 0 4px 12px rgba(234,179,8,0.4); text-align:center; line-height:59px; font-weight:bold;">黄球</div>
         </div>
-        <button class="mock-button" onclick="loadErbaoHUD()" style="margin-top:35px; width:100%;">🔙 返回启蒙舱大厅</button>
+        <div style="display:flex; gap:15px; margin-top:35px;">
+          <button class="mock-button glow-erbao" onclick="launchSensory('color')" style="flex:1; margin-top:0;">🔄 一键重置重新选择</button>
+          <button class="mock-button" onclick="loadErbaoHUD()" style="flex:1; margin-top:0;">🔙 返回启蒙舱大厅</button>
+        </div>
       </div>
     `;
     setupSensoryDragDrop('color');
@@ -100,7 +106,10 @@ function launchSensory(type) {
             </div>
           `).join("")}
         </div>
-        <button class="mock-button" onclick="loadErbaoHUD()" style="margin-top:35px; width:100%;">🔙 返回启蒙舱大厅</button>
+        <div style="display:flex; gap:15px; margin-top:35px;">
+          <button class="mock-button glow-erbao" onclick="launchSensory('sound')" style="flex:1; margin-top:0;">🔄 一键重置重新选择</button>
+          <button class="mock-button" onclick="loadErbaoHUD()" style="flex:1; margin-top:0;">🔙 返回启蒙舱大厅</button>
+        </div>
       </div>
     `;
   }
@@ -254,6 +263,7 @@ function setupSensoryDragDrop(mode) {
   const draggables = document.querySelectorAll('.drag-item');
   const slots = document.querySelectorAll('.shape-slot');
   
+  // --- Mouse drag support ---
   draggables.forEach(drag => {
     drag.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/plain', drag.id);
@@ -267,6 +277,59 @@ function setupSensoryDragDrop(mode) {
       const dragId = e.dataTransfer.getData('text/plain');
       handleSensoryDrop(dragId, slot);
     });
+  });
+
+  // --- iPad/Touch screen custom finger-dragging polyfill ---
+  draggables.forEach(drag => {
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let isDragging = false;
+
+    drag.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      isDragging = true;
+      drag.style.transition = 'none';
+      drag.style.zIndex = '1000';
+    }, { passive: true });
+
+    drag.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      currentX = touch.clientX - startX;
+      currentY = touch.clientY - startY;
+      drag.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      
+      // Crucial: prevent iPad screen scrolling when dragging elements
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    drag.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      drag.style.zIndex = '';
+      drag.style.transition = 'transform 0.2s';
+
+      const touch = e.changedTouches[0];
+      
+      // Hide cursor/pointerEvents to probe element underneath touch coordinate
+      drag.style.pointerEvents = 'none';
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      drag.style.pointerEvents = '';
+
+      let slot = null;
+      if (targetElement) {
+        slot = targetElement.closest('.shape-slot');
+      }
+
+      if (slot) {
+        handleSensoryDrop(drag.id, slot);
+      }
+      
+      // Always snap back smoothly to starting position for matching games
+      drag.style.transform = 'none';
+    }, { passive: true });
   });
 }
 
