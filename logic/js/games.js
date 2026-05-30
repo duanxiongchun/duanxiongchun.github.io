@@ -51,7 +51,7 @@ function speakText(text) {
 
 // ==================== 🏆 胜利引擎（统一入口）====================
 
-function trigger6yoVictory(starEarned, speechFeedback) {
+function trigger6yoVictory(ignoredStarParam, speechFeedback) {
   const type = window.currentGameTrack;
   if (!type) { console.warn("currentGameTrack not set"); return; }
 
@@ -62,13 +62,49 @@ function trigger6yoVictory(starEarned, speechFeedback) {
     player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
   }
   
+  const level = window.isMixedMode ? (player.progress.mixed || 1) : (player.progress[type] || 1);
+
+  // Graded point calculation (based on developmental flow state)
+  let calculatedStars = 2; // Default Easy: Level 1-12
+  let difficultyName = "🟢 基础挑战";
+  let difficultyColor = "#34d399";
+  if (level > 42) {
+    calculatedStars = 30; // Ultimate: Level 43-50
+    difficultyName = "🔥 超常挑战";
+    difficultyColor = "#f43f5e";
+  } else if (level > 28) {
+    calculatedStars = 12; // Hard: Level 29-42
+    difficultyName = "⚡ 高级挑战";
+    difficultyColor = "#fbbf24";
+  } else if (level > 12) {
+    calculatedStars = 5;  // Medium: Level 13-28
+    difficultyName = "🔵 进阶挑战";
+    difficultyColor = "#60a5fa";
+  }
+
+  // Apply Daily Streak Multiplier (operant conditioning)
+  const streak = player.streaks || 1;
+  let multiplier = 1.0;
+  if (streak >= 7) multiplier = 1.5;
+  else if (streak >= 3) multiplier = 1.2;
+
+  let baseEarned = Math.round(calculatedStars * multiplier);
+  let isMilestone = false;
+  
+  if (!window.isMixedMode && level === 50) {
+    baseEarned += 150; // Milestone bonus!
+    isMilestone = true;
+  }
+
+  // Update State progress
   if (window.isMixedMode) {
     player.progress.mixed = (player.progress.mixed || 1) + 1;
   } else {
     if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
     player.progress[type]++;
   }
-  player.stars = (player.stars || 0) + starEarned;
+  
+  player.stars = (player.stars || 0) + baseEarned;
   saveAppState();
 
   // 实时更新导航栏积分显示
@@ -81,13 +117,13 @@ function trigger6yoVictory(starEarned, speechFeedback) {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.connect(g); g.connect(ctx.destination);
-    o.frequency.setValueAtTime(440, ctx.currentTime);
-    o.frequency.setValueAtTime(554.37, ctx.currentTime + 0.08);
-    o.frequency.setValueAtTime(659.25, ctx.currentTime + 0.16);
-    o.frequency.setValueAtTime(880, ctx.currentTime + 0.24);
+    o.frequency.setValueAtTime(523.25, ctx.currentTime);
+    o.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+    o.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16);
+    o.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.24);
     g.gain.setValueAtTime(0.2, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-    o.start(); o.stop(ctx.currentTime + 0.4);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+    o.start(); o.stop(ctx.currentTime + 0.45);
   } catch(e) {}
 
   const container = document.getElementById("game-stage");
@@ -95,20 +131,32 @@ function trigger6yoVictory(starEarned, speechFeedback) {
     <div class="glass-card" style="padding:40px; text-align:center; max-width:500px; margin:40px auto; border-color:#10b981; background:rgba(16,185,129,0.08); border-width:2px; animation:pulseGlow 1.2s infinite ease-in-out;">
       <span style="font-size:5em; display:block; margin-bottom:10px;">🌟</span>
       <h2 style="color:#10b981; font-weight:800; margin-bottom:5px;">回答正确！</h2>
-      <p style="font-size:1.1em; color:#fff; font-weight:600;">${speechFeedback}</p>
-      <div style="font-size:1.5em; font-weight:bold; color:#fbbf24; margin:15px 0;">🪙 +${starEarned} 星星</div>
-      <p style="font-size:0.8em; color:#94a3b8; letter-spacing:1px; animation:blinker 1s linear infinite;">正在自动开启下一关，请准备... 🚀</p>
+      <div style="font-size:0.85em; font-weight:bold; color:${difficultyColor}; margin-bottom:10px;">${difficultyName} · 第 ${level} 关</div>
+      <p style="font-size:1.05em; color:#fff; font-weight:600; margin-bottom:15px;">${speechFeedback}</p>
+      
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:12px; margin:15px 0; font-size:0.85em; color:#94a3b8; line-height:1.6;">
+        <div>基础得分：<span style="color:#fff; font-weight:bold;">+${calculatedStars}</span></div>
+        ${multiplier > 1 ? `<div>连续学习奖励：<span style="color:#fbbf24; font-weight:bold;">${multiplier}x 倍数</span> (已连续打卡 ${streak} 天)</div>` : ''}
+        ${isMilestone ? `<div>🎖️ 通关里程碑大奖：<span style="color:#a78bfa; font-weight:bold;">+150 额外星星</span></div>` : ''}
+        <div style="font-size:1.4em; font-weight:bold; color:#fbbf24; margin-top:8px;">共获得：🪙 +${baseEarned} 星星</div>
+      </div>
+      
+      <p style="font-size:0.8em; color:#94a3b8; letter-spacing:1px; animation:blinker 1s linear infinite; margin-top:15px;">正在自动开启下一关，请准备... 🚀</p>
     </div>
   `;
 
-  speakText(speechFeedback);
+  // Speech feedback integration
+  const streakSpeech = multiplier > 1 ? `，连续打卡 ${streak} 天，获得翻倍奖励！` : "";
+  const milestoneSpeech = isMilestone ? "，天呐！你太棒了！完成了本维度的终极特训，获得了额外的通关大奖！" : "";
+  speakText(`${speechFeedback}${streakSpeech}${milestoneSpeech}`);
+  
   setTimeout(() => {
     if (window.isMixedMode) {
       launchMixedMode();
     } else {
       launchTest(type);
     }
-  }, 1300);
+  }, 1800); // Extended slightly to let them read the cool breakdown
 }
 
 function check6yoAnswer(ans) {

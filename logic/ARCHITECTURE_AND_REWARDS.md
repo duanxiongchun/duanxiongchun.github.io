@@ -54,15 +54,15 @@ graph TD
     }
   },
   "rewards": [
-    { "id": "r1", "title": "看动画片 30 分钟 📺", "cost": 40, "target": "dabao" },
-    { "id": "r2", "title": "去楼下坐摇摇车 2 次 🎠", "cost": 30, "target": "erbao" }
+    { "id": "r1", "title": "看动画片 30 分钟 📺", "cost": 180, "target": "dabao" },
+    { "id": "r2", "title": "去楼下坐摇摇车 2 次 🎠", "cost": 90, "target": "erbao" }
   ],
   "redemptions": [
     {
       "playerId": "dabao",
       "playerName": "果果 (6岁)",
       "rewardTitle": "看动画片 30 分钟 📺",
-      "cost": 40,
+      "cost": 180,
       "date": "2026-05-31 07:15"
     }
   ]

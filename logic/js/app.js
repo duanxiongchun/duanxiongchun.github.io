@@ -26,11 +26,11 @@ const DEFAULT_STATE = {
     }
   },
   rewards: [
-    { id: "r1", title: "看动画片 30 分钟 📺", cost: 40, target: "dabao" },
-    { id: "r2", title: "去楼下坐摇摇车 2 次 🎠", cost: 30, target: "erbao" },
-    { id: "r3", title: "买乐高小积木 1 套 🧱", cost: 150, target: "dabao" },
-    { id: "r4", title: "吃美味冰淇淋 1 个 🍦", cost: 100, target: "dabao" },
-    { id: "r5", title: "喝一瓶小酸奶 🍼", cost: 20, target: "erbao" }
+    { id: "r1", title: "看动画片 30 分钟 📺", cost: 180, target: "dabao" },
+    { id: "r2", title: "去楼下坐摇摇车 2 次 🎠", cost: 90, target: "erbao" },
+    { id: "r3", title: "买乐高小积木 1 套 🧱", cost: 750, target: "dabao" },
+    { id: "r4", title: "吃美味冰淇淋 1 个 🍦", cost: 450, target: "dabao" },
+    { id: "r5", title: "喝一瓶小酸奶 🍼", cost: 60, target: "erbao" }
   ],
   redemptions: []
 };
