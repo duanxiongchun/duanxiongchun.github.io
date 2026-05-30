@@ -3,150 +3,82 @@
 function loadDabaoHUD() {
   initAppState();
   const player = appState.players.dabao;
-  
-  // Safely guarantee progress schemas are initialized
-  if (!player.progress) {
-    player.progress = { spatial: 1, numeric: 1, attention: 1, deduction: 1 };
-  }
-  
-  const progress = player.progress;
-  const lSpatial = progress.spatial > 50 ? 50 : progress.spatial;
-  const lNumeric = progress.numeric > 50 ? 50 : progress.numeric;
-  const lAttention = progress.attention > 50 ? 50 : progress.attention;
-  const lDeduction = progress.deduction > 50 ? 50 : progress.deduction;
-  
-  // Progress percentages calculations
-  const pSpatial = Math.min(((lSpatial - 1) / 50) * 100, 100);
-  const pNumeric = Math.min(((lNumeric - 1) / 50) * 100, 100);
-  const pAttention = Math.min(((lAttention - 1) / 50) * 100, 100);
-  const pDeduction = Math.min(((lDeduction - 1) / 50) * 100, 100);
 
-  const container = document.getElementById("game-stage");
+  if (!player.progress) {
+    player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1 };
+  }
+  // 补全新维度
+  ['spatial','numeric','attention','deduction','pattern','memory','language','analogy'].forEach(k => {
+    if (typeof player.progress[k] !== 'number') player.progress[k] = 1;
+  });
+  saveAppState();
+
+  const p = player.progress;
+  const clamp = v => Math.min(v > 50 ? 50 : v, 50);
+  const pct = v => Math.min(((clamp(v) - 1) / 50) * 100, 100);
+
+  const tracks = [
+    { key:'spatial',  icon:'🧱', color:'#818cf8', glow:'#6366f1', label:'空间图形推理',   desc:'3D积木计数·折叠对称·立体想象力' },
+    { key:'numeric',  icon:'🧮', color:'#22d3ee', glow:'#06b6d4', label:'数字规律',       desc:'数列填空·倍数等差·斐波那契规律' },
+    { key:'attention',icon:'⚡', color:'#34d399', glow:'#10b981', label:'注意力扫描',     desc:'舒尔特格·顺序倒序·奇偶筛选' },
+    { key:'deduction',icon:'🔍', color:'#d8b4fe', glow:'#a855f7', label:'逻辑演绎排序',   desc:'因果时序重排·生长过程推理' },
+    { key:'pattern',  icon:'🎨', color:'#fbbf24', glow:'#f59e0b', label:'图形矩阵推理',   desc:'3×3矩阵规律·颜色形状旋转推理' },
+    { key:'memory',   icon:'🧠', color:'#f472b6', glow:'#ec4899', label:'短时记忆复现',   desc:'序列记忆·图案复现·工作记忆训练' },
+    { key:'language', icon:'📚', color:'#2dd4bf', glow:'#14b8a6', label:'言语理解分类',   desc:'分类归纳·找异类·场景常识判断' },
+    { key:'analogy',  icon:'🔗', color:'#c4b5fd', glow:'#8b5cf6', label:'类比推理',       desc:'A对B则C对D·关系类比·逻辑关联' },
+  ];
+
+  const container = document.getElementById('game-stage');
   container.innerHTML = `
-    <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; padding-top: 20px;">
-      
-      <!-- Logic Outposts Dashboard -->
+    <div style="display:grid;grid-template-columns:2.4fr 1fr;gap:25px;padding-top:20px;">
       <div>
-        <div class="glass-card" style="padding: 25px; border-color: rgba(99, 102, 241, 0.25); margin-bottom: 25px;">
-          <h2 style="color: #818cf8; font-weight: 800; display: flex; align-items: center; gap: 10px; margin: 0;">
-            🛰️ 脑力特训控制台 (果果舱)
+        <div class="glass-card" style="padding:25px;border-color:rgba(99,102,241,0.25);margin-bottom:25px;">
+          <h2 style="color:#818cf8;font-weight:800;display:flex;align-items:center;gap:10px;margin:0;">
+            🛰️ 脑力特训控制台（果果舱）
           </h2>
-          <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 5px;">
-            系统已加载「八少八素起航线」特训大纲。每项特训包含 50 道高难度逻辑关卡，共计 200 关大题库：
+          <p style="color:var(--text-muted);font-size:0.82em;margin-top:6px;">
+            「北京八中少儿班·八少八素」选拔考察8大维度特训 · 共 400 关题库 · 每维度 50 关递进升级
           </p>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px;">
-            
-            <!-- Category 1: Spatial -->
-            <div class="glass-card glow-dabao pulse-hover" style="padding: 20px; cursor: pointer; display:flex; flex-direction:column; justify-content:space-between; min-height:165px;" onclick="launchTest('spatial')">
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size: 2.2em;">🧱</span>
-                  <span style="font-size:0.8em; color:#a5b4fc; font-weight:bold; font-family:var(--font-fira);">第 ${lSpatial}/50 关</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+            ${tracks.map(t => {
+              const lv = clamp(p[t.key] || 1);
+              const pc = pct(p[t.key] || 1);
+              return `
+              <div class="glass-card pulse-hover" style="padding:18px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:155px;border-color:rgba(255,255,255,0.06);" onclick="launchTest('${t.key}')" onmouseover="this.style.borderColor='${t.glow}44'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:2em;">${t.icon}</span>
+                    <span style="font-size:0.75em;color:${t.color};font-weight:bold;">第${lv}/50关</span>
+                  </div>
+                  <h3 style="font-weight:700;color:#fff;font-size:0.95em;margin-top:8px;">${t.label}</h3>
+                  <p style="font-size:0.7em;color:var(--text-muted);margin-top:4px;line-height:1.3;">${t.desc}</p>
                 </div>
-                <h3 style="font-weight: 700; color: #fff; font-size:1.05em; margin-top:10px;">空间与图形推理</h3>
-                <p style="font-size: 0.75em; color: var(--text-muted); margin-top: 5px; line-height: 1.35;">
-                  3D积木折叠计数与对称旋转，锻炼空间多维想象力。
-                </p>
-              </div>
-              <div style="margin-top:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.7em; color:#6366f1; font-weight:bold; margin-bottom:3px;">
-                  <span>探索进度</span>
-                  <span>${Math.round(pSpatial)}%</span>
+                <div style="margin-top:10px;">
+                  <div style="display:flex;justify-content:space-between;font-size:0.65em;color:${t.color};font-weight:bold;margin-bottom:3px;">
+                    <span>探索进度</span><span>${Math.round(pc)}%</span>
+                  </div>
+                  <div style="width:100%;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                    <div style="width:${pc}%;height:100%;background:${t.glow};box-shadow:0 0 8px ${t.glow};border-radius:3px;"></div>
+                  </div>
                 </div>
-                <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-                  <div style="width:${pSpatial}%; height:100%; background:#6366f1; box-shadow:0 0 8px #6366f1; border-radius:3px;"></div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Category 2: Numeric -->
-            <div class="glass-card glow-dabao pulse-hover" style="padding: 20px; cursor: pointer; display:flex; flex-direction:column; justify-content:space-between; min-height:165px;" onclick="launchTest('numeric')">
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size: 2.2em;">🧮</span>
-                  <span style="font-size:0.8em; color:#22d3ee; font-weight:bold; font-family:var(--font-fira);">第 ${lNumeric}/50 关</span>
-                </div>
-                <h3 style="font-weight: 700; color: #fff; font-size:1.05em; margin-top:10px;">数理与逻辑计算</h3>
-                <p style="font-size: 0.75em; color: var(--text-muted); margin-top: 5px; line-height: 1.35;">
-                  加减乘倍模式匹配与天平等量代换，锻炼数字抽象推理。
-                </p>
-              </div>
-              <div style="margin-top:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.7em; color:#06b6d4; font-weight:bold; margin-bottom:3px;">
-                  <span>探索进度</span>
-                  <span>${Math.round(pNumeric)}%</span>
-                </div>
-                <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-                  <div style="width:${pNumeric}%; height:100%; background:#06b6d4; box-shadow:0 0 8px #06b6d4; border-radius:3px;"></div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Category 3: Attention -->
-            <div class="glass-card glow-dabao pulse-hover" style="padding: 20px; cursor: pointer; display:flex; flex-direction:column; justify-content:space-between; min-height:165px;" onclick="launchTest('attention')">
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size: 2.2em;">⚡</span>
-                  <span style="font-size:0.8em; color:#34d399; font-weight:bold; font-family:var(--font-fira);">第 ${lAttention}/50 关</span>
-                </div>
-                <h3 style="font-weight: 700; color: #fff; font-size:1.05em; margin-top:10px;">瞬时记忆与注意力</h3>
-                <p style="font-size: 0.75em; color: var(--text-muted); margin-top: 5px; line-height: 1.35;">
-                  双数倒数舒尔特方格与亮光阵列复现，开发视觉追踪速度。
-                </p>
-              </div>
-              <div style="margin-top:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.7em; color:#10b981; font-weight:bold; margin-bottom:3px;">
-                  <span>探索进度</span>
-                  <span>${Math.round(pAttention)}%</span>
-                </div>
-                <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-                  <div style="width:${pAttention}%; height:100%; background:#10b981; box-shadow:0 0 8px #10b981; border-radius:3px;"></div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Category 4: Deduction -->
-            <div class="glass-card glow-dabao pulse-hover" style="padding: 20px; cursor: pointer; display:flex; flex-direction:column; justify-content:space-between; min-height:165px;" onclick="launchTest('deduction')">
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size: 2.2em;">🔍</span>
-                  <span style="font-size:0.8em; color:#d8b4fe; font-weight:bold; font-family:var(--font-fira);">第 ${lDeduction}/50 关</span>
-                </div>
-                <h3 style="font-weight: 700; color: #fff; font-size:1.05em; margin-top:10px;">逻辑演绎与推理</h3>
-                <p style="font-size: 0.75em; color: var(--text-muted); margin-top: 5px; line-height: 1.35;">
-                  时序先后因果重排与机器人真假辩词，塑造科学逻辑力。
-                </p>
-              </div>
-              <div style="margin-top:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.7em; color:#a855f7; font-weight:bold; margin-bottom:3px;">
-                  <span>探索进度</span>
-                  <span>${Math.round(pDeduction)}%</span>
-                </div>
-                <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
-                  <div style="width:${pDeduction}%; height:100%; background:#a855f7; box-shadow:0 0 8px #a855f7; border-radius:3px;"></div>
-                </div>
-              </div>
-            </div>
-            
+              </div>`;
+            }).join('')}
           </div>
         </div>
       </div>
-      
-      <!-- Reward shop -->
+
+      <!-- 积分兑换商城 -->
       <div>
-        <div class="glass-card" style="padding: 25px; border-color: rgba(245, 158, 11, 0.25);">
-          <h3 style="color:#fbbf24; font-weight:700; margin-bottom: 15px;">🎁 积分兑换商城</h3>
-          <div id="shop-catalog" style="max-height: 480px; overflow-y: auto;">
-            <!-- catalog loaded dynamically -->
-          </div>
+        <div class="glass-card" style="padding:25px;border-color:rgba(245,158,11,0.25);">
+          <h3 style="color:#fbbf24;font-weight:700;margin-bottom:15px;">🎁 积分兑换商城</h3>
+          <div id="shop-catalog" style="max-height:550px;overflow-y:auto;"></div>
         </div>
       </div>
-      
     </div>
   `;
-  renderRewardsList("dabao");
+  renderRewardsList('dabao');
 }
+
 
 function loadErbaoHUD() {
   const container = document.getElementById("game-stage");

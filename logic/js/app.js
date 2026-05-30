@@ -13,7 +13,7 @@ const DEFAULT_STATE = {
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
       solvedQuestions: [], // Tracks successfully solved logic level IDs for Guoguo
-      progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1 }, // Stably tracks 果果's 50 progressive levels per track
+      progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1 }, // 8大维度各50关
       stats: { spatial: 75, numeric: 60, attention: 85, deduction: 50 }
     },
     erbao: {
@@ -52,10 +52,16 @@ function initAppState() {
           if (!appState.players.dabao.solvedQuestions) {
             appState.players.dabao.solvedQuestions = [];
           }
-          // Critical migration: Inject and persist progress tracking schema if missing in browser database
+          // 确保所有8个维度的进度字段都存在
           if (!appState.players.dabao.progress) {
-            appState.players.dabao.progress = { spatial: 1, numeric: 1, attention: 1, deduction: 1 };
+            appState.players.dabao.progress = {};
           }
+          const defaultProgress = { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1 };
+          Object.keys(defaultProgress).forEach(k => {
+            if (typeof appState.players.dabao.progress[k] !== 'number') {
+              appState.players.dabao.progress[k] = defaultProgress[k];
+            }
+          });
         }
         if (appState.players.erbao) {
           if (appState.players.erbao.name.includes("二宝") || appState.players.erbao.name.includes("小宝")) {
