@@ -9,7 +9,7 @@ function loadDabaoHUD() {
       <div>
         <div class="glass-card" style="padding: 25px; border-color: rgba(99, 102, 241, 0.25); margin-bottom: 25px;">
           <h2 style="color: #818cf8; font-weight: 800; display: flex; align-items: center; gap: 10px;">
-            🛰️ 脑力特训控制台 (大宝舱)
+            🛰️ 脑力特训控制台 (果果舱)
           </h2>
           <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 5px;">
             系统已加载「八少八素起航线」大纲。点击下列测试维度模块，即刻连线训练舱：
@@ -81,10 +81,10 @@ function loadErbaoHUD() {
       <div>
         <div class="glass-card" style="padding: 25px; border-color: rgba(245, 158, 11, 0.25); margin-bottom: 25px;">
           <h2 style="color: #fbbf24; font-weight: 800; display: flex; align-items: center; gap: 10px;">
-            🐰 萌新早教启蒙舱 (二宝舱)
+            🐰 萌新早教启蒙舱 (淼淼舱)
           </h2>
           <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 5px;">
-            针对二宝 2 岁发育特点，设计色彩、形状、声音大颗粒无字触控匹配，锻炼手脑协调力：
+            针对淼淼 2 岁发育特点，设计色彩、形状、声音大颗粒无字触控匹配，锻炼手脑协调力：
           </p>
           
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px;">
@@ -103,7 +103,7 @@ function loadErbaoHUD() {
               <span style="font-size: 2.2em; display: block; margin-bottom: 8px;">📐</span>
               <h3 style="font-weight: 700; color: #fff;">形状分类厂</h3>
               <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
-                圆形和正方形大卡片拖动匹配，磁力对齐吸附，训练抓握和平面感知。
+                圆形、方形和三角形大卡片拖动匹配，磁力对齐吸附，训练抓握和平面感知。
               </p>
             </div>
             
@@ -112,7 +112,7 @@ function loadErbaoHUD() {
               <span style="font-size: 2.2em; display: block; margin-bottom: 8px;">🔊</span>
               <h3 style="font-weight: 700; color: #fff;">声光探测仪</h3>
               <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
-                听小猫小狗和汽车小喇叭声音，点击识别匹配卡片，训练视听反射。
+                听小猫小狗和小山羊声音，点击识别匹配卡片，训练视听反射。
               </p>
             </div>
             
@@ -181,7 +181,7 @@ function redeemReward(rewardId) {
   // Save progress
   saveAppState();
   
-  alert(`🎉 兑换申请成功！\n系统已暂扣 ${reward.cost} 颗星星，兑换清单已发给爸爸妈妈。快让他们在家长后台帮您确认发放，领取您的精美小礼品吧！🧸`);
+  alert(`🎉 兑换申请成功！\n系统已暂扣 ${reward.cost} 颗星星，兑换清单已发给爸爸妈妈。快让他们在家长控制台确认发放，领取您的精美小礼品吧！🧸`);
   
   // Update local view coins
   document.getElementById("star-count").innerText = `🪙 ${player.stars}`;

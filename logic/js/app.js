@@ -6,19 +6,21 @@ const DEFAULT_STATE = {
   lastUpdated: Date.now(),
   players: {
     dabao: {
-      name: "大宝 (6岁)",
+      name: "果果 (6岁)",
       avatar: "🦁",
       stars: 120, // default initial reward stars for trial
       streaks: 2,
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
+      solvedQuestions: [], // Tracks successfully solved logic level IDs for Guoguo
       stats: { spatial: 75, numeric: 60, attention: 85, deduction: 50 }
     },
     erbao: {
-      name: "二宝 (2岁)",
+      name: "淼淼 (2岁)",
       avatar: "🐰",
       stars: 30, // default initial reward stars for trial
       stickers: ["happy_bunny"],
+      solvedQuestions: [], // Tracks successfully solved sensory level IDs for Miaomiao
       lastTrainedDate: null
     }
   },
@@ -39,10 +41,28 @@ function initAppState() {
   if (local) {
     try {
       appState = JSON.parse(local);
-      // Backwards compatibility safety check
-      if (!appState.players || !appState.players.dabao || !appState.rewards) {
-        throw new Error("Invalid structure");
+      
+      // Auto-migrate old state names and add solvedQuestions array if missing
+      if (appState.players) {
+        if (appState.players.dabao) {
+          if (appState.players.dabao.name.includes("大宝")) {
+            appState.players.dabao.name = "果果 (6岁)";
+          }
+          if (!appState.players.dabao.solvedQuestions) {
+            appState.players.dabao.solvedQuestions = [];
+          }
+        }
+        if (appState.players.erbao) {
+          if (appState.players.erbao.name.includes("二宝") || appState.players.erbao.name.includes("小宝")) {
+            appState.players.erbao.name = "淼淼 (2岁)";
+          }
+          if (!appState.players.erbao.solvedQuestions) {
+            appState.players.erbao.solvedQuestions = [];
+          }
+        }
       }
+      
+      saveAppState();
     } catch (e) {
       console.warn("Storage structure mismatch. Resetting to defaults.", e);
       appState = DEFAULT_STATE;
@@ -82,6 +102,14 @@ function logoutPlayer() {
   document.getElementById("app-container").style.display = "none";
   document.getElementById("player-gate").style.display = "flex";
   window.currentPlayerId = null;
+}
+
+function clearAllHistory() {
+  if (confirm("⚠️ 确定要清空所有数据吗？\n这将永久清除果果和淼淼的星星数量、解锁的勋章以及所有通关记录，重置后无法恢复！")) {
+    localStorage.removeItem(STORAGE_KEY);
+    alert("🎉 历史记录清除成功！正在重新载入系统...");
+    window.location.href = "index.html";
+  }
 }
 
 // Global initialization

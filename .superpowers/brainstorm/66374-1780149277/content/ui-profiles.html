@@ -1,0 +1,93 @@
+<h2>个性化双人账号系统 & 家长控制中心</h2>
+<p class="subtitle">针对大宝（6岁 - 幼小衔接及逻辑启蒙）和二宝（2岁 - 动作与视听认知）的巨大年龄差异，我们设计了以下双模系统：</p>
+
+<div class="mockup" style="border: 2px solid #52c41a; border-radius: 12px; overflow: hidden; background: #fff;">
+  <div class="mockup-header" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+    <span>🛸 逻辑思维训练基地 · 成员入口</span>
+    <span style="font-size: 0.85em; opacity: 0.9;">🏠 静态云本地模式 (已启动)</span>
+  </div>
+  
+  <div class="mockup-body" style="padding: 25px; background: #f0fdf4; font-family: 'Outfit', sans-serif; display: flex; flex-direction: column; align-items: center;">
+    
+    <h3 style="color: #065f46; margin-bottom: 20px;">请选择学习舱成员：</h3>
+    
+    <!-- Profile Selection Row -->
+    <div style="display: flex; gap: 25px; width: 100%; max-width: 500px; justify-content: center; margin-bottom: 25px;">
+      <!-- Child 1 (6yo) Card -->
+      <div class="card" style="flex: 1; border: 3px solid #6366f1; background: white; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(99,102,241,0.15);" onclick="alert('进入大宝（6岁）逻辑探险家模式')">
+        <div style="font-size: 3em; margin-bottom: 10px;">🦁</div>
+        <div style="font-weight: 800; font-size: 1.1em; color: #1e1b4b;">大宝 (6岁)</div>
+        <div style="font-size: 0.8em; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-top: 5px; font-weight: bold;">逻辑探险家 🌟 75</div>
+        <div style="font-size: 0.75em; color: #64748b; margin-top: 10px; text-align: left; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+          • 当前进度：第 5 关 (空间旋转)<br>
+          • 训练方向：空间、数理规律、记忆力 (冲刺八少八素铺垫)
+        </div>
+      </div>
+
+      <!-- Child 2 (2yo) Card -->
+      <div class="card" style="flex: 1; border: 3px solid #fbbf24; background: white; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(251,191,36,0.15);" onclick="alert('进入二宝（2岁）认知小萌新模式')">
+        <div style="font-size: 3em; margin-bottom: 10px;">🐰</div>
+        <div style="font-weight: 800; font-size: 1.1em; color: #78350f;">二宝 (2岁)</div>
+        <div style="font-size: 0.8em; color: #b45309; background: #fef3c7; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-top: 5px; font-weight: bold;">认知小萌新 🌟 12</div>
+        <div style="font-size: 0.75em; color: #64748b; margin-top: 10px; text-align: left; border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+          • 当前进度：颜色对对碰<br>
+          • 训练方向：大图标、听音辨动物、形状拖拽配对 (感官逻辑)
+        </div>
+      </div>
+    </div>
+
+    <!-- Parent Control Panel Entrance -->
+    <div style="width: 100%; max-width: 500px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: bold; color: #334155; font-size: 0.9em;">⚙️ 家长控制中心 (Parent Admin)</span>
+        <button style="background: #64748b; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75em; cursor: pointer;">安全密码解锁</button>
+      </div>
+      <div style="font-size: 0.75em; color: #64748b; margin-top: 8px;">
+        在家长端，您可以：
+        <ul style="margin: 5px 0 0 15px; padding: 0; line-height: 1.4;">
+          <li>🌟 <strong>定制兑换奖励</strong>：自定义孩子们可以用积分换取的礼品（例如：乐高积木 - 200星）。</li>
+          <li>📊 <strong>查看学习报表</strong>：对比两个小孩每天的答题正确率和时长。</li>
+          <li>💾 <strong>数据备份与同步</strong>：将所有学习进度一键导出为本地 JSON 文件，或通过微信传到平板电脑中导入恢复。</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top: 25px;">
+  <div class="pros">
+    <h4>大宝 (6岁) 训练思路 - 八少八素预备起航线 🧭</h4>
+    <ul>
+      <li><strong>图形空间基础</strong>：从简单的「2D 图形镜像/旋转」、「积木数量数一数」开始，培养立体几何直觉。</li>
+      <li><strong>启发式数理</strong>：以连线、数字规律、大小比较代替纯算术，杜绝死记硬背，契合八少八素对脑力灵活性而非提前学的要求。</li>
+      <li><strong>专注力训练</strong>：通过 3x3「闪烁网格记忆」、舒尔特方格等趣味小游戏，提升短时注意广度。</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>二宝 (2岁) 训练思路 - 蒙特梭利感官认知 👶</h4>
+    <ul>
+      <li><strong>零文字全视听</strong>：不认识字，全靠大面积的鲜艳卡片、可爱的动物叫声和直观的手指划动。</li>
+      <li><strong>手眼协调与基础认知</strong>：设计「把红苹果拖进红篮子」、「找出形状相同的积木」、「听听哪个是猫咪叫声」，训练手眼协调与简单的同类归纳。</li>
+      <li><strong>保护视力防沉迷</strong>：系统默认提供「限时控制」（如单次 10 分钟锁定），帮助低龄宝宝合理用眼。</li>
+    </ul>
+  </div>
+</div>
+
+<h3>对于双模角色账号与课程体系设计，您觉得合适吗？</h3>
+<div class="options">
+  <div class="option" data-choice="profile_perfect" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>非常合适，正是我想要的！</h3>
+      <p>大宝专注逻辑启蒙（幼小衔接 & 八少八素路线），二宝专注感官认知，家长能自主定制奖励并本地备份。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="profile_adjust" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>需要进行一些细节调整</h3>
+      <p>例如：调整部分板块考察比重，或是对 2 岁宝宝的认知模块有其他的规划建议（请在输入框写明）。</p>
+    </div>
+  </div>
+</div>

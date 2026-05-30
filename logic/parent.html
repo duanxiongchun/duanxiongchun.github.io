@@ -56,7 +56,7 @@
   <div id="parent-lock" class="gate-overlay" style="display: flex;">
     <div class="glass-card gate-container text-center">
       <h2 style="color: var(--color-accent); font-weight: 800; margin-bottom: 10px;">🔒 家长验证控制台</h2>
-      <p style="color:#94a3b8; font-size: 0.9em; margin-bottom: 25px;">请正确解答以下口算题以启动控制舱（防止大宝误入修改积分）：</p>
+      <p style="color:#94a3b8; font-size: 0.9em; margin-bottom: 25px;">请正确解答以下口算题以启动控制舱（防止果果误入修改积分）：</p>
       <h1 id="lock-expression" style="color: #6366f1; font-size: 3em; margin-bottom: 20px; font-family: var(--font-fira);">7 * 8 = ?</h1>
       <input type="number" id="lock-answer" class="mock-input" style="width:140px; text-align:center; font-size:1.6em; border-color: rgba(99,102,241,0.5);" placeholder="??">
       <button class="mock-button glow-dabao" onclick="verifyParentLock()" style="margin-top:20px; display:block; width:100%; font-size:1.1em; padding:12px;">启动系统</button>
@@ -81,11 +81,11 @@
     <!-- Stats Row -->
     <div class="glass-card stats-card">
       <div class="stat-item">
-        <p style="font-size:0.8em; color:#94a3b8;">🦁 大宝星星余额</p>
+        <p style="font-size:0.8em; color:#94a3b8;">🦁 果果星星余额</p>
         <div id="stat-dabao-stars" class="stat-val" style="color:#818cf8;">0</div>
       </div>
       <div class="stat-item" style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); padding: 0 40px;">
-        <p style="font-size:0.8em; color:#94a3b8;">🐰 二宝星星余额</p>
+        <p style="font-size:0.8em; color:#94a3b8;">🐰 淼淼星星余额</p>
         <div id="stat-erbao-stars" class="stat-val" style="color:#fbbf24;">0</div>
       </div>
       <div class="stat-item">
@@ -96,7 +96,7 @@
 
     <div class="parent-grid">
       <!-- Star Coins & Rewards panel -->
-      <div class="glass-card" style="padding: 25px; border-color: rgba(99,102,241,0.25);">
+      <div class="glass-card" style="padding: 25px; border-color: rgba(99, 102, 241, 0.25);">
         <h3 style="color:#818cf8; margin-bottom: 15px; font-weight: 700;">🎁 待发放奖励申请</h3>
         <div id="redemption-list" style="max-height: 400px; overflow-y: auto;">
           <!-- approvals dynamically loaded -->
@@ -115,6 +115,9 @@
         <p style="font-size:0.75em; color:#94a3b8; margin-top:5px; margin-bottom:10px;">粘贴您在另一台设备上复制的备份口令，一键恢复最新的打卡进度：</p>
         <textarea id="import-token" class="mock-input" style="width:100%; height:80px; font-size:0.85em; font-family:var(--font-fira); line-height:1.4;" placeholder="在这里粘贴微信转发的备份口令..."></textarea>
         <button class="mock-button glow-success" onclick="importDataToken()" style="margin-top:10px; width:100%; font-size:0.95em; padding:8px;">📥 一键导入并覆盖数据</button>
+        
+        <!-- CLEAR HISTORY TRIGGER -->
+        <button class="mock-button" onclick="clearAllHistory()" style="margin-top:35px; width:100%; background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.4); color:#fca5a5; font-weight:700; border-style:dashed;">⚠️ 一键清空所有历史记录 (重置进度)</button>
       </div>
     </div>
 
