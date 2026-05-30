@@ -117,13 +117,61 @@
         <button class="mock-button glow-success" onclick="importDataToken()" style="margin-top:10px; width:100%; font-size:0.95em; padding:8px;">📥 一键导入并覆盖数据</button>
         
         <!-- CLEAR HISTORY TRIGGER -->
+        <!-- CLEAR HISTORY TRIGGER -->
         <button class="mock-button" onclick="clearAllHistory()" style="margin-top:35px; width:100%; background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.4); color:#fca5a5; font-weight:700; border-style:dashed;">⚠️ 一键清空所有历史记录 (重置进度)</button>
+      </div>
+    </div>
+
+    <!-- 🎓 逻辑学习效果面测与能力评估 (Parent Verification & Assessment Center) -->
+    <div class="glass-card" style="padding: 25px; margin-top: 25px; border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.01);">
+      <h3 style="color:#22d3ee; margin-bottom: 10px; font-weight: 700; display:flex; align-items:center; gap:8px;">🎓 学习效果现场抽测与认知评估</h3>
+      <p style="font-size:0.8em; color:#94a3b8; margin-bottom: 20px;">随时抽测孩子在对应维度的真实掌握情况，防止孩子“闭着眼睛瞎猜”通关。家长当面提问，并在网页上记录面测结果：</p>
+      
+      <div class="parent-grid" style="margin-top:0;">
+        <!-- Left: Cognitive Assessment Radar & Progress -->
+        <div class="glass-card" style="padding:20px; background:rgba(6,182,212,0.02); border-color:rgba(255,255,255,0.03);">
+          <h4 style="color:#fff; margin-bottom:15px; font-weight:600;">🦁 果果的认知能力看板 (8大核心维度)</h4>
+          <div id="cognitive-radar-list" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- Render progress bars dynamically -->
+          </div>
+          <div id="cognitive-rating-badge" class="glass-card" style="margin-top:20px; padding:12px; border-color:rgba(99,102,241,0.25); background:rgba(99,102,241,0.05); text-align:center; font-weight:700; color:#fff;">
+            <!-- Rating analysis dynamically -->
+          </div>
+        </div>
+        
+        <!-- Right: Parent In-Person Oral Quiz Generator -->
+        <div class="glass-card" style="padding:20px; background:rgba(168,85,247,0.02); border-color:rgba(255,255,255,0.03); display:flex; flex-direction:column; justify-content:space-between; min-height: 320px;">
+          <div>
+            <h4 style="color:#fff; margin-bottom:15px; font-weight:600;">🎯 家长专属防作弊面测题</h4>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+              <select id="quiz-track-select" class="mock-input" style="flex:1; padding:8px; font-size:0.95em; background:#090a10; border-color:rgba(168,85,247,0.4); color:#fff; border-radius:8px;">
+                <option value="spatial">🧩 空间图形推理</option>
+                <option value="numeric">🧮 数字规律与天平</option>
+                <option value="attention">⚡ 注意力与记忆力</option>
+                <option value="deduction">🔍 逻辑演绎与排序</option>
+                <option value="pattern">🎨 图形矩阵推理</option>
+                <option value="language">💬 语言理解与类比</option>
+              </select>
+              <button class="mock-button glow-dabao" onclick="generateOralQuiz()" style="padding:8px 15px; font-size:0.95em; border-radius:8px; white-space:nowrap; margin-top:0;">🎲 随机出题</button>
+            </div>
+            
+            <div id="oral-quiz-box" class="glass-card" style="padding:15px; background:rgba(255,255,255,0.02); min-height:120px; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:left; border-color:rgba(255,255,255,0.05);">
+              <p style="color:#64748b; font-size:0.9em; text-align:center; margin:0;">请选择维度，点击【随机出题】给孩子面测！</p>
+            </div>
+          </div>
+          
+          <div id="oral-quiz-actions" style="display:none; gap:12px; margin-top:20px;">
+            <button class="mock-button glow-success" onclick="submitOralQuizResult(true)" style="flex:1; font-weight:700; padding:10px; font-size:0.95em; margin-top:0;">✅ 宝贝答对了 (🪙 +20)</button>
+            <button class="mock-button" onclick="submitOralQuizResult(false)" style="flex:1; border-color:rgba(239,68,68,0.4); color:#fca5a5; font-weight:700; padding:10px; font-size:0.95em; margin-top:0;">❌ 没答对/重来</button>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/questions.js"></script>
   <script>
     let currentAnswer = 56;
     
@@ -153,6 +201,7 @@
       document.getElementById("stat-erbao-stars").innerText = appState.players.erbao.stars;
       document.getElementById("stat-pending-redemps").innerText = appState.redemptions.length;
       loadRedemptions();
+      loadCognitiveRadar();
     }
 
     function loadRedemptions() {
@@ -238,6 +287,153 @@
       } catch (e) {
         alert("❌ 导入口令码解析失败！请检查复制的代码是否完整，确保没有多余的空格或字符丢失。");
       }
+    }
+
+    function loadCognitiveRadar() {
+      const player = appState.players.dabao;
+      const progress = player.progress || { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1 };
+      
+      const tracks = [
+        { key: 'spatial', name: '🧩 空间图形推理', color: '#818cf8' },
+        { key: 'numeric', name: '🧮 数字规律平衡', color: '#34d399' },
+        { key: 'attention', name: '⚡ 注意力与记忆', color: '#fbbf24' },
+        { key: 'deduction', name: '🔍 逻辑演绎排序', color: '#f43f5e' },
+        { key: 'pattern', name: '🎨 图形矩阵推理', color: '#a78bfa' },
+        { key: 'language', name: '💬 语言类比理解', color: '#38bdf8' }
+      ];
+      
+      let totalLevels = 0;
+      const listContainer = document.getElementById("cognitive-radar-list");
+      if (listContainer) {
+        listContainer.innerHTML = tracks.map(t => {
+          const val = progress[t.key] || 1;
+          totalLevels += val - 1;
+          const pct = Math.min(((val - 1) / 50) * 100, 100);
+          return `
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.85em; color:#e2e8f0; margin-bottom:4px;">
+                <span>${t.name}</span>
+                <strong style="color:${t.color}">${val - 1} / 50 关</strong>
+              </div>
+              <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${t.color}; border-radius:4px; transition:width 0.4s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      // Calculate Cognitive Level
+      let ratingText = '';
+      if (totalLevels < 10) {
+        ratingText = "🌱 秩序感知期 (L1 基础探险人)";
+      } else if (totalLevels < 30) {
+        ratingText = "🚀 运算与演绎期 (L2 精英特训生)";
+      } else if (totalLevels < 60) {
+        ratingText = "🧠 流体智力跃迁期 (L3 核心逻辑官)";
+      } else {
+        ratingText = "🏅 八少八素特优备用人才 (L4 宇宙级天才)";
+      }
+      
+      const badgeContainer = document.getElementById("cognitive-rating-badge");
+      if (badgeContainer) {
+        badgeContainer.innerHTML = `
+          <div style="font-size:0.85em; color:#94a3b8; margin-bottom:4px;">综合认知测评等级</div>
+          <div style="font-size:1.15em; color:#22d3ee; font-weight:800;">${ratingText}</div>
+          <div style="font-size:0.8em; color:#64748b; margin-top:4px;">累计自主通关了 ${totalLevels} 个高难度逻辑挑战</div>
+        `;
+      }
+    }
+
+    let currentOralQuiz = null;
+
+    function generateOralQuiz() {
+      const track = document.getElementById("quiz-track-select").value;
+      let qList = [];
+      
+      if (track === 'spatial') {
+        qList = [...(window.MIRROR_QUESTIONS || []), ...(window.ROTATION_QUESTIONS || [])];
+      } else if (track === 'numeric') {
+        qList = [
+          { text: '一箱苹果等于2盒草莓，一盒草莓等于3包软糖。那么一箱苹果等于几包软糖？', correct: '6包软糖', wrong: ['4包', '5包', '8包'], hint: '1箱=2盒，1盒=3包，所以2盒=2*3=6包！' },
+          { text: '天平左边是 12 颗葡萄，右边是 1 个大桃子加 4 颗葡萄。天平左右平衡，一个大桃子等于几颗葡萄？', correct: '8颗', wrong: ['6颗', '10颗', '4颗'], hint: '两边都拿掉4颗葡萄，右边剩大桃子，左边剩12-4=8颗。' }
+        ];
+      } else if (track === 'attention') {
+        qList = window.ATTENTION_TRACK_QUESTIONS || [];
+      } else if (track === 'deduction') {
+        qList = [...(window.DEDUCTION_WEIGHT_QUESTIONS || []), ...(window.DEDUCTION_QUEUE_QUESTIONS || [])];
+      } else if (track === 'pattern') {
+        qList = window.PATTERN_QUESTIONS || [];
+      } else if (track === 'language') {
+        qList = [...(window.LANGUAGE_QUESTIONS || []), ...(window.ANALOGY_QUESTIONS || [])];
+      }
+      
+      if (!qList || qList.length === 0) {
+        document.getElementById("oral-quiz-box").innerHTML = `<p style="color:#f87171; font-size:0.9em; text-align:center; margin:0;">未找到对应题库，请确认 questions.js 是否成功加载。</p>`;
+        return;
+      }
+      
+      // Randomly select
+      const q = qList[Math.floor(Math.random() * qList.length)];
+      currentOralQuiz = q;
+      
+      let html = `<div style="width:100%;">`;
+      
+      // If it is a spatial/matrix grid drawing
+      if (q.original) {
+        html += `<pre style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; font-family:var(--font-fira); font-size:1.1em; color:#fbbf24; text-align:center; margin-bottom:10px; line-height:1.25;">${q.original}</pre>`;
+      } else if (q.matrix) {
+        // Draw 3x3 pattern matrix beautifully
+        html += `<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; max-width:180px; margin: 0 auto 12px;">`;
+        q.matrix.forEach(cell => {
+          html += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:6px; text-align:center; font-size:1.25em;">${cell}</div>`;
+        });
+        html += `</div>`;
+      } else if (q.clues) {
+        html += `<div style="background:rgba(255,255,255,0.04); padding:8px; border-radius:8px; margin-bottom:10px;">`;
+        q.clues.forEach(c => {
+          html += `<div style="font-size:0.85em; font-weight:bold; color:#fff;">${c}</div>`;
+        });
+        html += `</div>`;
+      }
+      
+      const qText = q.text || q.desc || q.title || "请指出其中包含的逻辑规律：";
+      html += `<p style="font-size:1.02em; color:#fff; font-weight:700; line-height:1.4; margin-bottom:10px;">${qText}</p>`;
+      
+      const correctAns = q.correct || (q.opts && q.opts[q.ans]) || "请核对答案";
+      html += `<div style="margin:10px 0; padding:8px 12px; border-radius:8px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25);">
+        <span style="font-size:0.8em; color:#34d399; font-weight:600; display:block;">💡 标准正确答案</span>
+        <strong style="font-size:1.1em; color:#10b981;">${correctAns}</strong>
+      </div>`;
+      
+      const hint = q.hint || "引导孩子找出图形的轴对称、旋转规律或天平的大小代换。";
+      html += `<div style="margin-top:10px; font-size:0.82em; color:#94a3b8; line-height:1.4;">
+        <span style="color:#a78bfa; font-weight:700;">🗣️ 家长讲题话术提示：</span>${hint}
+      </div>`;
+      
+      html += `</div>`;
+      
+      document.getElementById("oral-quiz-box").innerHTML = html;
+      document.getElementById("oral-quiz-box").style.textAlign = "left";
+      document.getElementById("oral-quiz-actions").style.display = "flex";
+    }
+
+    function submitOralQuizResult(isCorrect) {
+      if (isCorrect) {
+        initAppState();
+        appState.players.dabao.stars += 20; // Reward 20 stars
+        saveAppState();
+        loadDashboardStats();
+        alert("🎉 恭喜！已成功记录果果通过现场面测，金币 +20！本记录已提交至主看板！🌟");
+      } else {
+        alert("💡 没关系！请对照【家长讲题话术】给果果耐心讲一下题目的规律，让他理清头绪后再试一题！");
+      }
+      
+      // Reset
+      document.getElementById("oral-quiz-box").innerHTML = `<p style="color:#64748b; font-size:0.9em; text-align:center; margin:0;">请选择维度，点击【随机出题】给孩子面测！</p>`;
+      document.getElementById("oral-quiz-box").style.textAlign = "center";
+      document.getElementById("oral-quiz-actions").style.display = "none";
+      currentOralQuiz = null;
     }
 
     window.onload = () => {
