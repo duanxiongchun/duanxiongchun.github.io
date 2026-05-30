@@ -65,8 +65,12 @@ function clickBackwardRecall(num) {
   }
 }
 
+let memorySolvedCount = 0; // 成功填充的槽位计数
+
 function startMemoryRecall(originalSeq) {
-  memoryCurrentIdx = 0;
+  memoryExpected = [...originalSeq];
+  memorySolvedCount = 0;
+  
   const recallArea = document.getElementById('memory-recall-area');
   if (!recallArea) return;
   recallArea.style.display = 'block';
@@ -77,42 +81,164 @@ function startMemoryRecall(originalSeq) {
   const opts = [...originalSeq, ...distractors.slice(0, 4)].sort(() => Math.random() - 0.5);
 
   recallArea.innerHTML = `
-    <p style="font-size:0.9em;color:#f472b6;font-weight:700;margin-bottom:15px;">🎯 请点击第 <span id="recall-pos">1</span> 个图案：</p>
+    <p style="font-size:0.9em;color:#f472b6;font-weight:700;margin-bottom:15px;">🎯 拖拽图案到正确的位置，或直接轻点它！</p>
     <div id="selected-display" style="display:flex;justify-content:center;gap:10px;min-height:50px;margin-bottom:15px;flex-wrap:wrap;">
-      ${originalSeq.map(() => `<div style="width:50px;height:50px;border-radius:10px;border:2px dashed rgba(255,255,255,0.2);"></div>`).join('')}
+      ${originalSeq.map((_, idx) => `<div class="memory-slot" data-slot-idx="${idx}" style="width:50px;height:50px;border-radius:10px;border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.5em;transition:all 0.2s;"></div>`).join('')}
     </div>
-    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-      ${opts.map(o => `<button class="mock-button glow-dabao" id="recall-btn-${o}" onclick="clickMemoryRecall('${o}', ${JSON.stringify(originalSeq)})" style="font-size:1.5em;width:58px;height:58px;border-radius:12px;">${o}</button>`).join('')}
+    <div id="memory-options-container" style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+      ${opts.map(o => `
+        <button class="mock-button glow-dabao recall-btn" id="recall-btn-${o}" data-emoji="${o}" style="font-size:1.5em;width:58px;height:58px;border-radius:12px;touch-action:none;user-select:none;position:relative;">${o}</button>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
+      <button class="mock-button glow-dabao" onclick="resetMemoryRecall()" style="font-size:0.92em;padding:8px 20px;border-radius:10px;font-weight:700;border-color:rgba(236,72,153,0.4);">🔄 一键清空重新选择</button>
     </div>
   `;
+
+  setupMemoryRecallDragAndDrop();
 }
 
-function clickMemoryRecall(selected, originalSeq) {
-  if (selected !== originalSeq[memoryCurrentIdx]) {
-    speakText("不对哦！试试别的图案！");
+function setupMemoryRecallDragAndDrop() {
+  const draggables = document.querySelectorAll('.recall-btn');
+
+  draggables.forEach(drag => {
+    let startX = 0, startY = 0;
+    let isDragging = false;
+    const emoji = drag.getAttribute('data-emoji');
+
+    const onPointerDown = (e) => {
+      drag.setPointerCapture(e.pointerId);
+      startX = e.clientX;
+      startY = e.clientY;
+      isDragging = true;
+      drag.style.transition = 'none';
+      drag.style.zIndex = '1000';
+      drag.style.transform = 'scale(1.15)';
+    };
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      drag.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.15)`;
+    };
+
+    const onPointerUp = (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      drag.releasePointerCapture(e.pointerId);
+      
+      drag.style.zIndex = '';
+      drag.style.transition = 'transform 0.2s';
+      drag.style.transform = 'none';
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 6) {
+        // Tap-to-Move 轻点飞入
+        handleMemoryTap(emoji, drag);
+      } else {
+        // Drag-and-Drop 探测目标槽位
+        drag.style.pointerEvents = 'none';
+        const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+        drag.style.pointerEvents = '';
+
+        let slot = null;
+        if (targetElement) {
+          slot = targetElement.closest('.memory-slot');
+        }
+
+        if (slot) {
+          handleMemoryDrop(emoji, slot, drag);
+        }
+      }
+    };
+
+    drag.addEventListener('pointerdown', onPointerDown);
+    drag.addEventListener('pointermove', onPointerMove);
+    drag.addEventListener('pointerup', onPointerUp);
+    drag.addEventListener('pointercancel', onPointerUp);
+  });
+}
+
+function handleMemoryTap(emoji, dragBtn) {
+  // 智能寻轨：找到该图案在 originalSeq 中首个尚未被填充的正确槽位
+  let targetSlotIdx = -1;
+  for (let i = 0; i < memoryExpected.length; i++) {
+    if (memoryExpected[i] === emoji) {
+      const slot = document.querySelector(`.memory-slot[data-slot-idx="${i}"]`);
+      if (slot && !slot.innerText) {
+        targetSlotIdx = i;
+        break;
+      }
+    }
+  }
+
+  if (targetSlotIdx !== -1) {
+    const slot = document.querySelector(`.memory-slot[data-slot-idx="${targetSlotIdx}"]`);
+    fillMemorySlot(slot, emoji, dragBtn);
+  } else {
+    speakText("再回忆回忆，试试别的图案！");
     showWrongToast();
-    return;
   }
-  // 正确：更新显示
-  const slots = document.querySelectorAll('#selected-display div');
-  if (slots[memoryCurrentIdx]) {
-    slots[memoryCurrentIdx].innerHTML = selected;
-    slots[memoryCurrentIdx].style.border = '2px solid #10b981';
-    slots[memoryCurrentIdx].style.fontSize = '1.5em';
-    slots[memoryCurrentIdx].style.display = 'flex';
-    slots[memoryCurrentIdx].style.alignItems = 'center';
-    slots[memoryCurrentIdx].style.justifyContent = 'center';
-  }
-  const btn = document.getElementById(`recall-btn-${selected}`);
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
+}
 
-  memoryCurrentIdx++;
-  const posEl = document.getElementById('recall-pos');
-  if (posEl) posEl.innerText = memoryCurrentIdx + 1;
-
-  if (memoryCurrentIdx >= originalSeq.length) {
-    trigger6yoVictory(10, "全部记对了！果果的记忆力超级厉害！");
+function handleMemoryDrop(emoji, slot, dragBtn) {
+  const slotIdx = parseInt(slot.getAttribute('data-slot-idx'));
+  
+  // 检查落点槽位的正确 emoji 是否是拖拽卡片
+  if (memoryExpected[slotIdx] === emoji) {
+    if (slot.innerText) {
+      // 槽位已被占用，弹回
+      return;
+    }
+    fillMemorySlot(slot, emoji, dragBtn);
+  } else {
+    speakText("位置不对哦，再想一想！");
+    showWrongToast();
   }
+}
+
+function fillMemorySlot(slot, emoji, dragBtn) {
+  slot.innerText = emoji;
+  slot.style.border = '2px solid #10b981';
+  slot.style.background = 'rgba(16, 185, 129, 0.15)';
+  
+  dragBtn.disabled = true;
+  dragBtn.style.opacity = '0.4';
+  dragBtn.style.pointerEvents = 'none';
+
+  memorySolvedCount++;
+
+  if (memorySolvedCount >= memoryExpected.length) {
+    setTimeout(() => {
+      trigger6yoVictory(10, "全部记对了！果果的记忆力超级厉害！");
+    }, 300);
+  }
+}
+
+function resetMemoryRecall() {
+  memorySolvedCount = 0;
+  
+  // 清空槽位样式与文本
+  const slots = document.querySelectorAll('.memory-slot');
+  slots.forEach(slot => {
+    slot.innerText = '';
+    slot.style.border = '2px dashed rgba(255,255,255,0.2)';
+    slot.style.background = '';
+  });
+
+  // 恢复选项卡片
+  const draggables = document.querySelectorAll('.recall-btn');
+  draggables.forEach(drag => {
+    drag.disabled = false;
+    drag.style.opacity = '1';
+    drag.style.pointerEvents = 'auto';
+  });
+  
+  speakText("已全部清空，果果可以重新选择啦！");
 }
 
 function launchMemory(level, container) {
