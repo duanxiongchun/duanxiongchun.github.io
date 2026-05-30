@@ -3,6 +3,22 @@
 let currentAnswer6yo = 0;
 let currentDeductionTimeline = [];
 
+// Built-in Chinese Speech Synthesis Utility
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    // Cancel any ongoing speaking to prevent overlaps
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.95;  // Slightly slower, child-friendly speech rate
+    utterance.pitch = 1.15; // Slightly higher, energetic pitch for kids
+    window.speechSynthesis.speak(utterance);
+  } else {
+    console.warn("Speech synthesis not supported on this browser.");
+  }
+}
+
 function launchTest(type) {
   const container = document.getElementById("game-stage");
   
@@ -16,10 +32,15 @@ function launchTest(type) {
     const q = blockQuestions[Math.floor(Math.random() * blockQuestions.length)];
     currentAnswer6yo = q.ans;
 
+    const questionText = "大宝，请数一数这堆立方体中总共有多少个积木，注意底层被压在底下的隐形积木哦。";
+
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(99,102,241,0.3);">
-        <h2 style="color:#818cf8; font-weight:800; margin-bottom:10px;">🧱 3D 积木探视镜 Block Count</h2>
-        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🦁 大宝，请数一数这堆立方体中总共有多少个积木卡槽（注意底层被压在底下的“隐形积木”哦）：</p>
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:10px;">
+          <h2 style="color:#818cf8; font-weight:800; margin:0;">🧱 3D 积木探视镜</h2>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:5px 12px; font-size:0.85em; display:flex; align-items:center; gap:5px; border-radius:15px; font-weight:700;">🔊 语音读题</button>
+        </div>
+        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🦁 数一数，总共有多少个积木卡槽（包含压在下面的“隐形积木”）：</p>
         
         <div style="background:rgba(15,23,42,0.6); padding:30px; border-radius:16px; height:180px; display:flex; align-items:center; justify-content:center; font-size:3em; border:1px solid rgba(255,255,255,0.06); line-height:1.4; font-family:var(--font-fira); font-weight:bold; letter-spacing:8px;">
           ${q.visual}
@@ -36,6 +57,9 @@ function launchTest(type) {
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:35px; width:100%;">🛰️ 返回特训大厅</button>
       </div>
     `;
+    
+    // Autoplay voice question
+    setTimeout(() => { speakText(questionText); }, 200);
   } 
   
   else if (type === 'numeric') {
@@ -48,10 +72,15 @@ function launchTest(type) {
     const q = seriesQuestions[Math.floor(Math.random() * seriesQuestions.length)];
     currentAnswer6yo = q.ans;
 
+    const questionText = "大宝，请根据数字的变化规律，猜一猜泡泡问号里面应该填哪个数字呢？";
+
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(99,102,241,0.3);">
-        <h2 style="color:#818cf8; font-weight:800; margin-bottom:10px;">🧮 数泡泡找规律 Math Sequence</h2>
-        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🦁 大宝，请根据数字的规律，猜猜泡泡【❓】里面应该填哪个数：</p>
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:10px;">
+          <h2 style="color:#818cf8; font-weight:800; margin:0;">🧮 数泡泡找规律</h2>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:5px 12px; font-size:0.85em; display:flex; align-items:center; gap:5px; border-radius:15px; font-weight:700;">🔊 语音读题</button>
+        </div>
+        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🦁 猜猜泡泡【❓】里面应该填哪个数：</p>
         
         <div style="display:flex; justify-content:center; align-items:center; gap:15px; margin:30px 0;">
           ${q.sequence.map(item => {
@@ -72,14 +101,22 @@ function launchTest(type) {
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:35px; width:100%;">🛰️ 返回特训大厅</button>
       </div>
     `;
+    
+    // Autoplay voice question
+    setTimeout(() => { speakText(questionText); }, 200);
   } 
   
   else if (type === 'attention') {
     // Attention Dimension: Schulte Grid
+    const questionText = "大宝，请用小眼睛快速扫描格子，按照数字一到九的顺序，依次点击它们吧。";
+
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(99,102,241,0.3);">
-        <h2 style="color:#818cf8; font-weight:800; margin-bottom:10px;">⚡ 舒尔特脑波追踪 Schulte Grid</h2>
-        <p style="font-size:1.05em; color:#a1a1aa; margin-bottom:20px;">🦁 大宝，请用眼睛快速扫描格子，按顺序依次点击 【1 → 9】：</p>
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:10px;">
+          <h2 style="color:#818cf8; font-weight:800; margin:0;">⚡ 舒尔特脑波追踪</h2>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:5px 12px; font-size:0.85em; display:flex; align-items:center; gap:5px; border-radius:15px; font-weight:700;">🔊 语音读题</button>
+        </div>
+        <p style="font-size:1.05em; color:#a1a1aa; margin-bottom:20px;">🦁 集中精神，快速点击数字 【1 → 9】：</p>
         
         <div id="schulte-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; max-width:280px; margin:25px auto;">
           <!-- Schulte cells loaded dynamically -->
@@ -89,6 +126,9 @@ function launchTest(type) {
       </div>
     `;
     setupDabaoSchulte();
+    
+    // Autoplay voice question
+    setTimeout(() => { speakText(questionText); }, 200);
   } 
   
   else if (type === 'deduction') {
@@ -102,10 +142,15 @@ function launchTest(type) {
     // Shuffle items
     currentDeductionTimeline = [...timelineItems].sort(() => Math.random() - 0.5);
 
+    const questionText = "大宝，请通过点击上下方向键，重新把下面的事件，按照从小到大的生长顺序排一排吧。";
+
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(99,102,241,0.3);">
-        <h2 style="color:#818cf8; font-weight:800; margin-bottom:10px;">🔍 时空发生顺序 Chrono Sort</h2>
-        <p style="font-size:1.05em; color:#a1a1aa; margin-bottom:20px;">🦁 大宝，拖拽或点击重新给下面的事件按正确的成长逻辑排序：</p>
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:10px;">
+          <h2 style="color:#818cf8; font-weight:800; margin:0;">🔍 时空发生顺序</h2>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:5px 12px; font-size:0.85em; display:flex; align-items:center; gap:5px; border-radius:15px; font-weight:700;">🔊 语音读题</button>
+        </div>
+        <p style="font-size:1.05em; color:#a1a1aa; margin-bottom:20px;">🦁 点击上下键，将卡片按苹果树的生长逻辑从头到尾排列：</p>
         
         <div id="timeline-list" style="display:flex; flex-direction:column; gap:12px; margin:25px 0;">
           ${currentDeductionTimeline.map((item, idx) => `
@@ -124,6 +169,9 @@ function launchTest(type) {
       </div>
     `;
     setupDeductionDrag();
+    
+    // Autoplay voice question
+    setTimeout(() => { speakText(questionText); }, 200);
   }
 }
 
@@ -150,10 +198,12 @@ function checkDabaoAnswer(ans) {
       o.stop(audioCtx.currentTime + 0.4);
     } catch(err){}
 
+    speakText("答对了！大宝太厉害啦！加十分！");
     alert("🎉 太酷啦！大宝回答完全正确！获得 10 颗星星奖励！继续加油哦 🦁🌟");
     document.getElementById("star-count").innerText = `🪙 ${appState.players.dabao.stars}`;
     loadDabaoHUD();
   } else {
+    speakText("不对哦。再仔细数十一下，或者换个数字试试吧！");
     alert("❌ 呀，算错啦。别着急，再仔细看一看、数一数细节，或者点击其他数字试试！💡");
   }
 }
@@ -201,6 +251,7 @@ function clickDabaoSchulte(num) {
         initAppState();
         appState.players.dabao.stars += 15;
         saveAppState();
+        speakText("专注力满分！大宝真棒！加十五分！");
         alert("🎉 闪电追踪！大宝专注力满分！获得 15 颗星星奖励！🦁🌟");
         document.getElementById("star-count").innerText = `🪙 ${appState.players.dabao.stars}`;
         loadDabaoHUD();
@@ -209,6 +260,9 @@ function clickDabaoSchulte(num) {
   } else {
     btn.style.background = "rgba(239, 68, 68, 0.25)";
     btn.style.borderColor = "#ef4444";
+    
+    speakText("点错数字了。再找找看。");
+    
     setTimeout(() => {
       if (btn.style.background.includes("239")) {
         btn.style.background = "rgba(255, 255, 255, 0.05)";
@@ -252,10 +306,12 @@ function verifyDabaoTimeline() {
     initAppState();
     appState.players.dabao.stars += 10;
     saveAppState();
+    speakText("排序正确！大宝太棒了！加十分！");
     alert("🎉 推演大成功！时空成长逻辑完美契合！获得 10 颗星星奖励！🦁🌟");
     document.getElementById("star-count").innerText = `🪙 ${appState.players.dabao.stars}`;
     loadDabaoHUD();
   } else {
+    speakText("排序不太对哦，再想想看。");
     alert("❌ 唔，时空发生关系不对哦。小花必须先发芽才能盛开，再想一想，调换顺序重新提交吧！🐰");
   }
 }
