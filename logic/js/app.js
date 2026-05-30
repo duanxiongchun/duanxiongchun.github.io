@@ -13,7 +13,7 @@ const DEFAULT_STATE = {
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
       solvedQuestions: [], // Tracks successfully solved logic level IDs for Guoguo
-      progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1 }, // 8大维度各50关
+      progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1, mixed: 1 }, // 8大维度各50关 + 1个400关综合航线
       stats: { spatial: 75, numeric: 60, attention: 85, deduction: 50 }
     },
     erbao: {
@@ -56,7 +56,7 @@ function initAppState() {
           if (!appState.players.dabao.progress) {
             appState.players.dabao.progress = {};
           }
-          const defaultProgress = { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1 };
+          const defaultProgress = { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1, mixed: 1 };
           Object.keys(defaultProgress).forEach(k => {
             if (typeof appState.players.dabao.progress[k] !== 'number') {
               appState.players.dabao.progress[k] = defaultProgress[k];

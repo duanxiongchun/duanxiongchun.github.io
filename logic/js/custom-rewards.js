@@ -5,10 +5,10 @@ function loadDabaoHUD() {
   const player = appState.players.dabao;
 
   if (!player.progress) {
-    player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1 };
+    player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
   }
   // 补全新维度
-  ['spatial','numeric','attention','deduction','pattern','memory','language','analogy'].forEach(k => {
+  ['spatial','numeric','attention','deduction','pattern','memory','language','analogy','mixed'].forEach(k => {
     if (typeof player.progress[k] !== 'number') player.progress[k] = 1;
   });
   saveAppState();
@@ -39,6 +39,29 @@ function loadDabaoHUD() {
           <p style="color:var(--text-muted);font-size:0.82em;margin-top:6px;">
             「北京八中少儿班·八少八素」选拔考察8大维度特训 · 共 400 关题库 · 每维度 50 关递进升级
           </p>
+
+          <!-- 每日综合特训航线入口 banner -->
+          <div class="glass-card glow-mixed pulse-hover" style="padding: 20px; margin-top: 20px; cursor: pointer; border: 2px solid #a855f7; background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(99,102,241,0.15)); border-radius: 16px; box-shadow: 0 8px 32px rgba(168, 85, 247, 0.15); margin-bottom: 25px;" onclick="launchMixedMode()">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+              <div style="text-align: left;">
+                <span style="font-size: 1.8em; display: block; margin-bottom: 6px;">🚀 宇宙脑力综合航线 (Interleaved Outpost)</span>
+                <h3 style="font-weight: 800; color: #fff; margin: 0; font-size: 1.1em; display: flex; align-items: center; gap: 8px;">
+                  一键开启 400 关综合穿插特训模式 <span style="background: #e11d48; color: #fff; font-size: 0.65em; padding: 2px 8px; border-radius: 20px; font-weight: 800; letter-spacing: 1px; animation: blinker 1.2s infinite;">HOT 推荐</span>
+                </h3>
+                <p style="font-size: 0.75em; color: var(--text-muted); margin-top: 5px; line-height: 1.4; max-width: 480px;">
+                  8大认知维度（空间、数字、注意力、逻辑、矩阵、记忆、言语、类比）全部交叉打乱出题！每关都是新类型，完美防枯燥，全面激活大脑潜力！
+                </p>
+              </div>
+              <div style="text-align: right; min-width: 120px;">
+                <span style="font-size: 0.85em; color: #c4b5fd; font-weight: bold; display: block; margin-bottom: 4px;">通关进度</span>
+                <span style="font-size: 1.15em; color: #fbbf24; font-weight: 800; display: block; margin-bottom: 6px; font-family: var(--font-fira);">${player.progress.mixed || 1} / 400 关</span>
+                <div style="width: 120px; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-left: auto;">
+                  <div style="width: ${Math.min(((player.progress.mixed || 1) - 1) / 400 * 100 + 0.25, 100)}%; height: 100%; background: linear-gradient(90deg, #a855f7, #6366f1); box-shadow: 0 0 8px #a855f7; border-radius: 3px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
             ${tracks.map(t => {
               const lv = clamp(p[t.key] || 1);
