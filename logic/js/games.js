@@ -175,8 +175,9 @@ function launchTest(type) {
   else if (type === 'analogy') launchAnalogy(level, container);
 }
 
-// ==================== 🧱 维度1：空间图形推理 (3D积木) ====================
+// ==================== 🧱 维度1：空间图形推理（5种题型交替）====================
 
+// ------- 题型A：3D积木计数 -------
 function getSpatialStack(level) {
   if (level === 1) return [{x:0,y:0,z:0},{x:0,y:0,z:1}];
   if (level === 2) return [{x:0,y:0,z:0},{x:1,y:0,z:0},{x:0,y:0,z:1}];
@@ -188,28 +189,26 @@ function getSpatialStack(level) {
   for (let x = 0; x < baseSize; x++) {
     for (let y = 0; y < baseSize; y++) {
       let h = 1;
-      if (x === 0 && y === 0) h = Math.min(Math.floor(level / 5) + 1, 5);
-      else if (x === 1 && y === 0) h = Math.min(Math.floor(level / 9) + 1, 4);
-      else if (x === 0 && y === 1) h = Math.min(Math.floor(level / 12) + 1, 3);
-      else if (x === 2 && y === 0) h = level > 25 ? Math.min(Math.floor(level / 15) + 1, 3) : 1;
-      for (let z = 0; z < h; z++) cubes.push({x, y, z});
+      if (x===0&&y===0) h = Math.min(Math.floor(level/5)+1, 5);
+      else if (x===1&&y===0) h = Math.min(Math.floor(level/9)+1, 4);
+      else if (x===0&&y===1) h = Math.min(Math.floor(level/12)+1, 3);
+      else if (x===2&&y===0) h = level>25 ? Math.min(Math.floor(level/15)+1,3) : 1;
+      for (let z = 0; z < h; z++) cubes.push({x,y,z});
     }
   }
   return cubes;
 }
 
 function renderIsometricSVG(cubes) {
-  cubes.sort((a, b) => (a.x + a.y) - (b.x + b.y) || a.z - b.z);
-  const cx = 160, cy = 110;
+  cubes.sort((a,b) => (a.x+a.y)-(b.x+b.y) || a.z-b.z);
+  const cx=160, cy=110;
   let svg = `<svg width="100%" height="200" viewBox="0 0 320 200" style="background:transparent;display:block;margin:auto;">`;
   svg += `<ellipse cx="160" cy="135" rx="95" ry="38" fill="rgba(0,0,0,0.18)"/>`;
   cubes.forEach(cube => {
-    const px = cx + (cube.x - cube.y) * 24;
-    const py = cy + (cube.x + cube.y) * 12 - cube.z * 24;
-    const even = (cube.x + cube.y) % 2 === 0;
-    const [top, left, right] = even
-      ? ["#a5b4fc","#6366f1","#4f46e5"]
-      : ["#34d399","#10b981","#059669"];
+    const px = cx+(cube.x-cube.y)*24;
+    const py = cy+(cube.x+cube.y)*12-cube.z*24;
+    const even = (cube.x+cube.y)%2===0;
+    const [top,left,right] = even?["#a5b4fc","#6366f1","#4f46e5"]:["#34d399","#10b981","#059669"];
     svg += `<g transform="translate(${px},${py})">
       <polygon points="0,-12 24,0 0,12 -24,0" fill="${top}" stroke="#1e1b4b" stroke-width="1.5" stroke-linejoin="round"/>
       <polygon points="-24,0 0,12 0,36 -24,24" fill="${left}" stroke="#1e1b4b" stroke-width="1.5" stroke-linejoin="round"/>
@@ -220,29 +219,253 @@ function renderIsometricSVG(cubes) {
   return svg;
 }
 
+// ------- 题型B：镜像对称 -------
+const MIRROR_QUESTIONS = [
+  { original:'⬛⬜⬜\n⬜⬛⬜\n⬜⬜⬛', correct:'⬜⬜⬛\n⬜⬛⬜\n⬛⬜⬜', wrong:['⬛⬜⬜\n⬜⬛⬜\n⬜⬜⬛','⬜⬛⬜\n⬛⬜⬛\n⬜⬛⬜','⬜⬜⬜\n⬛⬛⬛\n⬜⬜⬜'], hint:'镜像就像照镜子，左右互换' },
+  { original:'🔴⬜⬜\n⬜🔴⬜\n🔴⬜🔴', correct:'⬜⬜🔴\n⬜🔴⬜\n🔴⬜🔴', wrong:['🔴⬜🔴\n⬜🔴⬜\n🔴⬜⬜','⬜🔴⬜\n🔴⬜🔴\n⬜🔴⬜','🔴🔴⬜\n⬜⬜🔴\n🔴⬜⬜'], hint:'红点镜像后，左边变右边' },
+  { original:'⭐⬜⬜\n⭐⭐⬜\n⭐⭐⭐', correct:'⬜⬜⭐\n⬜⭐⭐\n⭐⭐⭐', wrong:['⭐⭐⭐\n⭐⭐⬜\n⭐⬜⬜','⬜⭐⬜\n⭐⬜⭐\n⬜⭐⬜','⭐⭐⭐\n⬜⭐⭐\n⬜⬜⭐'], hint:'星星从左阶梯，镜像后从右边阶梯' },
+  { original:'🔵⬜🔵\n⬜🔵⬜\n⬜⬜🔵', correct:'🔵⬜🔵\n⬜🔵⬜\n🔵⬜⬜', wrong:['🔵🔵⬜\n⬜🔵⬜\n⬜⬜🔵','⬜🔵⬜\n🔵⬜🔵\n🔵⬜⬜','🔵⬜🔵\n🔵⬜🔵\n🔵⬜🔵'], hint:'左右两边的蓝点位置对调' },
+  { original:'🟡🟡⬜\n🟡⬜⬜\n🟡🟡🟡', correct:'⬜🟡🟡\n⬜⬜🟡\n🟡🟡🟡', wrong:['🟡🟡🟡\n⬜⬜🟡\n🟡🟡⬜','⬜🟡🟡\n🟡🟡⬜\n🟡🟡🟡','🟡⬜🟡\n🟡⬜🟡\n🟡🟡🟡'], hint:'L形镜像后方向反转' },
+  { original:'⬛⬛⬛\n⬛⬜⬜\n⬛⬜⬛', correct:'⬛⬛⬛\n⬜⬜⬛\n⬛⬜⬛', wrong:['⬛⬜⬛\n⬛⬜⬜\n⬛⬛⬛','⬛⬜⬛\n⬜⬜⬛\n⬛⬛⬛','⬜⬛⬜\n⬛⬜⬛\n⬜⬛⬜'], hint:'上方横排不变，下方左右对调' },
+  { original:'🌟⬜⬜\n⬜🌟🌟\n🌟⬜🌟', correct:'⬜⬜🌟\n🌟🌟⬜\n🌟⬜🌟', wrong:['🌟⬜🌟\n🌟🌟⬜\n⬜⬜🌟','⬜🌟⬜\n🌟⬜🌟\n⬜🌟⬜','🌟🌟⬜\n⬜⬜🌟\n🌟⬜🌟'], hint:'每行左右互换位置' },
+  { original:'🟢🟢⬜\n⬜🟢🟢\n⬜⬜🟢', correct:'⬜🟢🟢\n🟢🟢⬜\n🟢⬜⬜', wrong:['🟢⬜⬜\n🟢🟢⬜\n⬜🟢🟢','⬜🟢⬜\n🟢⬜🟢\n⬜🟢⬜','🟢⬜🟢\n⬜🟢⬜\n🟢⬜🟢'], hint:'斜线方向在镜像中反转' },
+];
+
+// ------- 题型C：图形旋转 -------
+const ROTATION_QUESTIONS = [
+  { title:'把下面的图案旋转90°（向右转一格），变成哪个？',
+    original:'➡️⬜\n⬆️⬜', correct:'⬆️➡️\n⬜⬜', wrong:['⬜⬆️\n⬜➡️','⬜⬜\n➡️⬆️','⬆️⬜\n➡️⬜'], hint:'向右旋转90°：上面变右边，右边变下面' },
+  { title:'这个箭头转了多少度？从「↑」变成了「→」',
+    original:'↑', correct:'90°（四分之一圈）', wrong:['45°（八分之一圈）','180°（半圈）','270°（四分之三圈）'], hint:'从上到右，是四分之一圈转动', isText:true },
+  { title:'这个图案旋转180°后，变成哪个？',
+    original:'▲\n⬜⬜', correct:'⬜⬜\n▽', wrong:['▲\n⬜⬜','⬜▲\n⬜⬜','⬜⬜\n▲'], hint:'旋转180°就是整个翻转过来，上下颠倒' },
+  { title:'「b」旋转后变成哪个字母？',
+    original:'b', correct:'d', wrong:['q','p','g'], hint:'b左右镜像变d，上下翻转变p', isText:true },
+  { title:'「p」旋转180°变成哪个？',
+    original:'p', correct:'d', wrong:['b','q','g'], hint:'p转180°，上下颠倒后变成d', isText:true },
+  { title:'小汽车向右开，转了半圈后朝向哪边？',
+    original:'🚗→', correct:'←🚗', wrong:['🚗→','↑🚗','🚗↓'], hint:'半圈就是180°，方向完全反过来', isText:true },
+  { title:'把「L」形状向右旋转90°变成哪个？',
+    original:'⬛⬜\n⬛⬜\n⬛⬛', correct:'⬛⬛⬛\n⬛⬜⬜', wrong:['⬛⬛\n⬜⬛\n⬜⬛','⬛⬛\n⬛⬜\n⬛⬜','⬜⬜⬛\n⬛⬛⬛'], hint:'L形向右转：竖的变横的，横的变竖的' },
+  { title:'时钟从3点转到6点，指针转了多少度？',
+    original:'3点→6点', correct:'90°', wrong:['30°','45°','180°'], hint:'一个圆360°，从3到6是四分之一圈', isText:true },
+];
+
+// ------- 题型D：图形找规律补全 -------
+const COMPLETION_QUESTIONS = [
+  { desc:'下面图案有什么规律？第四个应该是：',
+    items:['⬜⬜','⬜⬛','⬛⬜','?'], correct:'⬛⬛', wrong:['⬜⬜','⬜⬛','⬛⬛⬛'], hint:'每次多一个黑色方块' },
+  { desc:'找出规律，问号处的形状是：',
+    items:['△','△△','△△△','?'], correct:'△△△△', wrong:['△△','◯','△◯△'], hint:'每次多加一个三角形' },
+  { desc:'这串图案有规律，?处应该是：',
+    items:['🔴🔵','🔵🟡','🟡🔴','?'], correct:'🔴🔵', wrong:['🔵🔴','🟡🔵','🔴🟡'], hint:'三对颜色循环出现' },
+  { desc:'数数各行方块数量，第四行有几个？',
+    items:['⬛','⬛⬛','⬛⬛⬛','?'], correct:'⬛⬛⬛⬛（4个）', wrong:['⬛⬛⬛（3个）','⬛⬛⬛⬛⬛（5个）','⬛（1个）'], hint:'每行比上一行多一个方块' },
+  { desc:'图案中黑白交替，问号处是：',
+    items:['⬛⬜⬛','⬜⬛⬜','⬛⬜⬛','?'], correct:'⬜⬛⬜', wrong:['⬛⬜⬛','⬛⬛⬛','⬜⬜⬜'], hint:'黑白间隔交替，第四行跟第二行一样' },
+  { desc:'圆圈数量有规律，问号处有几个圆？',
+    items:['1个⭕','3个⭕','5个⭕','?'], correct:'7个⭕', wrong:['4个⭕','6个⭕','8个⭕'], hint:'每次加2，奇数序列' },
+  { desc:'形状越来越大，?处的形状是：',
+    items:['小🔴','中🟠','大🔴','?'], correct:'特大🟠', wrong:['小🔵','中🔴','大🟠'], hint:'红橙交替出现，大小递增' },
+  { desc:'颜色按规律排列，?处是：',
+    items:['🔴🔴🔵','🔵🔴🔴','🔴🔵🔴','?'], correct:'🔵🔴🔵', wrong:['🔴🔴🔴','🔵🔵🔵','🔴🔵🔵'], hint:'每行蓝色位置向右移一格' },
+];
+
+// ------- 题型E：立体展开图识别 -------
+const UNFOLDING_QUESTIONS = [
+  { title:'一个骰子展开后，哪个图是正确的展开图？',
+    img:'🎲', correct:'十字形展开图（中间一排4个+上下各1个）', wrong:['L形展开图','直线6个','Z形展开图'],
+    hint:'正方体展开图有11种，十字形是最常见的', isChoice:true,
+    optEmoji:['➕十字形','🔠直线形','📐L形','〰️Z形'], ans:0 },
+  { title:'把一张纸折叠后剪一刀，展开后的图案是哪个？',
+    img:'✂️📄', correct:'中间有对称的洞', wrong:['只有一边有洞','没有洞','四个角有洞'],
+    hint:'折叠后剪，展开后洞的位置是对称的', isChoice:true,
+    optEmoji:['🔲对称两洞','▪️单边洞','⬛无洞','◼️角落洞'], ans:0 },
+  { title:'积木从正面看是■■■，从上面看也是■■■，它是什么形状？',
+    img:'📦', correct:'长方体（砖块状）', wrong:['球形','锥形','圆柱形'],
+    hint:'正面和上面都是长方形，说明是长方体', isChoice:true,
+    optEmoji:['📦长方体','⚽球形','🔺锥形','🥫圆柱'], ans:0 },
+  { title:'一个圆柱体从正面看是什么形状？',
+    img:'🥫', correct:'长方形', wrong:['圆形','三角形','六边形'],
+    hint:'圆柱从侧面看是一个四边形，从上面看才是圆', isChoice:true,
+    optEmoji:['▬长方形','⭕圆形','🔺三角形','⬡六边形'], ans:0 },
+  { title:'把一个正方形纸对折两次，角上剪一个洞，展开后有几个洞？',
+    img:'📄✂️', correct:'4个洞', wrong:['1个洞','2个洞','8个洞'],
+    hint:'折两次，每次翻倍，1个洞展开后变4个洞', isChoice:true,
+    optEmoji:['4️⃣4个','1️⃣1个','2️⃣2个','8️⃣8个'], ans:0 },
+  { title:'三个方块叠在一起，从正面看是什么？',
+    img:'📦📦📦', correct:'一个大正方形', wrong:['三个小正方形并排','一个三角形','三个圆形'],
+    hint:'叠放的方块从正面看会合并成一个大形状', isChoice:true,
+    optEmoji:['⬛大正方','⬛⬛⬛三个小','🔺三角','⭕⭕⭕三圆'], ans:0 },
+  { title:'把正方形纸从中间折叠，边长变成多少？',
+    img:'📄→📄/2', correct:'原来的一半', wrong:['原来的两倍','不变','原来的四分之一'],
+    hint:'折叠就是把长度减半，变成原来的二分之一', isChoice:true,
+    optEmoji:['½一半','×2两倍','=不变','¼四分一'], ans:0 },
+  { title:'圆锥体从上面看是什么形状？',
+    img:'🔺', correct:'圆形', wrong:['三角形','正方形','五边形'],
+    hint:'冰淇淋筒从上往下看，只能看到圆圆的顶部', isChoice:true,
+    optEmoji:['⭕圆形','🔺三角','⬛正方','⬠五边'], ans:0 },
+];
+
 function launchSpatial(level, container) {
-  const cubes = getSpatialStack(level);
-  currentAnswer6yo = cubes.length;
-  const q = `果果，请数一数这堆立方体积木总共有多少个？底下被压住的也要数哦！`;
-  const svgHTML = renderIsometricSVG(cubes);
-  const min = Math.max(1, currentAnswer6yo - 3);
-  const opts = Array.from({length:8}, (_,i) => min + i);
-  container.innerHTML = `
-    <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
-      <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
-        <h3 style="color:#818cf8;font-weight:800;margin:0;">🧱 空间图形推理 — 第 ${level}/50 关</h3>
-        <button class="mock-button glow-dabao" onclick="speakText('${q.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+  // 5种题型按关卡段分配：1-10积木，11-20镜像，21-30旋转，31-40补全，41-50展开图
+  const phase = Math.ceil(level / 10);
+
+  if (phase === 1) {
+    // 题型A：3D积木计数
+    const cubes = getSpatialStack(level);
+    currentAnswer6yo = cubes.length;
+    const q = `果果，请数一数这堆立方体积木总共有多少个？被压在下面的也要数哦！`;
+    const svgHTML = renderIsometricSVG(cubes);
+    const min = Math.max(1, currentAnswer6yo - 3);
+    const opts = Array.from({length:8}, (_,i) => min+i);
+    container.innerHTML = `
+      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+          <h3 style="color:#818cf8;font-weight:800;margin:0;">🧱 空间推理·积木计数 — 第${level}/50关</h3>
+          <button class="mock-button glow-dabao" onclick="speakText('${q.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+        </div>
+        <p style="font-size:0.85em;color:#a1a1aa;margin-bottom:15px;">🦁 数一数总共有多少个积木方块（包括被压住的）：</p>
+        <div class="glass-card" style="background:rgba(15,23,42,0.6);padding:10px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">${svgHTML}</div>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+          ${opts.map(n => `<button class="mock-button glow-dabao" onclick="check6yoAnswer(${n})" style="font-size:1.35em;width:54px;height:54px;border-radius:10px;">${n}</button>`).join('')}
+        </div>
+        <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
-      <p style="font-size:0.9em;color:#a1a1aa;margin-bottom:15px;">🦁 数一数总共有多少个方块（包括被压住的）：</p>
-      <div class="glass-card" style="background:rgba(15,23,42,0.6);padding:10px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">${svgHTML}</div>
-      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
-        ${opts.map(n => `<button class="mock-button glow-dabao" onclick="check6yoAnswer(${n})" style="font-size:1.35em;width:54px;height:54px;border-radius:10px;">${n}</button>`).join('')}
+    `;
+    setTimeout(() => speakText(q), 300);
+  }
+
+  else if (phase === 2) {
+    // 题型B：镜像对称
+    const q = MIRROR_QUESTIONS[(level - 11) % MIRROR_QUESTIONS.length];
+    const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
+    const correctIdx = allOpts.indexOf(q.correct);
+    const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
+    container.innerHTML = `
+      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+          <h3 style="color:#818cf8;font-weight:800;margin:0;">🪞 空间推理·镜像对称 — 第${level}/50关</h3>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+        </div>
+        <p style="font-size:0.9em;color:#a1a1aa;margin-bottom:15px;">🦁 镜像就像照镜子，左右互换。选出正确的镜像：</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin:20px 0;">
+          <div style="text-align:center;">
+            <div style="font-size:0.75em;color:#64748b;margin-bottom:8px;">原图</div>
+            <div class="glass-card" style="padding:15px;font-size:1.8em;line-height:1.6;white-space:pre;font-family:monospace;min-width:100px;">${q.original}</div>
+          </div>
+          <div style="font-size:2em;color:#818cf8;">🪞</div>
+          <div style="text-align:center;">
+            <div style="font-size:0.75em;color:#64748b;margin-bottom:8px;">镜像是？</div>
+            <div class="glass-card" style="padding:15px;font-size:1.8em;line-height:1.6;border:2px dashed #6366f1;min-width:100px;color:#818cf8;font-weight:800;">❓</div>
+          </div>
+        </div>
+        <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+          ${allOpts.map((opt,i) => `
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:1.3em;line-height:1.6;padding:12px;border-radius:12px;white-space:pre;font-family:monospace;">${opt}</button>
+          `).join('')}
+        </div>
+        <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
-      <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
-    </div>
-  `;
-  setTimeout(() => speakText(q), 300);
+    `;
+    setTimeout(() => speakText(questionText), 300);
+  }
+
+  else if (phase === 3) {
+    // 题型C：图形旋转
+    const q = ROTATION_QUESTIONS[(level - 21) % ROTATION_QUESTIONS.length];
+    const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
+    const correctIdx = allOpts.indexOf(q.correct);
+    const questionText = `果果，${q.title}`;
+    container.innerHTML = `
+      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+          <h3 style="color:#818cf8;font-weight:800;margin:0;">🔄 空间推理·图形旋转 — 第${level}/50关</h3>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+        </div>
+        <p style="font-size:0.95em;color:#a1a1aa;margin-bottom:15px;">🦁 ${q.title}</p>
+        <div class="glass-card" style="padding:20px;font-size:2.5em;line-height:1.6;margin:15px auto;max-width:200px;white-space:pre;font-family:monospace;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);">${q.original}</div>
+        <p style="font-size:0.8em;color:#64748b;margin:10px 0 20px;">💡 ${q.hint}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+          ${allOpts.map((opt,i) => `
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:${q.isText?'1em':'1.3em'};padding:15px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">${opt}</button>
+          `).join('')}
+        </div>
+        <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
+      </div>
+    `;
+    setTimeout(() => speakText(questionText), 300);
+  }
+
+  else if (phase === 4) {
+    // 题型D：图形序列补全
+    const q = COMPLETION_QUESTIONS[(level - 31) % COMPLETION_QUESTIONS.length];
+    const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
+    const correctIdx = allOpts.indexOf(q.correct);
+    const questionText = `果果，${q.desc}`;
+    container.innerHTML = `
+      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+          <h3 style="color:#818cf8;font-weight:800;margin:0;">🧩 空间推理·规律补全 — 第${level}/50关</h3>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+        </div>
+        <p style="font-size:0.95em;color:#a1a1aa;margin-bottom:20px;">🦁 ${q.desc}</p>
+        <div style="display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0;">
+          ${q.items.map((item,i) => `
+            <div class="glass-card" style="padding:12px 16px;font-size:1.4em;min-width:65px;${item==='?'?'border:2px dashed #fbbf24;color:#fbbf24;font-weight:800;background:rgba(251,191,36,0.08);':''}">${item}</div>
+          `).join('')}
+        </div>
+        <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto;">
+          ${allOpts.map((opt,i) => `
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:0.95em;padding:14px;border-radius:12px;line-height:1.4;">${opt}</button>
+          `).join('')}
+        </div>
+        <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
+      </div>
+    `;
+    setTimeout(() => speakText(questionText), 300);
+  }
+
+  else {
+    // 题型E：立体展开图 / 空间想象
+    const q = UNFOLDING_QUESTIONS[(level - 41) % UNFOLDING_QUESTIONS.length];
+    const opts = q.optEmoji;
+    const questionText = `果果，${q.title}`;
+    container.innerHTML = `
+      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+          <h3 style="color:#818cf8;font-weight:800;margin:0;">📦 空间推理·立体想象 — 第${level}/50关</h3>
+          <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+        </div>
+        <div class="glass-card" style="padding:20px;margin:15px 0;background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.2);">
+          <div style="font-size:3em;margin-bottom:12px;">${q.img}</div>
+          <p style="font-size:1.05em;color:#fff;font-weight:600;margin:0;">${q.title}</p>
+        </div>
+        <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+          ${opts.map((opt,i) => `
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="font-size:0.95em;padding:14px;border-radius:12px;font-weight:700;">${opt}</button>
+          `).join('')}
+        </div>
+        <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
+      </div>
+    `;
+    setTimeout(() => speakText(questionText), 300);
+  }
 }
+
+function checkSpatialChoice(selected, correct) {
+  if (selected === correct) {
+    trigger6yoVictory(10, "太棒了！空间推理答对啦！果果的空间感超强！");
+  } else {
+    speakText("再仔细看看，想一想再选！");
+    showWrongToast();
+  }
+}
+
+
 
 // ==================== 🧮 维度2：数字规律 ====================
 
