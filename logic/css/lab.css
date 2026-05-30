@@ -317,6 +317,16 @@ body {
   50% { transform: scale(1.02); filter: brightness(1.15); }
 }
 
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes blinker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
 .pulse-hover {
   transition: transform 0.2s ease;
 }

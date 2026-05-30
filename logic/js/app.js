@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
       solvedQuestions: [], // Tracks successfully solved logic level IDs for Guoguo
+      progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1 }, // Stably tracks 果果's 50 progressive levels per track
       stats: { spatial: 75, numeric: 60, attention: 85, deduction: 50 }
     },
     erbao: {
@@ -50,6 +51,10 @@ function initAppState() {
           }
           if (!appState.players.dabao.solvedQuestions) {
             appState.players.dabao.solvedQuestions = [];
+          }
+          // Critical migration: Inject and persist progress tracking schema if missing in browser database
+          if (!appState.players.dabao.progress) {
+            appState.players.dabao.progress = { spatial: 1, numeric: 1, attention: 1, deduction: 1 };
           }
         }
         if (appState.players.erbao) {

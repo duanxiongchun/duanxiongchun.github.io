@@ -422,8 +422,19 @@ function check6yoAnswer(ans) {
     trigger6yoVictory(10, "答对啦！果果太棒了！加十个星星！");
   } else {
     speakText("算错啦，再仔细看一看，或者换个答案试试吧，你可以的！");
-    alert("❌ 呀，算错/推错啦。别着急，再仔细看一看、想一想，再次尝试吧！💡");
+    showWrongAnswerFeedback();
   }
+}
+
+function showWrongAnswerFeedback() {
+  const existing = document.getElementById("wrong-feedback-toast");
+  if (existing) existing.remove();
+  const toast = document.createElement("div");
+  toast.id = "wrong-feedback-toast";
+  toast.style.cssText = `position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(239,68,68,0.92); color:#fff; padding:14px 28px; border-radius:16px; font-size:1.05em; font-weight:700; z-index:9999; box-shadow:0 8px 32px rgba(239,68,68,0.4); animation:slideUpFade 0.3s ease;`;
+  toast.innerHTML = `❌ 呀，再仔细想一想，换个答案试试吧！💡`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
 }
 
 function verifyDabaoTimeline() {
@@ -438,13 +449,30 @@ function verifyDabaoTimeline() {
 
 // Dynamic victory card overlay with 1.2-second automatic level advancement!
 function trigger6yoVictory(starEarned, speechFeedback) {
-  initAppState();
-  const player = appState.players.dabao;
   const type = window.currentGameTrack;
-  
-  // Advance progress stably
+  if (!type) {
+    console.warn("trigger6yoVictory: currentGameTrack is not set!");
+    return;
+  }
+
+  // Safely read and update state — avoid calling initAppState() here
+  // which would reload from localStorage and potentially clobber in-memory progress
+  if (!appState.players || !appState.players.dabao) {
+    initAppState();
+  }
+  const player = appState.players.dabao;
+
+  // Ensure progress object exists with null-safety guard
+  if (!player.progress) {
+    player.progress = { spatial: 1, numeric: 1, attention: 1, deduction: 1 };
+  }
+  if (typeof player.progress[type] !== 'number') {
+    player.progress[type] = 1;
+  }
+
+  // Advance progress FIRST, then save
   player.progress[type]++;
-  player.stars += starEarned;
+  player.stars = (player.stars || 0) + starEarned;
   saveAppState();
   
   // Play happy synth sound
