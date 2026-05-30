@@ -102,7 +102,10 @@ function launchSpatial(level, container) {
             <div class="glass-card" style="padding:15px;font-size:1.8em;line-height:1.6;border:2px dashed #6366f1;min-width:100px;color:#818cf8;font-weight:800;">❓</div>
           </div>
         </div>
-        <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
+        <p style="font-size:0.85em;color:#94a3b8;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+          <span>💡 ${q.hint}</span>
+          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror', ${JSON.stringify(q.original)}, ${JSON.stringify(q.hint)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
+        </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:1.3em;line-height:1.6;padding:12px;border-radius:12px;white-space:pre;font-family:monospace;">${opt}</button>
@@ -127,7 +130,10 @@ function launchSpatial(level, container) {
         </div>
         <p style="font-size:0.95em;color:#a1a1aa;margin-bottom:15px;">🦁 ${q.title}</p>
         <div class="glass-card" style="padding:20px;font-size:2.5em;line-height:1.6;margin:15px auto;max-width:200px;white-space:pre;font-family:monospace;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);">${q.original}</div>
-        <p style="font-size:0.8em;color:#64748b;margin:10px 0 20px;">💡 ${q.hint}</p>
+        <p style="font-size:0.85em;color:#94a3b8;margin:12px 0 20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+          <span>💡 ${q.hint}</span>
+          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate', ${JSON.stringify(q.original)}, ${JSON.stringify(q.hint)}, ${JSON.stringify(q.title)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
+        </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:${q.isText?'1em':'1.3em'};padding:15px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">${opt}</button>

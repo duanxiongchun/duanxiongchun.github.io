@@ -308,3 +308,168 @@ function resetMixedProgress() {
   speakText("已重置综合特训进度，重新开始挑战吧！");
   launchMixedMode();
 }
+
+// ==================== 🎬 空间想象与旋转/镜像 3D 动画演示助手 ====================
+
+function showSpatialHelpAnimation(type, original, hint, title = '') {
+  const styleId = 'spatial-help-animation-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      @keyframes mirrorFlip {
+        0% {
+          transform: translateX(0) scale(1) rotateY(0deg);
+          opacity: 0.85;
+        }
+        15% {
+          transform: translateX(0) scale(1.1) rotateY(0deg);
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(110px) scale(1.15) rotateY(90deg);
+          opacity: 0.9;
+          filter: brightness(1.2);
+        }
+        80% {
+          transform: translateX(220px) scale(1) rotateY(180deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(220px) scale(1) rotateY(180deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes rotate90Anim {
+        0% { transform: rotate(0deg) scale(1); }
+        15% { transform: rotate(0deg) scale(1.08); }
+        65% { transform: rotate(90deg) scale(1.08); filter: brightness(1.15); }
+        85%, 100% { transform: rotate(90deg) scale(1); }
+      }
+
+      @keyframes rotate180Anim {
+        0% { transform: rotate(0deg) scale(1); }
+        15% { transform: rotate(0deg) scale(1.08); }
+        65% { transform: rotate(180deg) scale(1.08); filter: brightness(1.15); }
+        85%, 100% { transform: rotate(180deg) scale(1); }
+      }
+
+      .spatial-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeInModal 0.3s ease-out;
+      }
+
+      @keyframes fadeInModal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      .spatial-modal-card {
+        max-width: 520px;
+        width: 90%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(30, 41, 59, 0.8);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(129, 140, 248, 0.2);
+        border-radius: 24px;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  let is180 = false;
+  if (title && (title.includes('180') || title.includes('半圈') || title.includes('字母')) || hint.includes('180') || hint.includes('半圈')) {
+    is180 = true;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'spatial-modal-overlay';
+  overlay.id = 'spatial-anim-modal';
+
+  let animStageHTML = '';
+
+  if (type === 'mirror') {
+    animStageHTML = `
+      <div style="display:flex; justify-content:center; align-items:center; gap:25px; margin: 30px 0; position:relative; min-height:160px; perspective: 600px;">
+        <!-- Left Side: Original -->
+        <div style="text-align:center; flex:1;">
+          <div style="font-size:0.75em; color:#94a3b8; margin-bottom:8px; font-weight:700;">原图</div>
+          <div class="glass-card" style="padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.06); font-weight:bold; text-align:center;">${original}</div>
+        </div>
+        
+        <!-- Center Mirror Axis -->
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:120px; width:2px; border-left:2px dashed #818cf8; position:relative; z-index:5;">
+          <span style="position:absolute; background:#818cf8; color:#fff; font-size:0.7em; padding:2px 6px; border-radius:10px; font-weight:bold; white-space:nowrap; top:45%; transform:translateY(-50%); box-shadow:0 0 10px rgba(129,140,248,0.5);">镜子 🪞</span>
+        </div>
+        
+        <!-- Right Side: Destination Mirror -->
+        <div style="text-align:center; flex:1;">
+          <div style="font-size:0.75em; color:#94a3b8; margin-bottom:8px; font-weight:700;">对称镜面</div>
+          <div class="glass-card" style="padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; border:2px dashed rgba(129,140,248,0.3); background:rgba(129,140,248,0.02); color:rgba(129,140,248,0.4); font-weight:bold; text-align:center;">❓</div>
+        </div>
+        
+        <!-- Floating Animated Card -->
+        <div class="glass-card" style="position:absolute; left: calc(50% - 150px); top: 22px; padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; background:rgba(129,140,248,0.25); border:2px solid #818cf8; color:#fff; font-weight:bold; text-align:center; pointer-events:none; z-index:10; animation: mirrorFlip 3.5s infinite ease-in-out; transform-origin: 50% 50%;">${original}</div>
+      </div>
+      <p style="font-size:0.95em; color:#a5b4fc; font-weight:bold; margin-bottom:10px;">🦋 左右两边像蝴蝶的翅膀一样翻转对称过来啦！</p>
+    `;
+  } else {
+    // Rotation
+    const animName = is180 ? 'rotate180Anim' : 'rotate90Anim';
+    const angleText = is180 ? '180° (转半圈，大头朝下)' : '90° (向右转四分之一圈)';
+    animStageHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin: 30px 0; position:relative; min-height:180px;">
+        <!-- Circular rotation path indicator -->
+        <div style="position:absolute; width:160px; height:160px; border:2px dashed rgba(129,140,248,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:1.6em; color:rgba(129,140,248,0.4); animation: rotate90Anim 3.5s infinite linear; display:none;">🔄</span>
+        </div>
+        
+        <!-- Rotating Card -->
+        <div class="glass-card" style="padding:20px; font-size:2em; line-height:1.5; white-space:pre; font-family:monospace; min-width:110px; background:rgba(129,140,248,0.18); border:2px solid #818cf8; color:#fff; font-weight:bold; text-align:center; animation: ${animName} 3.5s infinite ease-in-out; transform-origin: 50% 50%; z-index:10; box-shadow:0 0 20px rgba(129,140,248,0.25);">${original}</div>
+      </div>
+      <p style="font-size:0.95em; color:#a5b4fc; font-weight:bold; margin-bottom:10px;">🔄 像小风车/时针一样顺时针转动了 ${angleText}！</p>
+    `;
+  }
+
+  overlay.innerHTML = `
+    <div class="glass-card spatial-modal-card">
+      <h2 style="color:#818cf8; font-weight:800; margin-top:0; font-size:1.4em; display:flex; align-items:center; justify-content:center; gap:8px;">
+        🎨 空间想象演示课 🎬
+      </h2>
+      <p style="font-size:0.85em; color:#94a3b8; line-height:1.5;">果果，仔细看下面这个好玩的动画，看看它是怎么变化的：</p>
+      
+      ${animStageHTML}
+      
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:15px; text-align:left; font-size:0.9em; line-height:1.5; color:#cbd5e1; margin-top:15px;">
+        <span style="font-weight:800; color:#818cf8;">💡 脑力小秘诀：</span>${hint}
+      </div>
+      
+      <button class="mock-button glow-success" onclick="closeSpatialHelp()" style="width:100%; font-size:1em; font-weight:700; padding:12px; margin-top:20px;">
+        ❌ 我看懂了，去答题！
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  window.closeSpatialHelp = () => {
+    overlay.remove();
+  };
+
+  // Speaks
+  const intro = type === 'mirror' 
+    ? `果果，快看！图案照镜子的样子，是把左右位置完全对调过来，就像你在镜子面前抬起右手一样哦！`
+    : `果果，快看！这个图案正在像摩天轮或者钟表指针一样，顺时针向右转动了${is180 ? '半圈' : '九十度'}！`;
+  speakText(intro);
+}

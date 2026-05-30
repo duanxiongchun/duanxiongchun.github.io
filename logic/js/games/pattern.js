@@ -27,6 +27,13 @@ function launchPattern(level, container) {
   const optsWithIdx = q.opts.map((o, i) => ({o, i}));
   const shuffled = [...optsWithIdx].sort(() => Math.random() - 0.5);
 
+  let helpBtnHTML = '';
+  if (q.hint && (q.hint.includes('镜像') || q.hint.includes('对称') || q.hint.includes('折叠'))) {
+    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror', ${JSON.stringify(q.matrix[0])}, ${JSON.stringify(q.hint)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
+  } else if (q.hint && (q.hint.includes('旋转') || q.hint.includes('转动') || q.hint.includes('针'))) {
+    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate', ${JSON.stringify(q.matrix[0])}, ${JSON.stringify(q.hint)}, ${JSON.stringify(q.text || '')})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
+  }
+
   container.innerHTML = `
     <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(251,191,36,0.3);">
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -41,7 +48,10 @@ function launchPattern(level, container) {
           </div>
         `).join('')}
       </div>
-      <p style="font-size:0.8em;color:#64748b;margin-bottom:15px;">💡 ${q.hint}</p>
+      <p style="font-size:0.85em;color:#94a3b8;margin-bottom:15px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+        <span>💡 ${q.hint}</span>
+        ${helpBtnHTML}
+      </p>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:360px;margin:0 auto;">
         ${shuffled.map((item) => `
           <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;border-radius:10px;min-height:55px;">
