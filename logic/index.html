@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>脑力认知研究所 - Kids Logic Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/lab.css">
+  <style>
+    /* Immediate layout bindings */
+    .profile-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin: 40px 0;
+    }
+    
+    .profile-card {
+      padding: 40px 20px;
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .avatar-holder {
+      font-size: 5em;
+      margin-bottom: 20px;
+    }
+    
+    .gate-overlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+    }
+    
+    .gate-container {
+      width: 100%;
+      max-width: 680px;
+      padding: 40px;
+      margin: auto;
+    }
+    
+    @media (max-width: 600px) {
+      .profile-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .gate-container {
+        padding: 25px 15px;
+      }
+      .glow-title {
+        font-size: 2.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Player Selection Modal Overlay -->
+  <div id="player-gate" class="gate-overlay">
+    <div class="glass-card gate-container text-center">
+      <h1 class="glow-title">🧠 脑力认知研究所</h1>
+      <p class="gate-subtitle">COGNITIVE RESEARCH OUTPOST</p>
+      
+      <div class="profile-cards-grid">
+        <div class="profile-card dabao-card glass-card glow-dabao pulse-hover" onclick="selectPlayer('dabao')">
+          <div class="avatar-holder">🦁</div>
+          <h2 style="color: #818cf8;">大宝 (6岁)</h2>
+          <span class="badge badge-dabao" style="margin-top: 10px;">八少八素预备航线</span>
+        </div>
+        <div class="profile-card erbao-card glass-card glow-erbao pulse-hover" onclick="selectPlayer('erbao')">
+          <div class="avatar-holder">🐰</div>
+          <h2 style="color: #fbbf24;">二宝 (2岁)</h2>
+          <span class="badge badge-erbao" style="margin-top: 10px;">萌新感官启蒙舱</span>
+        </div>
+      </div>
+      
+      <button class="parent-btn" onclick="window.location.href='parent.html'">⚙️ 进入家长控制中心</button>
+    </div>
+  </div>
+
+  <!-- Dashboards Main Wrapper (Controlled by app.js router) -->
+  <main id="app-container" style="display: none;">
+    <!-- Navigation HUD -->
+    <header class="hud-nav glass-card">
+      <div class="nav-left">
+        <span id="nav-avatar">🦁</span>
+        <div style="margin-left: 5px;">
+          <h3 id="nav-player-name" style="margin-bottom: 2px;">大宝 (6岁)</h3>
+          <p id="nav-player-title" style="margin: 0; font-size: 0.8em;">级别: L5 逻辑探险家</p>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span id="star-count">🪙 0</span>
+        <button class="back-gate-btn" onclick="logoutPlayer()">🛰️ 切换成员</button>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Target -->
+    <section id="game-stage" class="stage-wrapper"></section>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/sensory.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/custom-rewards.js"></script>
+</body>
+</html>
