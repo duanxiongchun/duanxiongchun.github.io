@@ -133,7 +133,7 @@ function rerenderDeductionSlots() {
   } else {
     poolContainer.innerHTML = deductionPool.map((item) => {
       return `
-        <div id="deduction-drag-${item.id}" class="deduction-drag-item glass-card pulse-hover" draggable="true" data-item-id="${item.id}" onclick="placeDeductionItemInSlot('${item.id}')" style="padding:14px 18px; border:1px solid rgba(168,85,247,0.3); background:linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.04)); border-radius:16px; cursor:grab; font-weight:700; color:#fff; font-size:1.02em; display:flex; align-items:center; gap:12px; transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.08); user-select:none;">
+        <div id="deduction-drag-${item.id}" class="deduction-drag-item glass-card pulse-hover" data-item-id="${item.id}" onclick="placeDeductionItemInSlot('${item.id}')" style="touch-action: none; padding:14px 18px; border:1px solid rgba(168,85,247,0.3); background:linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.04)); border-radius:16px; cursor:grab; font-weight:700; color:#fff; font-size:1.02em; display:flex; align-items:center; gap:12px; transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.08); user-select:none;">
           <span style="font-size:1.25em;">👉</span>
           <span style="text-align:left; flex:1;">${item.text}</span>
         </div>

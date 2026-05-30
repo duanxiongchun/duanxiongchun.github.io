@@ -18,11 +18,11 @@ function launchSensory(type) {
         </div>
 
         <div style="display:flex; justify-content:center; gap:25px; background:rgba(255,255,255,0.03); padding:25px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); flex-wrap:wrap;">
-          <div id="drag-circle" class="drag-item" draggable="true" style="width:80px; height:80px; background:linear-gradient(135deg, #ef4444, #f87171); border-radius:50%; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(239,68,68,0.45); font-size:1.1em;">圆积木</div>
-          <div id="drag-square" class="drag-item" draggable="true" style="width:80px; height:80px; background:linear-gradient(135deg, #3b82f6, #60a5fa); border-radius:12px; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(59,130,246,0.45); font-size:1.1em;">方积木</div>
+          <div id="drag-circle" class="drag-item" style="touch-action: none; width:80px; height:80px; background:linear-gradient(135deg, #ef4444, #f87171); border-radius:50%; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(239,68,68,0.45); font-size:1.1em; user-select:none;">圆积木</div>
+          <div id="drag-square" class="drag-item" style="touch-action: none; width:80px; height:80px; background:linear-gradient(135deg, #3b82f6, #60a5fa); border-radius:12px; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(59,130,246,0.45); font-size:1.1em; user-select:none;">方积木</div>
           
           <!-- ADDED TRIANGLE DRAGGABLE -->
-          <div id="drag-triangle" class="drag-item" draggable="true" style="width:80px; height:80px; background:linear-gradient(135deg, #10b981, #34d399); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(16,185,129,0.45); font-size:1em; padding-top:25px;">角积木</div>
+          <div id="drag-triangle" class="drag-item" style="touch-action: none; width:80px; height:80px; background:linear-gradient(135deg, #10b981, #34d399); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 5px 15px rgba(16,185,129,0.45); font-size:1em; padding-top:25px; user-select:none;">角积木</div>
         </div>
         <div style="display:flex; gap:15px; margin-top:35px;">
           <button class="mock-button glow-erbao" onclick="launchSensory('shape')" style="flex:1; margin-top:0;">🔄 一键重置重新选择</button>
@@ -49,12 +49,12 @@ function launchSensory(type) {
         </div>
 
         <div style="display:flex; justify-content:center; gap:20px; background:rgba(255,255,255,0.03); padding:25px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); flex-wrap:wrap;">
-          <div id="drag-red" class="drag-item" draggable="true" style="width:65px; height:65px; background:#ef4444; border-radius:50%; cursor:grab; border:3px solid #f87171; box-shadow: 0 4px 12px rgba(239,68,68,0.4); text-align:center; line-height:59px; font-weight:bold;">红球</div>
-          <div id="drag-green" class="drag-item" draggable="true" style="width:65px; height:65px; background:#10b981; border-radius:50%; cursor:grab; border:3px solid #34d399; box-shadow: 0 4px 12px rgba(16,185,129,0.4); text-align:center; line-height:59px; font-weight:bold;">绿球</div>
-          <div id="drag-blue" class="drag-item" draggable="true" style="width:65px; height:65px; background:#3b82f6; border-radius:50%; cursor:grab; border:3px solid #60a5fa; box-shadow: 0 4px 12px rgba(59,130,246,0.4); text-align:center; line-height:59px; font-weight:bold;">蓝球</div>
+          <div id="drag-red" class="drag-item" style="touch-action: none; width:65px; height:65px; background:#ef4444; border-radius:50%; cursor:grab; border:3px solid #f87171; box-shadow: 0 4px 12px rgba(239,68,68,0.4); text-align:center; line-height:59px; font-weight:bold; user-select:none;">红球</div>
+          <div id="drag-green" class="drag-item" style="touch-action: none; width:65px; height:65px; background:#10b981; border-radius:50%; cursor:grab; border:3px solid #34d399; box-shadow: 0 4px 12px rgba(16,185,129,0.4); text-align:center; line-height:59px; font-weight:bold; user-select:none;">绿球</div>
+          <div id="drag-blue" class="drag-item" style="touch-action: none; width:65px; height:65px; background:#3b82f6; border-radius:50%; cursor:grab; border:3px solid #60a5fa; box-shadow: 0 4px 12px rgba(59,130,246,0.4); text-align:center; line-height:59px; font-weight:bold; user-select:none;">蓝球</div>
           
           <!-- ADDED YELLOW DRAGGABLE -->
-          <div id="drag-yellow" class="drag-item" draggable="true" style="width:65px; height:65px; background:#eab308; border-radius:50%; cursor:grab; border:3px solid #facc15; box-shadow: 0 4px 12px rgba(234,179,8,0.4); text-align:center; line-height:59px; font-weight:bold;">黄球</div>
+          <div id="drag-yellow" class="drag-item" style="touch-action: none; width:65px; height:65px; background:#eab308; border-radius:50%; cursor:grab; border:3px solid #facc15; box-shadow: 0 4px 12px rgba(234,179,8,0.4); text-align:center; line-height:59px; font-weight:bold; user-select:none;">黄球</div>
         </div>
         <div style="display:flex; gap:15px; margin-top:35px;">
           <button class="mock-button glow-erbao" onclick="launchSensory('color')" style="flex:1; margin-top:0;">🔄 一键重置重新选择</button>
@@ -180,20 +180,19 @@ function playSensorySound(type) {
     
     else if (type === 'sheep') {
       // 🐑 MODULATED low sawtooth/triangle "Baaa" sheep sound
-      // Uses low-frequency oscillator (LFO) to create vibrato tremolo
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const lfo = ctx.createOscillator();
       const lfoGain = ctx.createGain();
       
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(120, ctx.currentTime); // sheep pitch is low
-      osc.frequency.linearRampToValueAtTime(95, ctx.currentTime + 0.6); // slight slide down
+      osc.frequency.setValueAtTime(120, ctx.currentTime); 
+      osc.frequency.linearRampToValueAtTime(95, ctx.currentTime + 0.6); 
       
       lfo.type = 'sine';
-      lfo.frequency.value = 13; // 13Hz fast vibrato tremolo
+      lfo.frequency.value = 13; 
       
-      lfoGain.gain.value = 15; // frequency modulation amplitude
+      lfoGain.gain.value = 15; 
       
       lfo.connect(lfoGain);
       lfoGain.connect(osc.frequency);
@@ -219,7 +218,7 @@ function playSensorySound(type) {
       gain1.connect(ctx.destination);
       osc1.type = 'sine';
       osc1.frequency.setValueAtTime(1000, ctx.currentTime);
-      osc1.frequency.exponentialRampToValueAtTime(3000, ctx.currentTime + 0.15); // sharp chirp sweep up
+      osc1.frequency.exponentialRampToValueAtTime(3000, ctx.currentTime + 0.15); 
       gain1.gain.setValueAtTime(0.2, ctx.currentTime);
       gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
       osc1.start();
@@ -259,63 +258,47 @@ function guessSensorySound(guessedType) {
   }
 }
 
+// --- Unified Pointer Events Drag-and-Drop System (iPad & Touch Device Screen standard) ---
 function setupSensoryDragDrop(mode) {
   const draggables = document.querySelectorAll('.drag-item');
   const slots = document.querySelectorAll('.shape-slot');
   
-  // --- Mouse drag support ---
   draggables.forEach(drag => {
-    drag.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', drag.id);
-    });
-  });
+    // Add touch-action: none inline to fully disable browser panning while dragging
+    drag.style.touchAction = 'none';
 
-  slots.forEach(slot => {
-    slot.addEventListener('dragover', (e) => e.preventDefault());
-    slot.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const dragId = e.dataTransfer.getData('text/plain');
-      handleSensoryDrop(dragId, slot);
-    });
-  });
-
-  // --- iPad/Touch screen custom finger-dragging polyfill ---
-  draggables.forEach(drag => {
     let startX = 0, startY = 0;
-    let currentX = 0, currentY = 0;
     let isDragging = false;
 
-    drag.addEventListener('touchstart', (e) => {
-      const touch = e.touches[0];
-      startX = touch.clientX;
-      startY = touch.clientY;
+    const onPointerDown = (e) => {
+      drag.setPointerCapture(e.pointerId);
+      startX = e.clientX;
+      startY = e.clientY;
       isDragging = true;
       drag.style.transition = 'none';
       drag.style.zIndex = '1000';
-    }, { passive: true });
+      drag.style.transform = 'scale(1.1)';
+    };
 
-    drag.addEventListener('touchmove', (e) => {
+    const onPointerMove = (e) => {
       if (!isDragging) return;
-      const touch = e.touches[0];
-      currentX = touch.clientX - startX;
-      currentY = touch.clientY - startY;
-      drag.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-      
-      // Crucial: prevent iPad screen scrolling when dragging elements
-      if (e.cancelable) e.preventDefault();
-    }, { passive: false });
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      drag.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.1)`;
+    };
 
-    drag.addEventListener('touchend', (e) => {
+    const onPointerUp = (e) => {
       if (!isDragging) return;
       isDragging = false;
-      drag.style.zIndex = '';
-      drag.style.transition = 'transform 0.2s';
-
-      const touch = e.changedTouches[0];
+      drag.releasePointerCapture(e.pointerId);
       
-      // Hide cursor/pointerEvents to probe element underneath touch coordinate
+      drag.style.zIndex = '';
+      drag.style.transition = 'transform 0.2s, visibility 0.1s';
+      drag.style.transform = 'none';
+
+      // Probe target slot underneath pointer coordinates
       drag.style.pointerEvents = 'none';
-      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      const targetElement = document.elementFromPoint(e.clientX, e.clientY);
       drag.style.pointerEvents = '';
 
       let slot = null;
@@ -326,15 +309,17 @@ function setupSensoryDragDrop(mode) {
       if (slot) {
         handleSensoryDrop(drag.id, slot);
       }
-      
-      // Always snap back smoothly to starting position for matching games
-      drag.style.transform = 'none';
-    }, { passive: true });
+    };
+
+    drag.addEventListener('pointerdown', onPointerDown);
+    drag.addEventListener('pointermove', onPointerMove);
+    drag.addEventListener('pointerup', onPointerUp);
+    drag.addEventListener('pointercancel', onPointerUp);
   });
 }
 
 function handleSensoryDrop(dragId, slot) {
-  if (!dragId) return;
+  if (!dragId || !slot) return;
   
   const dragItem = document.getElementById(dragId);
   const dragType = dragId.split('-')[1]; // circle, square, triangle, red, green, blue, yellow
@@ -354,6 +339,7 @@ function handleSensoryDrop(dragId, slot) {
       const g = audioCtx.createGain();
       o.connect(g);
       g.connect(audioCtx.destination);
+      o.type = 'sine';
       o.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
       o.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
       g.gain.setValueAtTime(0.2, audioCtx.currentTime);
@@ -364,6 +350,20 @@ function handleSensoryDrop(dragId, slot) {
     
     checkSensoryVictory();
   } else {
+    // Play error beep and display brief alert
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(220, audioCtx.currentTime);
+      g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      o.start();
+      o.stop(audioCtx.currentTime + 0.2);
+    } catch(err){}
     alert("🐰 颜色或形状不对哦，再找同类的对对看！");
   }
 }
