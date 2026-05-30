@@ -3,16 +3,63 @@
 let currentAnswer6yo = 0;
 let currentDeductionTimeline = [];
 
-// Built-in Chinese Speech Synthesis Utility
+// Built-in Chinese Speech Synthesis Utility with Natural Human Voice Selector
+let bestChineseVoice = null;
+
+function loadBestVoice() {
+  if (!('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  
+  // Prioritized list of high-quality natural standard Mandarin voices:
+  // - "tingting": Apple macOS/iOS high-quality natural female (extremely standard & clear)
+  // - "xiaoxiao": Microsoft Edge neural natural female (world-class human voice)
+  // - "siri": Apple Siri voice assistant standard
+  // - "huihui": Microsoft Windows standard clear desktop voice
+  // - "google": Google Translate high-definition standard voice
+  const priorityNames = ["tingting", "xiaoxiao", "siri", "huihui", "google", "yating", "kangkang"];
+  
+  const zhVoices = voices.filter(v => v.lang.includes("zh-CN") || v.lang.includes("zh_CN") || v.lang.includes("zh-"));
+  if (zhVoices.length === 0) return;
+  
+  // Sort based on priority list
+  zhVoices.sort((a, b) => {
+    const aName = a.name.toLowerCase();
+    const bName = b.name.toLowerCase();
+    
+    let aIndex = priorityNames.findIndex(p => aName.includes(p));
+    let bIndex = priorityNames.findIndex(p => bName.includes(p));
+    
+    if (aIndex === -1) aIndex = 999;
+    if (bIndex === -1) bIndex = 999;
+    
+    return aIndex - bIndex;
+  });
+  
+  bestChineseVoice = zhVoices[0];
+}
+
+// Handle asynchronous loading of voices in Webkit/Blink engines
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = loadBestVoice;
+  loadBestVoice(); // attempt immediate load
+}
+
 function speakText(text) {
   if ('speechSynthesis' in window) {
     // Cancel any ongoing speaking to prevent overlaps
     window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = 0.95;  // Slightly slower, child-friendly speech rate
-    utterance.pitch = 1.15; // Slightly higher, energetic pitch for kids
+    
+    // Explicitly bind the discovered premium standard Mandarin human voice
+    if (bestChineseVoice) {
+      utterance.voice = bestChineseVoice;
+    } else {
+      utterance.lang = 'zh-CN';
+    }
+    
+    utterance.rate = 0.90;  // Slightly slower, highly clear listening speed for kids
+    utterance.pitch = 1.05; // Slightly pleasant, friendly vocal pitch
     window.speechSynthesis.speak(utterance);
   } else {
     console.warn("Speech synthesis not supported on this browser.");
