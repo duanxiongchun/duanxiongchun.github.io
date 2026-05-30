@@ -113,6 +113,11 @@ function logoutPlayer() {
   document.getElementById("app-container").style.display = "none";
   document.getElementById("player-gate").style.display = "flex";
   window.currentPlayerId = null;
+  // Restore screen scrolling
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+  document.body.style.height = '';
 }
 
 function clearAllHistory() {

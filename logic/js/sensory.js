@@ -1,6 +1,10 @@
-/* 🧠 脑力认知研究所 - 淼淼感官早教引擎 2yo Sensory Games Engine */
-
 function launchSensory(type) {
+  // Lock screen scrolling during early sensory gameplay to prevent iPad dragging conflict
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.height = '100%';
+
   const container = document.getElementById("game-stage");
   
   if (type === 'shape') {

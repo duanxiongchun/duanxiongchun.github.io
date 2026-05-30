@@ -195,6 +195,12 @@ function getTrackChineseName(type) {
 }
 
 function launchTest(type) {
+  // Lock screen scrolling during gameplay to prevent iPad dragging conflict
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.height = '100%';
+
   window.isMixedMode = false;
   initAppState();
   const player = appState.players.dabao;
@@ -234,6 +240,9 @@ function launchTest(type) {
   else if (type === 'memory') launchMemory(level, container);
   else if (type === 'language') launchLanguage(level, container);
   else if (type === 'analogy') launchAnalogy(level, container);
+
+  // Append unified Skip button bar at the bottom of the container
+  appendDabaoSkipButton(container);
 }
 
 // ==================== 🔧 工具与综合调度函数 ====================
@@ -256,6 +265,12 @@ function setupDeductionDrag() {
 }
 
 function launchMixedMode() {
+  // Lock screen scrolling during gameplay to prevent iPad dragging conflict
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.height = '100%';
+
   window.isMixedMode = true;
   initAppState();
   const player = appState.players.dabao;
@@ -299,6 +314,9 @@ function launchMixedMode() {
   else if (type === 'memory') launchMemory(trackLevel, container);
   else if (type === 'language') launchLanguage(trackLevel, container);
   else if (type === 'analogy') launchAnalogy(trackLevel, container);
+
+  // Append unified Skip button bar at the bottom of the container
+  appendDabaoSkipButton(container);
 }
 
 function resetMixedProgress() {
@@ -472,4 +490,48 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
     ? `果果，快看！图案照镜子的样子，是把左右位置完全对调过来，就像你在镜子面前抬起右手一样哦！`
     : `果果，快看！这个图案正在像摩天轮或者钟表指针一样，顺时针向右转动了${is180 ? '半圈' : '九十度'}！`;
   speakText(intro);
+}
+
+// ==================== ⏭️ 特训关卡一键“跳过此关”全局逻辑 ====================
+
+function appendDabaoSkipButton(container) {
+  // Ensure we don't render duplicate skip buttons
+  const old = document.getElementById('dabao-skip-bar');
+  if (old) old.remove();
+
+  const skipDiv = document.createElement('div');
+  skipDiv.id = 'dabao-skip-bar';
+  skipDiv.style.cssText = "text-align:center; margin-top:20px; margin-bottom:15px;";
+  skipDiv.innerHTML = `
+    <button class="mock-button glow-dabao" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
+      <span>⏭️ 跳过这一关 (本关太难？)</span>
+    </button>
+  `;
+  container.appendChild(skipDiv);
+}
+
+function skipCurrent6yoLevel() {
+  if (!confirm("🦁 确定要跳过这一关吗？\n跳过本关不会扣除或发放任何金币奖励。没关系，我们可以先做下一关！✨")) return;
+  
+  const type = window.currentGameTrack;
+  if (!type) return;
+
+  const player = appState.players.dabao;
+
+  // Advance progress
+  if (window.isMixedMode) {
+    player.progress.mixed = (player.progress.mixed || 1) + 1;
+  } else {
+    player.progress[type]++;
+  }
+  
+  saveAppState();
+  speakText("这关有点难，没关系！我们先来挑战下一关吧，加油！");
+
+  // Relaunch next level
+  if (window.isMixedMode) {
+    launchMixedMode();
+  } else {
+    launchTest(type);
+  }
 }

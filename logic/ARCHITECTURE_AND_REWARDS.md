@@ -203,3 +203,51 @@ function generateDynamicWeight(level) {
 * **时针偏转**：卡片在 `3.5s` 的循环周期内，以自身中心为原点，极其流畅地**顺时针向右偏转 90° 或 180°**，悬停 1.5s 后重播。
 * **角度解析**：演示引擎自动嗅探题目中的 `title` 和 `hint`。如果包含 "180" 或 "半圈" 字眼，则加载 `rotate180Anim` 翻转动画；若为 "90"，则加载 `rotate90Anim` 四分之一圈偏转动画，与题干完全对齐。
 
+---
+
+## 🔒 六、 视图滚动锁定与防冲突手势规范 (Gameplay Viewport Locking & Scrollbar Removal)
+
+为了彻底解决 iPad 在手指拖拽时由于“页面弹性滚动”与“滚动条闪烁”导致的手势冲突，系统实施了动态的**“视口状态锁 (Viewport State Lock)”**机制：
+
+### 1. 滚动条冲突原理
+移动端 WebKit 在手指滑动时默认拥有回弹（Bounce/Rubber-banding）特性。当孩子手指按压卡片并在屏幕上做拖拽位移时，若视口存在任何滚动可能，浏览器会优先触发 `window` 或 `body` 的视口位移，导致卡片在指尖下断联，手指与拖曳卡片产生错位脱靶。
+
+### 2. 动态滚动锁定架构
+为了保持大厅 HUD 面板、商城、家长报告的自然滚动能力，同时在关卡运行中彻底去除滚动条与回弹，系统使用以下动态切换规范：
+* **进入游戏锁定**：
+  在 `launchTest()`、`launchMixedMode()` 以及早教 `launchSensory()` 入口函数中，强行锁定浏览器视口：
+  ```javascript
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.height = '100%';
+  ```
+* **退出游戏复位**：
+  在返回大厅 HUD `loadDabaoHUD()`、`loadErbaoHUD()` 以及切换成员 `logoutPlayer()` 出口函数中，完美还原视口滚动：
+  ```javascript
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+  document.body.style.height = '';
+  ```
+通过这种**“非游戏态自由滚动，游戏态绝对锁定”**的按需切合设计，完全去除了页面滚动条的干扰，使得 iPad 上的手指拖曳体验达到 100% 灵敏与纯净。
+
+---
+
+## ⏭️ 七、 特训关卡“容错跳过”机制规范 (Gameplay Step-Over & Skip Level Standard)
+
+为了保护孩子的求知欲，避免极难题目（如 Level 43+ 的超常挑战）对孩子造成挫败感和心流中断，系统引入了**“跳过本关 (Skip Level)”**的弹性认知容错设计：
+
+### 1. 核心运行逻辑
+* **全局容器嵌入**：
+  在 `launchTest()` 和 `launchMixedMode()` 渲染关卡容器后，系统会统一在底部动态追加一个低对比度、无压力感的轻量化跳过操作条：
+  ```html
+  <button class="mock-button-skip" onclick="skipCurrent6yoLevel()">⏭️ 跳过这一关</button>
+  ```
+* **跳过操作流程 (`skipCurrent6yoLevel`)**：
+  1. **二次确认保护**：弹出友好确认框，避免误触。提示跳过不会扣除金币，但也不会发放本关奖励。
+  2. **状态安全递增**：将对应维度关卡数（特定维度的 `player.progress[type]++` 或综合航线的 `player.progress.mixed++`）向前推进 1 关，并即刻执行 `saveAppState()` 保存数据。
+  3. **语音情感缓冲**：调用 SpeechUtterance 接口对孩子说出鼓励语：“这关有点难，没关系！我们先来挑战下一关吧，加油！”
+  4. **重载下一关**：自动触发 `launchTest(type)` 或 `launchMixedMode()`，重构下一关卡，确保游戏体验不间断。
+
+
