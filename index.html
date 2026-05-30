@@ -56,12 +56,19 @@
       padding: 0;
     }
 
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
     body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       font-family: var(--font-inter);
       line-height: 1.6;
       overflow-x: hidden;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
       -webkit-font-smoothing: antialiased;
       /* Subtle grid background */
       background-image: 
