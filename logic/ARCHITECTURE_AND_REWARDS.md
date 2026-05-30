@@ -161,3 +161,45 @@ function generateDynamicWeight(level) {
 
 ### 3. 演进路线图结论
 通过上述**“算法生成模板”**去逐步替换 `questions.js` 中的静态数组，可以用极少的代码量，膨胀出**数万道100%不重复的全新脑力挑战题**。这不仅能完美支持 50 关，甚至能支撑起 400 关的长期综合航线特训，完美契合北京八中超常儿童选拔的“高频认知刺激”理念。
+
+---
+
+## 📱 四、 iPad 移动端触屏适配规范 (Touch Drag-and-Drop & Tap-to-Move Standards)
+
+为了保证游戏在 iPad 等主流平板设备的移动端触屏上能够拥有原生 App 级别的交互手感，我们制定了以下双重交互标准和底层适配规范：
+
+### 1. 为什么禁用 HTML5 `draggable="true"` 规范？
+在 WebKit（iOS / iPad OS Safari 与 Chrome）移动端渲染中，若对元素设置 `draggable="true"` 属性并使用 HTML5 原生 drag 事件，系统长按时会直接触发系统的 ghost 图片剪切和文本选择机制，直接劫持并终止 `touchstart` 和 `touchmove` 事件流，导致拖拽彻底失效或出现剧烈延迟卡顿。
+
+### 2. 统一指针事件（Pointer Events）拖拽架构
+系统全面切换为统一的 Pointer Events API，支持用一套极简代码无缝驱动 Desktop 鼠标和 iPad 手指操作：
+* **指针捕获机制 (`Pointer Capture`)**：在 `pointerdown` 事件中，执行 `element.setPointerCapture(e.pointerId)`，将当前指触焦点强行绑定在该拖拽项上。即使孩子手指滑动过快偏离了卡片，依然能够稳定跟随，不会产生脱靶现象。
+* **GPU 满帧渲染 (`translate3d`)**：拖拽位移一律采用 GPU 硬件加速的 `transform: translate3d(dx, dy, 0)` 渲染，消除像素抖动，保证拖拽延迟低于 16ms（60FPS 满帧运行）。
+* **绝对坐标槽位探测 (`elementFromPoint`)**：在 `pointerup` (或 pointercancel) 阶段，由于卡片本身在手指下方，我们需要：
+  1. 临时设置被拖拽元素的 `style.pointerEvents = 'none'`；
+  2. 调用 `document.elementFromPoint(e.clientX, e.clientY)` 获取松手时手指坐标正下方的 DOM 元素；
+  3. 恢复 `pointerEvents = ''`；
+  4. 利用 `closest('.shape-slot')` 或 `closest('.deduction-slot')` 精准匹配并派发放置逻辑。
+* **手势防划隔离 (`touch-action: none`)**：所有可拖拽的卡片、小球、形状积木，其内联样式中**必须设置 `touch-action: none;` 和 `user-select: none;`**。这能从 CSS 级底层告知 iPad OS 视口：手指在该积木上划动时，严禁触发页面的滚动（Rubber-banding）和双击缩放，实现绝对稳定的单卡片位移。
+
+### 3. 极速备选点击 (Tap-to-Move) 辅助交互
+考虑到小年龄段孩子（如 2 岁淼淼）在 iPad 上的精细动作能力尚未发育完全，系统必须支持**“拖拽”与“轻点飞入”**双重容错交互：
+* **距离微小点击过滤**：在 `pointerup` 时，计算 `Math.sqrt(dx*dx + dy*dy)`。如果指针位移小于 `6px`，则被过滤为“快速轻点/Tap”手势，立即触发槽位飞入/撤回函数，并跳过 drag-and-drop 的物理坐标探测。
+* **智能飞入**：轻点备选池卡片，卡片瞬间飞入上方首个空置步骤槽；轻点槽内卡片，卡片瞬间撤回下方备选池，提供 100% 极简答题通道。
+
+---
+
+## 🎬 五、 3D 空间变换“动画演示课”脚手架 (Visual Scaffolding Engine)
+
+针对“镜像对称”、“图形旋转”这类高认知负荷的空间想象力题目，系统配备了**“3D动画演示教学助手”**，旨在在孩子思考遇到死角时提供最形象的视觉支架（Scaffolding）：
+
+### 1. 3D 折叠镜像动画规范
+* **动画触发**：用户点击 `🎬 观看动画演示` 按钮，弹出 `backdrop-filter: blur(12px)` 的玻璃磨砂全屏浮层。
+* **物理翻飞**：原图卡片使用 `@keyframes` 运行，运用 3D 透视视口（`perspective: 600px`），执行 **`transform: rotateY(180deg)` 的 3D 沿镜轴左右翻转动画** 并向镜面侧移动，以 3D 翻动极具动感地演示了什么叫“左右互换”与“轴对称”。
+* **双通道融合 (Speech + Visual)**：播放动画的同时，调用 SpeechUtterance 中文语音合成播放教学引导，达成“视觉 + 听觉”双重编码学习，帮助孩子跨越认知负荷障碍。
+
+### 2. 罗盘顺时针旋转动画规范
+* **动画触发**：在弹窗中央展现原图，并在其背景渲染罗盘轨迹。
+* **时针偏转**：卡片在 `3.5s` 的循环周期内，以自身中心为原点，极其流畅地**顺时针向右偏转 90° 或 180°**，悬停 1.5s 后重播。
+* **角度解析**：演示引擎自动嗅探题目中的 `title` 和 `hint`。如果包含 "180" 或 "半圈" 字眼，则加载 `rotate180Anim` 翻转动画；若为 "90"，则加载 `rotate90Anim` 四分之一圈偏转动画，与题干完全对齐。
+
