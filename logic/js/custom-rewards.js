@@ -1,11 +1,8 @@
 /* 🧠 脑力认知研究所 - 积分兑换与乘员面板 HUD & Rewards Engine */
 
 function loadDabaoHUD() {
-  // Restore screen scrolling
-  document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.width = '';
-  document.body.style.height = '';
+  // Restore screen scrolling using global helper
+  unlockViewportScrolling();
 
   initAppState();
   const player = appState.players.dabao;
@@ -110,11 +107,8 @@ function loadDabaoHUD() {
 
 
 function loadErbaoHUD() {
-  // Restore screen scrolling
-  document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.width = '';
-  document.body.style.height = '';
+  // Restore screen scrolling using global helper
+  unlockViewportScrolling();
 
   const container = document.getElementById("game-stage");
   container.innerHTML = `

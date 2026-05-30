@@ -113,10 +113,26 @@ function logoutPlayer() {
   document.getElementById("app-container").style.display = "none";
   document.getElementById("player-gate").style.display = "flex";
   window.currentPlayerId = null;
-  // Restore screen scrolling
+  // Restore screen scrolling using global helper
+  unlockViewportScrolling();
+}
+
+// --- Unified Global Viewport Scroll Lock/Unlock for iPad/Mobile WebKit Compatibility ---
+function preventScrollHandler(e) {
+  if (e.cancelable) e.preventDefault();
+}
+
+function lockViewportScrolling() {
+  document.addEventListener('touchmove', preventScrollHandler, { passive: false });
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.body.style.height = '100%';
+}
+
+function unlockViewportScrolling() {
+  document.removeEventListener('touchmove', preventScrollHandler, { passive: false });
+  document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.width = '';
   document.body.style.height = '';
 }
 

@@ -196,10 +196,7 @@ function getTrackChineseName(type) {
 
 function launchTest(type) {
   // Lock screen scrolling during gameplay to prevent iPad dragging conflict
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-  document.body.style.height = '100%';
+  lockViewportScrolling();
 
   window.isMixedMode = false;
   initAppState();
@@ -266,10 +263,7 @@ function setupDeductionDrag() {
 
 function launchMixedMode() {
   // Lock screen scrolling during gameplay to prevent iPad dragging conflict
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-  document.body.style.height = '100%';
+  lockViewportScrolling();
 
   window.isMixedMode = true;
   initAppState();

@@ -1,9 +1,6 @@
 function launchSensory(type) {
   // Lock screen scrolling during early sensory gameplay to prevent iPad dragging conflict
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-  document.body.style.height = '100%';
+  lockViewportScrolling();
 
   const container = document.getElementById("game-stage");
   
