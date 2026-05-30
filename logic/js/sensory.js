@@ -1,4 +1,5 @@
 function launchSensory(type) {
+  window.currentSensoryTrack = type;
   // Lock screen scrolling during early sensory gameplay to prevent iPad dragging conflict
   lockViewportScrolling();
 
@@ -247,13 +248,9 @@ function playSensorySound(type) {
 function guessSensorySound(guessedType) {
   if (guessedType === window.sensoryTargetSound.type) {
     playSensorySound(guessedType);
-    initAppState();
-    appState.players.erbao.stars += 10;
-    saveAppState();
     
-    alert(`🎉 答对啦！真的是【${window.sensoryTargetSound.name}】在叫！\n淼淼真棒！给你 10 颗星星奖励！🌟`);
-    document.getElementById("star-count").innerText = `🪙 ${appState.players.erbao.stars}`;
-    loadErbaoHUD();
+    const feedback = `答对啦！真的是【${window.sensoryTargetSound.name}】在叫！\n淼淼真棒！奖励 10 颗星星！🌟`;
+    trigger2yoVictory(window.currentSensoryTrack || 'sound', feedback);
   } else {
     alert("❌ 不对哦。淼淼，再点小喇叭仔细听一下，猜猜这到底是谁的声音呢？🐰");
   }
@@ -375,12 +372,59 @@ function checkSensoryVictory() {
   
   if (allSolved) {
     setTimeout(() => {
-      initAppState();
-      appState.players.erbao.stars += 10;
-      saveAppState();
-      alert("🎉 太牛了！淼淼把所有颜色/形状都匹配好了！奖励 10 颗星星！🌟");
-      document.getElementById("star-count").innerText = `🪙 ${appState.players.erbao.stars}`;
-      loadErbaoHUD();
+      const feedback = "太牛了！淼淼把所有颜色或形状都完美配对好了！奖励 10 颗星星！🌟";
+      trigger2yoVictory(window.currentSensoryTrack || 'shape', feedback);
     }, 400);
   }
+}
+
+function trigger2yoVictory(type, speechFeedback) {
+  if (!appState.players || !appState.players.erbao) initAppState();
+  const player = appState.players.erbao;
+
+  const earnedStars = 10;
+  player.stars = (player.stars || 0) + earnedStars;
+  saveAppState();
+
+  // 更新 HUD 星星数
+  const starEl = document.getElementById("star-count");
+  if (starEl) starEl.innerText = `🪙 ${player.stars}`;
+
+  // 播放好听的和弦声音
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine';
+    o.frequency.setValueAtTime(523.25, ctx.currentTime); 
+    o.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); 
+    o.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); 
+    g.gain.setValueAtTime(0.2, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+    o.start(); o.stop(ctx.currentTime + 0.35);
+  } catch(err){}
+
+  const container = document.getElementById("game-stage");
+  container.innerHTML = `
+    <div class="glass-card" style="padding:40px; text-align:center; max-width:500px; margin:40px auto; border-color:#fbbf24; background:rgba(251,191,36,0.08); border-width:2px; animation:pulseGlow 1.2s infinite ease-in-out;">
+      <span style="font-size:5em; display:block; margin-bottom:10px;">🐰</span>
+      <h2 style="color:#fbbf24; font-weight:800; margin-bottom:5px;">淼淼宝宝太棒啦！</h2>
+      <p style="font-size:1.15em; color:#fff; font-weight:600; margin-bottom:15px;">${speechFeedback.replace(/\n/g, '<br>')}</p>
+      
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:12px; margin:15px 0; font-size:1em; color:#fde68a;">
+        获得奖励：<span style="font-weight:bold; font-size:1.2em;">🌟 +${earnedStars} 颗星星</span>
+      </div>
+      
+      <p style="font-size:0.85em; color:#fbbf24; letter-spacing:1px; animation:blinker 1s linear infinite; margin-top:20px;">下一题马上要开始喽，准备好了吗？🚀</p>
+    </div>
+  `;
+
+  // 播放语音
+  speakText(speechFeedback);
+
+  // 2 秒后自动出下一题
+  setTimeout(() => {
+    launchSensory(type);
+  }, 2000);
 }

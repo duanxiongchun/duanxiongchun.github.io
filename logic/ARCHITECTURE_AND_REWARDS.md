@@ -72,8 +72,10 @@ graph TD
 ### 2. 积分与奖励接口定义 (API Hooks)
 系统提供以下全局 API，任何子游戏模块均可无缝调用以增减金币：
 
-* **金币与胜利分发器**：`trigger6yoVictory(starEarned, speechFeedback)`
-  * *职责*：增加金币 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 语音赞赏 ➔ 自动切换下一关。
+* **果果金币与胜利分发器**：`trigger6yoVictory(starEarned, speechFeedback)`
+  * *职责*：增加金币 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 语音赞赏 ➔ 自动切换并载入下一关（果果特训版）。
+* **淼淼金币与胜利分发器**：`trigger2yoVictory(type, speechFeedback)`
+  * *职责*：增加金币 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 萌兔卡片渲染 ➔ 语音赞赏 ➔ 延时 2 秒后自动重新加载同轨道的下一题，实现无感连续出题（淼淼启蒙版）。
 * **奖励兑换申请**：`requestRedemption(playerId, rewardId)`
   * *职责*：核对余额是否足够 ➔ 扣除虚拟金币 ➔ 将申请推入 `redemptions` 审核队列 ➔ 触发页面渲染。
 * **家长端确认发放**：`approveRedemption(index)`
