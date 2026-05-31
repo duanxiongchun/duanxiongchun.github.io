@@ -549,12 +549,24 @@ function appendDabaoSkipButton(container) {
 
   const skipDiv = document.createElement('div');
   skipDiv.id = 'dabao-skip-bar';
-  skipDiv.style.cssText = "text-align:center; margin-top:20px; margin-bottom:15px;";
-  skipDiv.innerHTML = `
-    <button class="mock-button ${btnGlow}" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
-      <span>⏭️ 跳过这一关 (本关太难？)</span>
-    </button>
-  `;
+  skipDiv.style.cssText = "text-align:center; margin-top:20px; margin-bottom:15px; display:flex; justify-content:center; gap:15px; flex-wrap:wrap;";
+  
+  if (isErbao) {
+    skipDiv.innerHTML = `
+      <button class="mock-button ${btnGlow}" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
+        <span>⏭️ 跳过这一关 (太难了？)</span>
+      </button>
+      <button class="mock-button" onclick="loadErbaoHUD()" style="border-color:transparent; background:rgba(255,255,255,0.01); color:#64748b; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
+        <span>🔙 返回特训大厅</span>
+      </button>
+    `;
+  } else {
+    skipDiv.innerHTML = `
+      <button class="mock-button ${btnGlow}" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
+        <span>⏭️ 跳过这一关 (本关太难？)</span>
+      </button>
+    `;
+  }
   container.appendChild(skipDiv);
 }
 
