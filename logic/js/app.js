@@ -38,12 +38,13 @@ const DEFAULT_STATE = {
   redemptions: [],
   versionInfo: {
     major: 1,
-    minor: 4,
+    minor: 5,
     build: 82 // We will auto-increment this representing total publish counts
   }
 };
 
-let appState = DEFAULT_STATE;
+// Deep-copy so runtime mutations never pollute DEFAULT_STATE
+let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
 function initAppState() {
   const local = localStorage.getItem(STORAGE_KEY);
@@ -118,7 +119,8 @@ function initAppState() {
       saveAppState();
     }
   } else {
-    appState = DEFAULT_STATE;
+    // Deep-copy so the fresh state is independent of DEFAULT_STATE
+    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
     saveAppState();
   }
 }
