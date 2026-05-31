@@ -28,12 +28,19 @@ const DEFAULT_STATE = {
     }
   },
   rewards: [
-    { id: "r1", title: "看动画片 30 分钟 📺", cost: 180, target: "dabao" },
-    { id: "r2", title: "去楼下坐摇摇车 2 次 🎠", cost: 90, target: "erbao" },
-    { id: "r3", title: "兑换闪亮魔法水晶宝石 1 颗 💎", cost: 750, target: "dabao" },
-    { id: "r4", title: "吃美味冰淇淋 1 个 🍦", cost: 450, target: "dabao" },
-    { id: "r5", title: "喝一瓶小酸奶 🍼", cost: 60, target: "erbao" },
-    { id: "r6", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" }
+    // ── 淼淼专属奖励 (erbao) ────────────────────────────────
+    { id: "e1", title: "小贴纸一张 🌟",                    cost: 30,   target: "erbao" },
+    { id: "e2", title: "喝一瓶小酸奶 🍼",                   cost: 60,   target: "erbao" },
+    { id: "e3", title: "去楼下坐摇摇车 2 次 🎠",            cost: 90,   target: "erbao" },
+    { id: "e4", title: "兑换一辆玩具小汽车 🚗",             cost: 150,  target: "erbao" },
+    { id: "e5", title: "兑换一台玩具挖掘机 🚧",             cost: 240,  target: "erbao" },
+    { id: "e6", title: "兑换一套玩具工程车队 (3辆) 🚛",     cost: 450,  target: "erbao" },
+    { id: "e7", title: "兑换超大号遥控挖掘机 🏗️",           cost: 750,  target: "erbao" },
+    // ── 果果专属奖励 (dabao) ────────────────────────────────
+    { id: "d1", title: "看动画片 30 分钟 📺",               cost: 180,  target: "dabao" },
+    { id: "d2", title: "吃美味冰淇淋 1 个 🍦",              cost: 450,  target: "dabao" },
+    { id: "d3", title: "兑换闪亮魔法水晶宝石 1 颗 💎",      cost: 750,  target: "dabao" },
+    { id: "d4", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" },
   ],
   redemptions: [],
   versionInfo: {
@@ -88,14 +95,9 @@ function initAppState() {
         }
       }
       
-      // Auto-migrate rewards to ensure "r6" Crystal Geode exists
-      if (!appState.rewards) {
-        appState.rewards = [...DEFAULT_STATE.rewards];
-      } else {
-        if (!appState.rewards.some(r => r.id === "r6")) {
-          appState.rewards.push({ id: "r6", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" });
-        }
-      }
+      // Auto-migrate rewards: always sync to latest DEFAULT_STATE rewards list
+      // This ensures new rewards (like erbao toys) appear after update
+      appState.rewards = JSON.parse(JSON.stringify(DEFAULT_STATE.rewards));
       
       // Auto-migrate and update version info
       if (!appState.versionInfo) {

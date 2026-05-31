@@ -216,23 +216,51 @@ function loadErbaoHUD() {
 function renderRewardsList(playerId) {
   initAppState();
   const catalog = document.getElementById("shop-catalog");
-  const filtered = appState.rewards.filter(r => r.target === playerId);
-  
+  const player = appState.players[playerId];
+  const myStars = player.stars || 0;
+  const isErbao = playerId === 'erbao';
+  const accentColor = isErbao ? '#fbbf24' : '#818cf8';
+  const glowClass = isErbao ? 'glow-erbao' : 'glow-dabao';
+
+  // Filter by player and sort by cost ascending
+  const filtered = appState.rewards
+    .filter(r => r.target === playerId)
+    .sort((a, b) => a.cost - b.cost);
+
   if (filtered.length === 0) {
     catalog.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:0.8em; padding:20px;">商城暂无当前成员的专属奖品。</p>`;
     return;
   }
-  
-  catalog.innerHTML = filtered.map(r => `
-    <div class="glass-card" style="padding: 15px; margin-bottom: 12px; border-color: rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 8px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-        <span style="font-weight: 700; font-size: 0.95em; color: #fff; line-height:1.3;">${r.title}</span>
-        <span style="font-size: 0.85em; color: #fbbf24; font-weight:700; font-family:var(--font-fira); white-space:nowrap;">🪙 ${r.cost}</span>
+
+  catalog.innerHTML = filtered.map(r => {
+    const canAfford = myStars >= r.cost;
+    const pct = Math.min((myStars / r.cost) * 100, 100);
+    const borderColor = canAfford ? `${accentColor}66` : 'rgba(255,255,255,0.04)';
+    const badge = canAfford
+      ? `<span style="font-size:0.7em;background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);padding:2px 8px;border-radius:20px;font-weight:700;">✅ 可兑换</span>`
+      : `<span style="font-size:0.7em;background:rgba(255,255,255,0.03);color:#64748b;border:1px solid rgba(255,255,255,0.06);padding:2px 8px;border-radius:20px;">🔒 攒中…</span>`;
+    return `
+    <div class="glass-card" style="padding:14px;margin-bottom:10px;border-color:${borderColor};transition:border-color 0.3s;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+        <span style="font-weight:700;font-size:0.92em;color:#fff;line-height:1.35;flex:1;">${r.title}</span>
+        <span style="font-size:0.95em;color:#fbbf24;font-weight:800;font-family:var(--font-fira);white-space:nowrap;">🪙 ${r.cost}</span>
       </div>
-      <button class="mock-button glow-erbao" onclick="redeemReward('${r.id}')" style="padding: 6px 12px; font-size: 0.8em; width: 100%; border-radius:6px; font-weight:700; margin-top:2px;">一键兑换</button>
-    </div>
-  `).join("");
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        ${badge}
+        <span style="font-size:0.7em;color:#64748b;">已攒 ${myStars} / ${r.cost}</span>
+      </div>
+      <div style="width:100%;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-bottom:8px;">
+        <div style="width:${pct}%;height:100%;background:${canAfford ? '#34d399' : accentColor};border-radius:2px;transition:width 0.5s;"></div>
+      </div>
+      <button class="mock-button ${glowClass}" onclick="redeemReward('${r.id}')"
+        style="padding:6px 12px;font-size:0.8em;width:100%;border-radius:6px;font-weight:700;margin-top:0;
+        ${canAfford ? '' : 'opacity:0.45;cursor:not-allowed;'}">
+        ${canAfford ? '🎁 立即兑换' : '⏳ 星星不够，继续加油！'}
+      </button>
+    </div>`;
+  }).join("");
 }
+
 
 function redeemReward(rewardId) {
   initAppState();
