@@ -30,7 +30,8 @@ const DEFAULT_STATE = {
     { id: "r2", title: "去楼下坐摇摇车 2 次 🎠", cost: 90, target: "erbao" },
     { id: "r3", title: "兑换闪亮魔法水晶宝石 1 颗 💎", cost: 750, target: "dabao" },
     { id: "r4", title: "吃美味冰淇淋 1 个 🍦", cost: 450, target: "dabao" },
-    { id: "r5", title: "喝一瓶小酸奶 🍼", cost: 60, target: "erbao" }
+    { id: "r5", title: "喝一瓶小酸奶 🍼", cost: 60, target: "erbao" },
+    { id: "r6", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" }
   ],
   redemptions: []
 };
@@ -70,6 +71,15 @@ function initAppState() {
           if (!appState.players.erbao.solvedQuestions) {
             appState.players.erbao.solvedQuestions = [];
           }
+        }
+      }
+      
+      // Auto-migrate rewards to ensure "r6" Crystal Geode exists
+      if (!appState.rewards) {
+        appState.rewards = [...DEFAULT_STATE.rewards];
+      } else {
+        if (!appState.rewards.some(r => r.id === "r6")) {
+          appState.rewards.push({ id: "r6", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" });
         }
       }
       
