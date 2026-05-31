@@ -8,7 +8,7 @@ const DEFAULT_STATE = {
     dabao: {
       name: "果果 (6岁)",
       avatar: "🦁",
-      stars: 120, // default initial reward stars for trial
+      stars: 0, // starts from zero on fresh install
       streaks: 2,
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
@@ -20,7 +20,7 @@ const DEFAULT_STATE = {
     erbao: {
       name: "淼淼 (2岁)",
       avatar: "🐰",
-      stars: 30, // default initial reward stars for trial
+      stars: 0, // starts from zero on fresh install
       stickers: ["happy_bunny"],
       solvedQuestions: [], // Tracks successfully solved sensory level IDs for Miaomiao
       wrongQuestions: {}, // Tracks incorrectly solved sensory levels with their last attempt timestamp
