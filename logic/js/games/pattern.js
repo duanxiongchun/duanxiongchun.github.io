@@ -23,15 +23,22 @@ function launchPattern(level, container) {
   currentPatternAnswer = q.ans.toString();
   const questionText = q.text || '果果，观察图形变化规律，找出右下角问号处应该填哪个？';
 
+  // Set global currentSpatialQuestion for parameter-less animation helper
+  window.currentSpatialQuestion = {
+    original: q.matrix ? q.matrix[0] : '',
+    hint: q.hint || '',
+    title: q.text || ''
+  };
+
   // Shuffling options
   const optsWithIdx = q.opts.map((o, i) => ({o, i}));
   const shuffled = [...optsWithIdx].sort(() => Math.random() - 0.5);
 
   let helpBtnHTML = '';
   if (q.hint && (q.hint.includes('镜像') || q.hint.includes('对称') || q.hint.includes('折叠'))) {
-    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror', ${JSON.stringify(q.matrix[0])}, ${JSON.stringify(q.hint)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
+    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
   } else if (q.hint && (q.hint.includes('旋转') || q.hint.includes('转动') || q.hint.includes('针'))) {
-    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate', ${JSON.stringify(q.matrix[0])}, ${JSON.stringify(q.hint)}, ${JSON.stringify(q.text || '')})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
+    helpBtnHTML = `<button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;margin-bottom:0;">🎬 观看动画演示</button>`;
   }
 
   container.innerHTML = `

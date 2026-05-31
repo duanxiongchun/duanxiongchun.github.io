@@ -52,17 +52,12 @@ function speakText(text) {
 // ==================== 🏆 胜利引擎（统一入口）====================
 
 function trigger6yoVictory(ignoredStarParam, speechFeedback) {
-  const currentPlayerId = window.currentPlayerId || 'dabao';
-  if (currentPlayerId === 'erbao') {
-    trigger2yoVictory(window.currentGameTrack, speechFeedback);
-    return;
-  }
-
   const type = window.currentGameTrack;
   if (!type) { console.warn("currentGameTrack not set"); return; }
 
-  if (!appState.players || !appState.players.dabao) initAppState();
-  const player = appState.players.dabao;
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const isErbao = currentPlayerId === 'erbao';
+  const player = appState.players[currentPlayerId];
 
   if (!player.progress) {
     player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
@@ -132,11 +127,16 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
     o.start(); o.stop(ctx.currentTime + 0.45);
   } catch(e) {}
 
+  const themeColor = isErbao ? '#fbbf24' : '#10b981';
+  const bgColor = isErbao ? 'rgba(251,191,36,0.08)' : 'rgba(16,185,129,0.08)';
+  const avatar = isErbao ? '🐰' : '🌟';
+  const titleName = isErbao ? '回答正确！淼淼真棒！' : '回答正确！';
+
   const container = document.getElementById("game-stage");
   container.innerHTML = `
-    <div class="glass-card" style="padding:40px; text-align:center; max-width:500px; margin:40px auto; border-color:#10b981; background:rgba(16,185,129,0.08); border-width:2px; animation:pulseGlow 1.2s infinite ease-in-out;">
-      <span style="font-size:5em; display:block; margin-bottom:10px;">🌟</span>
-      <h2 style="color:#10b981; font-weight:800; margin-bottom:5px;">回答正确！</h2>
+    <div class="glass-card" style="padding:40px; text-align:center; max-width:500px; margin:40px auto; border-color:${themeColor}; background:${bgColor}; border-width:2px; animation:pulseGlow 1.2s infinite ease-in-out;">
+      <span style="font-size:5em; display:block; margin-bottom:10px;">${avatar}</span>
+      <h2 style="color:${themeColor}; font-weight:800; margin-bottom:5px;">${titleName}</h2>
       <div style="font-size:0.85em; font-weight:bold; color:${difficultyColor}; margin-bottom:10px;">${difficultyName} · 第 ${level} 关</div>
       <p style="font-size:1.05em; color:#fff; font-weight:600; margin-bottom:15px;">${speechFeedback}</p>
       
@@ -244,6 +244,7 @@ function launchTest(type) {
   // Route erbao to launchErbaoSensory
   if (currentPlayerId === 'erbao') {
     launchErbaoSensory(type, level, container);
+    appendDabaoSkipButton(container);
     return;
   }
 
@@ -328,6 +329,7 @@ function launchMixedMode() {
   // Route erbao to launchErbaoSensory
   if (currentPlayerId === 'erbao') {
     launchErbaoSensory(type, trackLevel, container);
+    appendDabaoSkipButton(container);
     return;
   }
 
@@ -357,6 +359,20 @@ function resetMixedProgress() {
 // ==================== 🎬 空间想象与旋转/镜像 3D 动画演示助手 ====================
 
 function showSpatialHelpAnimation(type, original, hint, title = '') {
+  // If original/hint are omitted, fall back to reading from window.currentSpatialQuestion
+  if (!original && window.currentSpatialQuestion) {
+    original = window.currentSpatialQuestion.original || window.currentSpatialQuestion.matrix?.[0] || '';
+    hint = window.currentSpatialQuestion.hint || '';
+    title = window.currentSpatialQuestion.title || window.currentSpatialQuestion.text || '';
+  }
+  // Ensure safe fallbacks
+  original = original || '';
+  hint = hint || '仔细看动画，找出其中的变化规律哦！';
+  title = title || '';
+
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const name = currentPlayerId === 'erbao' ? '淼淼' : '果果';
+
   const styleId = 'spatial-help-animation-styles';
   if (!document.getElementById(styleId)) {
     const style = document.createElement('style');
@@ -492,7 +508,7 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
       <h2 style="color:#818cf8; font-weight:800; margin-top:0; font-size:1.4em; display:flex; align-items:center; justify-content:center; gap:8px;">
         🎨 空间想象演示课 🎬
       </h2>
-      <p style="font-size:0.85em; color:#94a3b8; line-height:1.5;">果果，仔细看下面这个好玩的动画，看看它是怎么变化的：</p>
+      <p style="font-size:0.85em; color:#94a3b8; line-height:1.5;">${name}，仔细看下面这个好玩的动画，看看它是怎么变化的：</p>
       
       ${animStageHTML}
       
@@ -514,8 +530,8 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
 
   // Speaks
   const intro = type === 'mirror' 
-    ? `果果，快看！图案照镜子的样子，是把左右位置完全对调过来，就像你在镜子面前抬起右手一样哦！`
-    : `果果，快看！这个图案正在像摩天轮或者钟表指针一样，顺时针向右转动了${is180 ? '半圈' : '九十度'}！`;
+    ? `${name}，快看！图案照镜子的样子，是把左右位置完全对调过来，就像你在镜子面前抬起右手一样哦！`
+    : `${name}，快看！这个图案正在像摩天轮或者钟表指针一样，顺时针向右转动了${is180 ? '半圈' : '九十度'}！`;
   speakText(intro);
 }
 
@@ -526,11 +542,16 @@ function appendDabaoSkipButton(container) {
   const old = document.getElementById('dabao-skip-bar');
   if (old) old.remove();
 
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const isErbao = currentPlayerId === 'erbao';
+  const name = isErbao ? '淼淼' : '果果';
+  const btnGlow = isErbao ? 'glow-erbao' : 'glow-dabao';
+
   const skipDiv = document.createElement('div');
   skipDiv.id = 'dabao-skip-bar';
   skipDiv.style.cssText = "text-align:center; margin-top:20px; margin-bottom:15px;";
   skipDiv.innerHTML = `
-    <button class="mock-button glow-dabao" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
+    <button class="mock-button ${btnGlow}" onclick="skipCurrent6yoLevel()" style="border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); color:#94a3b8; font-size:0.88em; padding:8px 22px; border-radius:14px; font-weight:700; cursor:pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px; margin-top:0;">
       <span>⏭️ 跳过这一关 (本关太难？)</span>
     </button>
   `;
@@ -538,12 +559,14 @@ function appendDabaoSkipButton(container) {
 }
 
 function skipCurrent6yoLevel() {
-  if (!confirm("🦁 确定要跳过这一关吗？\n跳过本关不会扣除或发放任何金币奖励。没关系，我们可以先做下一关！✨")) return;
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const name = currentPlayerId === 'erbao' ? '淼淼' : '果果';
+  if (!confirm(`🐰 确定要跳过这一关吗？\n跳过本关不会扣除或发放任何金币奖励。没关系，${name}可以先做下一关！✨`)) return;
   
   const type = window.currentGameTrack;
   if (!type) return;
 
-  const player = appState.players.dabao;
+  const player = appState.players[currentPlayerId];
 
   // Advance progress
   if (window.isMixedMode) {

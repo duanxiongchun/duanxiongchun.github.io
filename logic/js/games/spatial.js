@@ -81,6 +81,7 @@ function launchSpatial(level, container) {
   else if (phase === 2) {
     // 题型B：镜像对称
     const q = MIRROR_QUESTIONS[qIdx];
+    window.currentSpatialQuestion = q;
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
@@ -104,7 +105,7 @@ function launchSpatial(level, container) {
         </div>
         <p style="font-size:0.85em;color:#94a3b8;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
           <span>💡 ${q.hint}</span>
-          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror', ${JSON.stringify(q.original)}, ${JSON.stringify(q.hint)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
+          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
@@ -119,6 +120,7 @@ function launchSpatial(level, container) {
   else if (phase === 3) {
     // 题型C：图形旋转
     const q = ROTATION_QUESTIONS[qIdx];
+    window.currentSpatialQuestion = q;
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.title}`;
@@ -132,7 +134,7 @@ function launchSpatial(level, container) {
         <div class="glass-card" style="padding:20px;font-size:2.5em;line-height:1.6;margin:15px auto;max-width:200px;white-space:pre;font-family:monospace;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);">${q.original}</div>
         <p style="font-size:0.85em;color:#94a3b8;margin:12px 0 20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
           <span>💡 ${q.hint}</span>
-          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate', ${JSON.stringify(q.original)}, ${JSON.stringify(q.hint)}, ${JSON.stringify(q.title)})" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
+          <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
