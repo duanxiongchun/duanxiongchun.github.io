@@ -191,7 +191,7 @@ function playSensorySound(type) {
     } 
     
     else if (type === 'sheep') {
-      // 🐑 MODULATED low sawtooth/triangle "Baaa" sheep sound
+      // 🐑 MODULATED sheep bleat sound
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const lfo = ctx.createOscillator();
@@ -203,12 +203,10 @@ function playSensorySound(type) {
       
       lfo.type = 'sine';
       lfo.frequency.value = 13; 
-      
       lfoGain.gain.value = 15; 
       
       lfo.connect(lfoGain);
       lfoGain.connect(osc.frequency);
-      
       osc.connect(gain);
       gain.connect(ctx.destination);
       
@@ -217,13 +215,12 @@ function playSensorySound(type) {
       
       lfo.start();
       osc.start();
-      
       lfo.stop(ctx.currentTime + 0.7);
       osc.stop(ctx.currentTime + 0.7);
     } 
     
     else if (type === 'bird') {
-      // 🐦 High-frequency quick sweeping "chirps"
+      // 🐦 High-frequency sweeping chirps
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
       osc1.connect(gain1);
@@ -250,6 +247,80 @@ function playSensorySound(type) {
         osc2.stop(ctx.currentTime + 0.15);
       }, 180);
     }
+    
+    else if (type === 'duck') {
+      // 🦆 rapid nasal sawtooth pulses
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(240, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(170, ctx.currentTime + 0.18);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    }
+    
+    else if (type === 'frog') {
+      // 🐸 low pitch clicks
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(70, ctx.currentTime);
+      gain.gain.setValueAtTime(0.22, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    }
+    
+    else if (type === 'bell') {
+      // 🔔 metallic chime ring
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.22, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.85);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.85);
+    }
+    
+    else if (type === 'cow') {
+      // 🐮 low-pitched mooing slide
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(105, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + 0.65);
+      gain.gain.setValueAtTime(0.24, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.65);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.65);
+    }
+    
+    else if (type === 'rooster') {
+      // 🐔 high-pitched cock-a-doodle-doo slide
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(880, ctx.currentTime + 0.32);
+      osc.frequency.linearRampToValueAtTime(680, ctx.currentTime + 0.58);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.62);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.62);
+    }
   } catch (err) {
     console.error("Audio Context blocked.", err);
   }
@@ -272,7 +343,6 @@ function setupSensoryDragDrop(mode) {
   const slots = document.querySelectorAll('.shape-slot');
   
   draggables.forEach(drag => {
-    // Add touch-action: none inline to fully disable browser panning while dragging
     drag.style.touchAction = 'none';
 
     let startX = 0, startY = 0;
@@ -330,7 +400,7 @@ function handleSensoryDrop(dragId, slot) {
   if (!dragId || !slot) return;
   
   const dragItem = document.getElementById(dragId);
-  const dragType = dragId.split('-')[1]; // circle, square, triangle, red, green, blue, yellow
+  const dragType = dragId.split('-')[1]; // circle, square, triangle, big, small
   const slotType = slot.id.split('-')[1];
   
   if (dragType === slotType) {
@@ -372,7 +442,7 @@ function handleSensoryDrop(dragId, slot) {
       o.start();
       o.stop(audioCtx.currentTime + 0.2);
     } catch(err){}
-    alert("🐰 颜色或形状不对哦，再找同类的对对看！");
+    alert("🐰 拖动的位置不对哦，再仔细对对看！");
   }
 }
 
@@ -382,15 +452,303 @@ function checkSensoryVictory() {
   
   if (allSolved) {
     setTimeout(() => {
-      const feedback = "太牛了！淼淼把所有颜色或形状都完美配对好了！🌟";
+      const feedback = "太牛了！淼淼把所有形状都完美配对好了！🌟";
       trigger6yoVictory(10, feedback);
     }, 400);
   }
 }
 
+// ==================== 淼淼 (2岁) 萌新感官启蒙 8大轨道 50关动态命题引擎 ====================
+
+function getErbaoSpatialConfig(level) {
+  const colors = [
+    { name: '红', hex: '#ef4444', grad: 'linear-gradient(135deg, #ef4444, #f87171)' },
+    { name: '蓝', hex: '#3b82f6', grad: 'linear-gradient(135deg, #3b82f6, #60a5fa)' },
+    { name: '绿', hex: '#10b981', grad: 'linear-gradient(135deg, #10b981, #34d399)' },
+    { name: '黄', hex: '#fbbf24', grad: 'linear-gradient(135deg, #fbbf24, #facc15)' },
+    { name: '粉', hex: '#ec4899', grad: 'linear-gradient(135deg, #ec4899, #f472b6)' },
+    { name: '紫', hex: '#a855f7', grad: 'linear-gradient(135deg, #a855f7, #c084fc)' },
+    { name: '橙', hex: '#f97316', grad: 'linear-gradient(135deg, #f97316, #fb923c)' }
+  ];
+
+  const c1 = colors[(level * 3) % colors.length];
+  const c2 = colors[(level * 3 + 1) % colors.length];
+  const c3 = colors[(level * 3 + 2) % colors.length];
+
+  return {
+    slots: [
+      { id: 'slot-circle', label: `${c1.name}色圆形 🔴`, shape: 'circle', color: c1.hex, grad: c1.grad, style: `width:90px; height:90px; border:3px dashed ${c1.hex}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.75em; background:rgba(255,255,255,0.02);` },
+      { id: 'slot-square', label: `${c2.name}色方形 🟦`, shape: 'square', color: c2.hex, grad: c2.grad, style: `width:90px; height:90px; border:3px dashed ${c2.hex}; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.75em; background:rgba(255,255,255,0.02);` },
+      { id: 'slot-triangle', label: `${c3.name}色三角 🔺`, shape: 'triangle', color: c3.hex, grad: c3.grad, style: `width:90px; height:90px; border:3px dashed ${c3.hex}; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.72em; padding-top:35px; background:rgba(255,255,255,0.02);` }
+    ],
+    draggables: [
+      { id: 'drag-circle', label: `${c1.name}圆木`, shape: 'circle', style: `touch-action: none; width:75px; height:75px; background:${c1.grad}; border-radius:50%; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size:0.9em; user-select:none;` },
+      { id: 'drag-square', label: `${c2.name}方木`, shape: 'square', style: `touch-action: none; width:75px; height:75px; background:${c2.grad}; border-radius:12px; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size:0.9em; user-select:none;` },
+      { id: 'drag-triangle', label: `${c3.name}角木`, shape: 'triangle', style: `touch-action: none; width:75px; height:75px; background:${c3.grad}; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size:0.85em; padding-top:22px; user-select:none;` }
+    ]
+  };
+}
+
+function getErbaoNumericConfig(level) {
+  const items = [
+    { icon: '🔴', name: '红气球' },
+    { icon: '🌟', name: '金黄星' },
+    { icon: '🐱', name: '小猫咪' },
+    { icon: '🦆', name: '小黄鸭' },
+    { icon: '🎈', name: '彩气球' },
+    { icon: '🍎', name: '红苹果' },
+    { icon: '🚗', name: '小汽车' },
+    { icon: '🍓', name: '甜草莓' },
+    { icon: '🌸', name: '粉花朵' },
+    { icon: '🐻', name: '小熊熊' }
+  ];
+  
+  const selectedItem = items[(level - 1) % items.length];
+  
+  let maxLimit = 3;
+  if (level > 35) maxLimit = 5;
+  else if (level > 15) maxLimit = 4;
+  
+  const count = ((level * 7) % maxLimit) + 1;
+  const itemStr = selectedItem.icon.repeat(count);
+  
+  const options = [];
+  for (let i = 1; i <= maxLimit; i++) options.push(i);
+  
+  return {
+    icon: selectedItem.icon,
+    itemName: selectedItem.name,
+    count: count,
+    itemStr: itemStr,
+    options: options
+  };
+}
+
+function getErbaoAttentionConfig(level) {
+  const basePool = ['🐼','🐶','🐱','🐮','🦁','🐸','🐷','🐨','🦊','🐻','🐯','🐹'];
+  const diffPool = ['🐰','🌟','🚗','🎈','🍒','🍓','👑','🍎','🎁','🍬','🍰','🦋'];
+  
+  const baseEmoji = basePool[(level - 1) % basePool.length];
+  const diffEmoji = diffPool[(level * 3) % diffPool.length];
+  
+  const gridSize = level <= 15 ? 2 : 3; // 2x2 vs 3x3
+  const gridCount = gridSize * gridSize;
+  const items = Array(gridCount - 1).fill(baseEmoji);
+  const diffIdx = (level * 11) % gridCount;
+  items.splice(diffIdx, 0, diffEmoji);
+  
+  return {
+    baseEmoji,
+    diffEmoji,
+    items,
+    diffIdx,
+    gridSize
+  };
+}
+
+function getErbaoDeductionConfig(level) {
+  const bigs = [
+    { icon: '🐘', name: '大象' },
+    { icon: '🦁', name: '狮子' },
+    { icon: '🐳', name: '鲸鱼' },
+    { icon: '🐻', name: '大熊' },
+    { icon: 'Rex 🦖', name: '恐龙' },
+    { icon: '🦛', name: '河马' },
+    { icon: '🦒', name: '长颈鹿' },
+    { icon: '🦈', name: '大鲨鱼' },
+    { icon: '🐄', name: '大奶牛' },
+    { icon: '🐫', name: '大骆驼' }
+  ];
+  
+  const smalls = [
+    { icon: '🐹', name: '仓鼠' },
+    { icon: '🐝', name: '蜜蜂' },
+    { icon: '🐟', name: '小鱼' },
+    { icon: '🐜', name: '蚂蚁' },
+    { icon: '🐥', name: '小鸡' },
+    { icon: '🐞', name: '瓢虫' },
+    { icon: '🐌', name: '蜗牛' },
+    { icon: '🦋', name: '蝴蝶' },
+    { icon: '🐛', name: '毛毛虫' },
+    { icon: '🦗', name: '蟋蟀' }
+  ];
+  
+  const big = bigs[(level - 1) % bigs.length];
+  const small = smalls[(level * 3) % smalls.length];
+  
+  return {
+    bigIcon: big.icon,
+    bigName: big.name,
+    smallIcon: small.icon,
+    smallName: small.name
+  };
+}
+
+function getErbaoPatternConfig(level) {
+  const pairs = [
+    { a: '🍎', b: '🍌' },
+    { a: '🐱', b: '🐶' },
+    { a: '🚗', b: '✈️' },
+    { a: '🔴', b: '🔵' },
+    { a: '⭐', b: '🌙' },
+    { a: '🎈', b: '🎁' },
+    { a: '🍦', b: '🍩' },
+    { a: '🍀', b: '🌸' },
+    { a: '⚽', b: '🏀' },
+    { a: '🦁', b: '🐰' }
+  ];
+  
+  const pair = pairs[(level - 1) % pairs.length];
+  
+  let patternType = 'abab';
+  if (level > 40) patternType = 'abb';
+  else if (level > 25) patternType = 'aab';
+  
+  let sequence = [];
+  let answer = '';
+  
+  if (patternType === 'abab') {
+    sequence = [pair.a, pair.b, pair.a, pair.b];
+    answer = pair.a;
+  } else if (patternType === 'aab') {
+    sequence = [pair.a, pair.a, pair.b, pair.a, pair.a];
+    answer = pair.b;
+  } else {
+    sequence = [pair.a, pair.b, pair.b, pair.a, pair.b];
+    answer = pair.b;
+  }
+  
+  return {
+    a: pair.a,
+    b: pair.b,
+    sequence: sequence,
+    ans: answer
+  };
+}
+
+function getErbaoMemoryConfig(level) {
+  const categories = [
+    { name: '水果', items: ['🍎','🍌','🍉','🍇','🍓','🍒','🍍','🍊'] },
+    { name: '动物', items: ['🐱','🐶','🐰','🐼','🦁','🐨','🐻','🦊'] },
+    { name: '玩具', items: ['🎈','🎁','🎨','🛹','🧸','🎺','🪁','🧱'] },
+    { name: '食物', items: ['🍦','🍩','🍰','🍬','🍭','🍪','🍕','🍔'] },
+    { name: '大自然', items: ['⭐','🌙','☀️','☁️','🌈','🌸','🍀','🍁'] }
+  ];
+  
+  const cat = categories[(level - 1) % categories.length];
+  const targetIdx = (level * 3) % cat.items.length;
+  const targetEmoji = cat.items[targetIdx];
+  
+  const diffCat = categories[(level) % categories.length];
+  const distractor1 = diffCat.items[(level * 2) % diffCat.items.length];
+  
+  const otherCat = categories[(level + 1) % categories.length];
+  const distractor2 = otherCat.items[(level * 4) % otherCat.items.length];
+  
+  const pool = [targetEmoji, distractor1, distractor2];
+  pool.sort((x, y) => ((targetEmoji.charCodeAt(0) + level) % 3) - 1.5);
+  
+  return {
+    targetEmoji: targetEmoji,
+    pool: pool,
+    catName: cat.name
+  };
+}
+
+function getErbaoLanguageConfig(level) {
+  const sounds = [
+    { name: '小猫 (喵喵) 🐱', icon: '🐱', type: 'cat' },
+    { name: '小狗 (汪汪) 🐶', icon: '🐶', type: 'dog' },
+    { name: '汽车喇叭 (哔哔) 🚗', icon: '🚗', type: 'beep' },
+    { name: '小山羊 (咩咩) 🐑', icon: '🐑', type: 'sheep' },
+    { name: '小百灵 (叽叽) 🐦', icon: '🐦', type: 'bird' },
+    { name: '小鸭子 (嘎嘎) 🦆', icon: '🦆', type: 'duck' },
+    { name: '小青蛙 (呱呱) 🐸', icon: '🐸', type: 'frog' },
+    { name: '金铜铃 (叮咚) 🔔', icon: '🔔', type: 'bell' },
+    { name: '大奶牛 (哞哞) 🐮', icon: '🐮', type: 'cow' },
+    { name: '大公鸡 (喔喔) 🐔', icon: '🐔', type: 'rooster' }
+  ];
+  
+  const targetSound = sounds[(level - 1) % sounds.length];
+  
+  const pool = [targetSound];
+  let offset = 1;
+  while (pool.length < 3) {
+    const candidate = sounds[(level - 1 + offset) % sounds.length];
+    if (!pool.some(p => p.type === candidate.type)) {
+      pool.push(candidate);
+    }
+    offset++;
+  }
+  
+  pool.sort((x, y) => ((targetSound.name.charCodeAt(0) + level) % 3) - 1.5);
+  
+  return {
+    targetSound: targetSound,
+    pool: pool
+  };
+}
+
+const ERBAO_ANALOGY_QUESTIONS = [
+  { q: '小狗 🐶 爱吃骨头 🦴，那小猫 🐱 爱吃什么呢？', ans: '🐟', opts: ['🐟', '🚗'] },
+  { q: '小松鼠 🐹 住在树洞里，那小鸟 🐦 住在哪里呢？', ans: '🪹', opts: ['🪹', '✈️'] },
+  { q: '小兔子 🐰 跑得快，那小蜗牛 🐌 爬得怎么样呢？', ans: '🐌', opts: ['🐌', '🚀'] },
+  { q: '太阳 ☀️ 在大白天出来，那月亮 🌙 在什么时候出来呢？', ans: '🌃', opts: ['🌃', '☀️'] },
+  { q: '小飞机 ✈️ 在天上飞，那小木船 🚢 在哪里开呢？', ans: '🌊', opts: ['🌊', '☁️'] },
+  { q: '穿鞋子 👟 之前，淼淼要先穿上什么呢？', ans: '🧦', opts: ['🧦', '🕶️'] },
+  { q: '天上下雨 🌧️ 要打雨伞 ☂️，那出太阳 ☀️ 可以戴什么呢？', ans: '🧢', opts: ['🧢', '🧤'] },
+  { q: '刷牙时要用牙刷 🪥，那洗脸时要用什么呢？', ans: '🧼', opts: ['🧼', '🥄'] },
+  { q: '喝牛奶要用杯子 🥛，那吃面条要用什么呢？', ans: '🥢', opts: ['🥢', '👟'] },
+  { q: '小企鹅 🐧 住在冰冷的世界，那小骆驼 🐫 住在什么地方呢？', ans: '🌵', opts: ['🌵', '🛁'] },
+  { q: '洗完手可以用毛巾擦手，那脚脏了要用什么洗呢？', ans: '🚿', opts: ['🚿', '🚗'] },
+  { q: '白天很亮我们要看书 📖，那晚上太黑了要打开什么呢？', ans: '💡', opts: ['💡', '🧹'] },
+  { q: '吃饭要坐椅子 🪑，那睡觉要躺在什么地方呢？', ans: '🛏️', opts: ['🛏️', '🚲'] },
+  { q: '苹果 🍎 是红色的，那香蕉 🍌 是什么颜色的呢？', ans: '💛', opts: ['💛', '💙'] },
+  { q: '小鸡 🐥 是从鸡蛋里孵出来的，那小鸭 🦆 是从哪里孵出来的呢？', ans: '🥚', opts: ['🥚', '🪵'] },
+  { q: '我们用眼睛 👁️ 来看美丽的风景，那我们用什么来听音乐呢？', ans: '👂', opts: ['👂', '👃'] },
+  { q: '花朵 🌸 闻起来很香，那糖果 🍬 尝起来是什么味道呢？', ans: '🍯', opts: ['🍯', '🍋'] },
+  { q: '小汽车 🚗 在马路上开，那小火车 🚂 在哪里开呢？', ans: '🛤️', opts: ['🛤️', '🌳'] },
+  { q: '天冷的时候我们要穿厚衣服 🧥，那天热的时候我们可以吃什么呢？', ans: '🍦', opts: ['🍦', '🍲'] },
+  { q: '树叶 🍃 是绿色的，那天空 ☁️ 是什么颜色的呢？', ans: '💙', opts: ['💙', '🖤'] },
+  { q: '蜜蜂 🐝 会飞到花丛中采蜜，那小鱼 🐟 会在哪里游来游去呢？', ans: '💧', opts: ['💧', '🔥'] },
+  { q: '我们穿衣服要扣纽扣，那穿鞋子要系什么呢？', ans: '🎀', opts: ['🎀', '🔑'] },
+  { q: '哭泣 😢 的时候我们会流眼泪，那开心 😄 的时候我们会怎么样呢？', ans: '😆', opts: ['😆', '😡'] },
+  { q: '小鸟 🐦 会在天上飞，那小青蛙 🐸 会怎么样呢？', ans: '🐸', opts: ['🐸', '🚗'] },
+  { q: '小狗 🐶 是汪汪叫，那小羊 🐑 是怎么叫的呢？', ans: '🐑', opts: ['🐑', '🐱'] },
+  { q: '我们洗澡时需要用到水 🚿，那扫地时需要用到什么呢？', ans: '🧹', opts: ['🧹', '🥄'] },
+  { q: '冰块 🧊 摸起来是冰冰的，那热水 ☕ 摸起来是什么感觉呢？', ans: '🔥', opts: ['🔥', '❄️'] },
+  { q: '树木 🌲 很高大，那地上的小草 🌱 怎么样呢？', ans: '🌱', opts: ['🌱', '☁️'] },
+  { q: '小猫 🐱 的毛摸起来软软的，那石头 🪨 摸起来是什么感觉呢？', ans: '🪨', opts: ['🪨', '🎈'] },
+  { q: '气球 🎈 充满了气会飞上天，那皮球 ⚽ 拍一下会怎么样呢？', ans: '🏀', opts: ['🏀', '🍎'] },
+  { q: '红灯 🔴 亮了我们要停下来，那小绿灯 🟢 亮了我们可以怎么样呢？', ans: '🏃', opts: ['🏃', '🛌'] },
+  { q: '我们写字要用画笔 ✏️，那切面包要用什么呢？', ans: '🔪', opts: ['🔪', '🪥'] },
+  { q: '天上的乌云 ☁️ 变黑了，那接下来天要干什么呢？', ans: '🌧️', opts: ['🌧️', '☀️'] },
+  { q: '我们走路要用双脚 👣，那拍手要用什么呢？', ans: '🙌', opts: ['🙌', '👓'] },
+  { q: '小青蛙 🐸 的身体是绿色的，那小火苗 🔥 是什么颜色的呢？', ans: '❤️', opts: ['❤️', '🖤'] },
+  { q: '大马路 🛣️ 很宽，那森林里的小路 🪵 怎么样呢？', ans: '🩹', opts: ['🩹', '🚀'] },
+  { q: '我们看书要用眼睛 👁️，那闻花香要用什么呢？', ans: '👃', opts: ['👃', '👂'] },
+  { q: '小兔子的耳朵 🐰 很长，那小仓鼠 🐹 的尾巴怎么样呢？', ans: '🐹', opts: ['🐹', '🦒'] },
+  { q: '垃圾 🗑️ 要扔进垃圾桶，那玩具 🧸 玩完了要放进哪里呢？', ans: '📦', opts: ['📦', '🚽'] },
+  { q: '小松鼠 🐹 最喜欢吃坚果，那淼淼最喜欢喝什么呢？', ans: '🥛', opts: ['🥛', '🧼'] },
+  { q: '我们渴了的时候要喝水 🥛，那我们饿了的时候要吃什么呢？', ans: '🍚', opts: ['🍚', '🧼'] },
+  { q: '小乌龟 🐢 爬得慢腾腾的，那小火箭 🚀 飞得怎么样呢？', ans: '⚡', opts: ['⚡', '🐌'] },
+  { q: '我们用梳子 🪮 梳头发，那我们用什么剪指甲呢？', ans: '✂️', opts: ['✂️', '🔑'] },
+  { q: '雪花 ❄️ 是白色的，那巧克力 🍫 是什么颜色的呢？', ans: '🟫', opts: ['🟫', '🟩'] },
+  { q: '树上的苹果 🍎 熟了会掉到地上，天上的风筝 🪁 怎么样呢？', ans: '🪁', opts: ['🪁', '🐠'] },
+  { q: '我们用嘴巴 👄 说话和吃东西，我们用什么擦鼻涕呢？', ans: '🧻', opts: ['🧻', '👟'] },
+  { q: '小鸟 🐦 可以在树枝上唱歌，那小螃蟹 🦀 可以在沙滩上怎么走呢？', ans: '🦀', opts: ['🦀', '🦅'] },
+  { q: '妈妈 👩 是女生的样子，那爸爸 👨 是什么样子的呢？', ans: '👨', opts: ['👨', '🐰'] },
+  { q: '我们睡前要刷牙 🪥，那起床后要先做什么呢？', ans: '💦', opts: ['💦', '👟'] },
+  { q: '太阳 ☀️ 照在身上暖洋洋的，那雪花 ❄️ 落在手上是什么感觉呢？', ans: '❄️', opts: ['❄️', '🔥'] }
+];
+
+function getErbaoAnalogyQuestion(level) {
+  return ERBAO_ANALOGY_QUESTIONS[(level - 1) % ERBAO_ANALOGY_QUESTIONS.length];
+}
+
 function launchErbaoSensory(type, level, container) {
   if (type === 'spatial') {
-    // 1. 平面形状分类厂 (Shape Matcher)
+    const config = getErbaoSpatialConfig(level);
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -400,15 +758,15 @@ function launchErbaoSensory(type, level, container) {
         <p style="font-size:0.95em; color:#a1a1aa; margin-bottom:20px;">🐰 淼淼，请把图形积木拖放到对应的虚线卡槽中：</p>
         
         <div style="display:flex; justify-content:space-around; margin-bottom:35px; gap:15px; flex-wrap:wrap;">
-          <div id="slot-circle" class="shape-slot glass-card" style="width:90px; height:90px; border:3px dashed rgba(255,255,255,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.8em;">圆形虚线</div>
-          <div id="slot-square" class="shape-slot glass-card" style="width:90px; height:90px; border:3px dashed rgba(255,255,255,0.3); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.8em;">方形虚线</div>
-          <div id="slot-triangle" class="shape-slot glass-card" style="width:90px; height:90px; border:3px dashed rgba(255,255,255,0.3); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:700; font-size:0.75em; padding-top:35px; background:rgba(255,255,255,0.02);">三角虚线</div>
+          ${config.slots.map(s => `
+            <div id="${s.id}" class="shape-slot glass-card" style="${s.style}">${s.label}</div>
+          `).join('')}
         </div>
 
         <div style="display:flex; justify-content:center; gap:20px; background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); flex-wrap:wrap;">
-          <div id="drag-circle" class="drag-item" style="touch-action: none; width:75px; height:75px; background:linear-gradient(135deg, #ef4444, #f87171); border-radius:50%; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(239,68,68,0.45); font-size:1em; user-select:none;">圆积木</div>
-          <div id="drag-square" class="drag-item" style="touch-action: none; width:75px; height:75px; background:linear-gradient(135deg, #3b82f6, #60a5fa); border-radius:12px; cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(59,130,246,0.45); font-size:1em; user-select:none;">方积木</div>
-          <div id="drag-triangle" class="drag-item" style="touch-action: none; width:75px; height:75px; background:linear-gradient(135deg, #10b981, #34d399); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); cursor:grab; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(16,185,129,0.45); font-size:0.9em; padding-top:22px; user-select:none;">角积木</div>
+          ${config.draggables.map(d => `
+            <div id="${d.id}" class="drag-item" style="${d.style}">${d.label}</div>
+          `).join('')}
         </div>
         <button class="mock-button glow-erbao" onclick="launchTest('spatial')" style="margin-top:25px; width:100%; border-color:transparent;">🔄 一键重置重新选择</button>
       </div>
@@ -418,55 +776,48 @@ function launchErbaoSensory(type, level, container) {
   } 
   
   else if (type === 'numeric') {
-    // 2. 淼淼数字数数 (Counting)
-    const count = (level % 3) + 1; // 1, 2, 或 3
-    const bubbleStr = '🔴'.repeat(count);
+    const config = getErbaoNumericConfig(level);
     
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:15px;">
           <h3 style="color:#fbbf24; font-weight:800; margin:0;">🔢 淼淼数字数数 (第 ${level} 关)</h3>
-          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，数一数有几个红气球呀？点击下面的数字选出来吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，数一数有几个${config.itemName}呀？点击下面的数字选出来吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
-        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🐰 数一数，这里有几个【红气球 🔴】呢？</p>
+        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🐰 数一数，这里有几个【${config.itemName} ${config.icon}】呢？</p>
         
-        <div style="font-size:4em; margin:20px 0; letter-spacing:10px; display:flex; justify-content:center; gap:10px;">
-          ${bubbleStr}
+        <div style="font-size:4.2em; margin:20px 0; letter-spacing:10px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; line-height:1.2;">
+          ${config.itemStr}
         </div>
 
-        <div style="display:flex; justify-content:center; gap:20px; margin-top:25px;">
-          ${[1, 2, 3].map(n => `
-            <button class="mock-button glow-erbao" onclick="check2yoAnswer(${n}, ${count})" style="font-size:2.2em; width:80px; height:80px; border-radius:18px; font-weight:bold;">${n}</button>
+        <div style="display:flex; justify-content:center; gap:15px; margin-top:25px; flex-wrap:wrap;">
+          ${config.options.map(n => `
+            <button class="mock-button glow-erbao" onclick="check2yoAnswer(${n}, ${config.count}, '${config.itemName}')" style="font-size:2.2em; width:75px; height:75px; border-radius:18px; font-weight:bold; display:flex; align-items:center; justify-content:center; padding:0;">${n}</button>
           `).join('')}
         </div>
       </div>
     `;
-    speakText(`淼淼宝宝，数一数有几个红气球呀？`);
+    speakText(`淼淼宝宝，数一数有几个${config.itemName}呀？`);
   } 
   
   else if (type === 'attention') {
-    // 3. 趣味找不同 (Spot the difference)
-    const animalPool = ['🐼','🐶','🐱','🐮','🦁','🐸','🐷','🐨','🦊'];
-    const baseEmoji = animalPool[(level - 1) % animalPool.length];
-    const diffPool = ['🐰','🌟','🚗','🎈','🍒','🍓','👑'].filter(e => e !== baseEmoji);
-    const diffEmoji = diffPool[Math.floor(Math.random() * diffPool.length)];
-    
-    // Create 3x3 array (8 base, 1 diff)
-    const items = Array(8).fill(baseEmoji);
-    const diffIdx = Math.floor(Math.random() * 9);
-    items.splice(diffIdx, 0, diffEmoji);
+    const config = getErbaoAttentionConfig(level);
+    const cols = config.gridSize;
+    const btnSize = cols === 2 ? '90px' : '70px';
+    const btnFontSize = cols === 2 ? '3.5em' : '2.8em';
+    const gridMax = cols === 2 ? '190px' : '240px';
 
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#fbbf24; font-weight:800; margin:0;">⚡ 趣味找不同 (第 ${level} 关)</h3>
-          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，快在里面找出那一个调皮的小调皮！把它点出来吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，快在里面找出那一个与其他不一样的小调皮！把它点出来吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <p style="font-size:1em; color:#a1a1aa; margin-bottom:20px;">🐰 谁和别人长得不一样？快把它点出来！</p>
         
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; max-width:240px; margin:20px auto;">
-          ${items.map((emoji, idx) => `
-            <button class="mock-button glow-erbao" onclick="checkAttention2yo(${idx}, ${diffIdx})" style="font-size:2.8em; height:70px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:14px; background:rgba(255,255,255,0.03);">${emoji}</button>
+        <div style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:12px; max-width:${gridMax}; margin:20px auto;">
+          ${config.items.map((emoji, idx) => `
+            <button class="mock-button glow-erbao" onclick="checkAttention2yo(${idx}, ${config.diffIdx}, '${emoji === config.diffEmoji ? '异类' : '普通款'}')" style="font-size:${btnFontSize}; height:${btnSize}; padding:0; display:flex; align-items:center; justify-content:center; border-radius:14px; background:rgba(255,255,255,0.03);">${emoji}</button>
           `).join('')}
         </div>
       </div>
@@ -475,65 +826,53 @@ function launchErbaoSensory(type, level, container) {
   } 
   
   else if (type === 'deduction') {
-    // 4. 动物大小分类 (Big-Small Sorting)
+    const config = getErbaoDeductionConfig(level);
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#fbbf24; font-weight:800; margin:0;">🔍 动物大小分类 (第 ${level} 关)</h3>
-          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，把大象拖进大箱子，小松鼠拖进小箱子里吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+          <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，把${config.bigName}拖进大箱子，小${config.smallName}拖进小箱子里吧！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <p style="font-size:0.95em; color:#a1a1aa; margin-bottom:20px;">🐰 大动物住大箱子，小动物住小箱子：</p>
         
-        <div style="display:flex; justify-content:space-around; margin-bottom:35px; gap:15px;">
+        <div style="display:flex; justify-content:space-around; margin-bottom:35px; gap:15px; align-items:center;">
           <div id="slot-big" class="shape-slot glass-card" style="width:120px; height:120px; border:3px dashed #fbbf24; border-radius:16px; display:flex; align-items:center; justify-content:center; color:#fbbf24; font-weight:800; font-size:0.88em; background:rgba(251,191,36,0.02);">📦 大箱子</div>
           <div id="slot-small" class="shape-slot glass-card" style="width:85px; height:85px; border:3px dashed rgba(255,255,255,0.3); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-weight:800; font-size:0.75em;">📦 小箱子</div>
         </div>
 
-        <div style="display:flex; justify-content:center; gap:30px; background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); align-items:center;">
+        <div style="display:flex; justify-content:center; gap:30px; background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); align-items:center; flex-wrap:wrap;">
           <div id="drag-big" class="drag-item" style="touch-action: none; width:95px; height:95px; background:linear-gradient(135deg, #fbbf24, #f59e0b); border-radius:16px; cursor:grab; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; color:black; box-shadow: 0 4px 12px rgba(251,191,36,0.4); user-select:none; font-size:1em;">
-            <span style="font-size:1.6em;">🐘</span>大象
+            <span style="font-size:1.6em;">${config.bigIcon}</span>${config.bigName}
           </div>
           <div id="drag-small" class="drag-item" style="touch-action: none; width:65px; height:65px; background:linear-gradient(135deg, #3b82f6, #60a5fa); border-radius:12px; cursor:grab; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; color:white; box-shadow: 0 4px 10px rgba(59,130,246,0.4); user-select:none; font-size:0.8em;">
-            <span style="font-size:1.3em;">🐹</span>松鼠
+            <span style="font-size:1.3em;">${config.smallIcon}</span>${config.smallName}
           </div>
         </div>
         <button class="mock-button glow-erbao" onclick="launchTest('deduction')" style="margin-top:25px; width:100%; border-color:transparent;">🔄 一键重置重新选择</button>
       </div>
     `;
     setupSensoryDragDrop('shape');
-    speakText('淼淼，把大动物拖进大箱子，小动物拖进小箱子！');
+    speakText(`淼淼，把大动物拖进大箱子，小动物拖进小箱子！`);
   } 
   
   else if (type === 'pattern') {
-    // 5. 图形 ABAB 规律
-    const patternPairs = [
-      { a: '🍎', b: '🍌' },
-      { a: '🐱', b: '🐶' },
-      { a: '🚗', b: '✈️' },
-      { a: '🔴', b: '🔵' },
-      { a: '⭐', b: '🌙' }
-    ];
-    const pair = patternPairs[(level - 1) % patternPairs.length];
-    
+    const config = getErbaoPatternConfig(level);
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
-          <h3 style="color:#fbbf24; font-weight:800; margin:0;">🎨 图形 ABAB 规律 (第 ${level} 关)</h3>
+          <h3 style="color:#fbbf24; font-weight:800; margin:0;">🎨 图形规律推理 (第 ${level} 关)</h3>
           <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，看这串好玩的规律，问号的地方应该放哪个图案呢？');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <p style="font-size:1em; color:#a1a1aa; margin-bottom:20px;">🐰 观察规律，问号【❓】处应该填什么呢？</p>
         
-        <div style="display:flex; justify-content:center; gap:12px; margin:25px 0; font-size:2.8em; align-items:center;">
-          <span>${pair.a}</span>
-          <span>${pair.b}</span>
-          <span>${pair.a}</span>
-          <span>${pair.b}</span>
-          <span style="font-weight:bold; color:#fbbf24; border:2px dashed #fbbf24; width:65px; height:65px; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; font-size:0.8em;">❓</span>
+        <div style="display:flex; justify-content:center; gap:12px; margin:25px 0; font-size:2.8em; align-items:center; flex-wrap:wrap;">
+          ${config.sequence.map(item => `<span>${item}</span>`).join('')}
+          <span style="font-weight:bold; color:#fbbf24; border:2px dashed #fbbf24; width:65px; height:65px; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; font-size:0.8em; line-height:1; padding-bottom:5px;">❓</span>
         </div>
 
         <div style="display:flex; justify-content:center; gap:20px; margin-top:25px;">
-          <button class="mock-button glow-erbao" onclick="checkPatternAnswer('${pair.a}', '${pair.a}')" style="font-size:2.2em; width:80px; height:80px; border-radius:18px;">${pair.a}</button>
-          <button class="mock-button glow-erbao" onclick="checkPatternAnswer('${pair.b}', '${pair.a}')" style="font-size:2.2em; width:80px; height:80px; border-radius:18px;">${pair.b}</button>
+          <button class="mock-button glow-erbao" onclick="checkPatternAnswer('${config.a}', '${config.ans}')" style="font-size:2.2em; width:80px; height:80px; border-radius:18px; display:flex; align-items:center; justify-content:center; padding:0;">${config.a}</button>
+          <button class="mock-button glow-erbao" onclick="checkPatternAnswer('${config.b}', '${config.ans}')" style="font-size:2.2em; width:80px; height:80px; border-radius:18px; display:flex; align-items:center; justify-content:center; padding:0;">${config.b}</button>
         </div>
       </div>
     `;
@@ -541,33 +880,23 @@ function launchErbaoSensory(type, level, container) {
   } 
   
   else if (type === 'memory') {
-    // 6. 闪现记忆配对 (Memory Match)
-    const emojis = ['🚗','🍉','🐶','🐱','🦁','👑','✈️','🍇','🍓','🐰','🎁','🎈','🌟'];
-    const targetEmoji = emojis[(level - 1) % emojis.length];
+    const config = getErbaoMemoryConfig(level);
     
-    // Choose distractor options
-    const pool = [targetEmoji];
-    while(pool.length < 3) {
-      const candidate = emojis[Math.floor(Math.random() * emojis.length)];
-      if(!pool.includes(candidate)) pool.push(candidate);
-    }
-    pool.sort(() => Math.random() - 0.5);
-
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#fbbf24; font-weight:800; margin:0;">🧠 闪现记忆配对 (第 ${level} 关)</h3>
           <button class="mock-button glow-erbao" onclick="speakText('淼淼宝宝，仔细盯住这个漂亮的图案！马上要变魔法消失喽！');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
-        <p id="memory-t-label" style="font-size:1em; color:#a1a1aa; margin-bottom:20px;">👀 淼淼，仔细记住这个可爱的图案：</p>
+        <p id="memory-t-label" style="font-size:1em; color:#a1a1aa; margin-bottom:20px;">👀 淼淼，仔细记住这个可爱的【${config.catName}】图案：</p>
         
-        <div id="2yo-memory-disp" class="glass-card" style="font-size:5.5em; width:120px; height:120px; margin:25px auto; display:flex; align-items:center; justify-content:center; border-color:#fbbf24; background:rgba(251,191,36,0.05); border-width:2px; border-radius:20px; transition:all 0.3s;">
-          ${targetEmoji}
+        <div id="2yo-memory-disp" class="glass-card" style="font-size:5.5em; width:120px; height:120px; margin:25px auto; display:flex; align-items:center; justify-content:center; border-color:#fbbf24; background:rgba(251,191,36,0.05); border-width:2px; border-radius:20px; transition:all 0.3s; line-height:1.2;">
+          ${config.targetEmoji}
         </div>
         <div id="2yo-memory-cd" style="font-size:1em; color:#fbbf24; font-weight:700;">3 秒后开始消失...</div>
         <div id="2yo-memory-opts" style="display:none; justify-content:center; gap:20px; margin-top:25px;">
-          ${pool.map(o => `
-            <button class="mock-button glow-erbao" onclick="checkMemory2yo('${o}', '${targetEmoji}')" style="font-size:2.8em; width:80px; height:80px; border-radius:18px;">${o}</button>
+          ${config.pool.map(o => `
+            <button class="mock-button glow-erbao" onclick="checkMemory2yo('${o}', '${config.targetEmoji}')" style="font-size:2.8em; width:80px; height:80px; border-radius:18px; display:flex; align-items:center; justify-content:center; padding:0;">${o}</button>
           `).join('')}
         </div>
       </div>
@@ -595,23 +924,10 @@ function launchErbaoSensory(type, level, container) {
   } 
   
   else if (type === 'language') {
-    // 7. 声光探测仪 (Sound Pairing)
-    const sounds = [
-      { name: '小猫 (喵喵) 🐱', icon: '🐱', type: 'cat' },
-      { name: '小狗 (汪汪) 🐶', icon: '🐶', type: 'dog' },
-      { name: '汽车喇叭 (哔哔) 🚗', icon: '🚗', type: 'beep' },
-      { name: '小山羊 (咩咩) 🐑', icon: '🐑', type: 'sheep' },
-      { name: '小百灵 (叽叽) 🐦', icon: '🐦', type: 'bird' }
-    ];
-    const targetSound = sounds[(level - 1) % sounds.length];
+    const config = getErbaoLanguageConfig(level);
+    const targetSound = config.targetSound;
     window.sensoryTargetSound = targetSound;
-
-    const pool = [targetSound];
-    while(pool.length < 3) {
-      const candidate = sounds[Math.floor(Math.random() * sounds.length)];
-      if(!pool.some(o => o.type === candidate.type)) pool.push(candidate);
-    }
-    pool.sort(() => Math.random() - 0.5);
+    const pool = config.pool;
 
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
@@ -624,9 +940,9 @@ function launchErbaoSensory(type, level, container) {
 
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px;">
           ${pool.map(s => `
-            <div class="glass-card pulse-hover" onclick="guessSensorySound('${s.type}')" style="padding:15px 10px; cursor:pointer; text-align:center; border-color:rgba(255,255,255,0.06); border-radius:12px;">
+            <div class="glass-card pulse-hover" onclick="guessSensorySound('${s.type}')" style="padding:15px 10px; cursor:pointer; text-align:center; border-color:rgba(255,255,255,0.06); border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
               <span style="font-size:3em; display:block; margin-bottom:5px;">${s.icon}</span>
-              <strong style="font-size:0.85em; color:#fff;">${s.name}</strong>
+              <strong style="font-size:0.82em; color:#fff; word-break:keep-all;">${s.name.split(' ')[0]}</strong>
             </div>
           `).join("")}
         </div>
@@ -638,51 +954,43 @@ function launchErbaoSensory(type, level, container) {
   } 
   
   else if (type === 'analogy') {
-    // 8. 淼淼认知关联 (Association)
-    const associations = [
-      { q: '小狗 🐶 爱吃骨头 🦴，那小猫 🐱 爱吃什么呢？', ans: '🐟', desc: '美味的小鱼', opts: ['🐟', '🚗'] },
-      { q: '小松鼠 🐹 住在树洞里，那小鸟 🐦 住在哪里呢？', ans: '🪹', desc: '树枝编的鸟巢', opts: ['🪹', '✈️'] },
-      { q: '小兔子 🐰 跑得快，那小蜗牛 🐌 爬得怎么样呢？', ans: '🐌', desc: '爬得非常慢', opts: ['🐌', '🚀'] },
-      { q: '太阳 ☀️ 在大白天出来，那月亮 🌙 在什么时候出来呢？', ans: '🌃', desc: '静静的黑夜', opts: ['🌃', '☀️'] },
-      { q: '小飞机 ✈️ 在天上飞，那小木船 🚢 在哪里开呢？', ans: '🌊', desc: '宽广的河水里', opts: ['🌊', '☁️'] }
-    ];
-    const item = associations[(level - 1) % associations.length];
+    const config = getErbaoAnalogyQuestion(level);
 
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#fbbf24; font-weight:800; margin:0;">🔗 淼淼认知关联 (第 ${level} 关)</h3>
-          <button class="mock-button glow-erbao" onclick="speakText('${item.q.replace(/['\"]/g, '')}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
+          <button class="mock-button glow-erbao" onclick="speakText('${config.q.replace(/['\"]/g, '')}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
-        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px;">🐰 ${item.q}</p>
+        <p style="font-size:1em; color:#a1a1aa; margin-bottom:25px; line-height:1.5; font-weight:600;">🐰 ${config.q}</p>
         
-        <div style="display:flex; justify-content:center; gap:25px; margin-top:25px;">
-          ${item.opts.map(o => `
-            <button class="mock-button glow-erbao" onclick="check2yoAssociation('${o}', '${item.ans}')" style="font-size:3.2em; width:100px; height:100px; border-radius:20px;">
+        <div style="display:flex; justify-content:center; gap:25px; margin-top:25px; flex-wrap:wrap;">
+          ${config.opts.map(o => `
+            <button class="mock-button glow-erbao" onclick="check2yoAssociation('${o}', '${config.ans}')" style="font-size:3.2em; width:100px; height:100px; border-radius:20px; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:0 6px 20px rgba(0,0,0,0.15);">
               ${o}
             </button>
           `).join('')}
         </div>
       </div>
     `;
-    speakText(item.q);
+    speakText(config.q);
   }
 }
 
-function check2yoAnswer(selected, correct) {
+function check2yoAnswer(selected, correct, name = '气球') {
   if (selected === correct) {
-    trigger6yoVictory(10, `答对啦！真的是 ${correct} 个！淼淼太棒了！加十颗星星！`);
+    trigger6yoVictory(10, `答对啦！真的是 ${correct} 个${name}！淼淼太棒了！加十个星星！`);
   } else {
-    speakText("数错了哦，再仔细数一数气球！");
+    speakText(`数错了哦，再仔细数一数${name}！`);
     showWrongToast();
   }
 }
 
-function checkAttention2yo(idx, diffIdx) {
+function checkAttention2yo(idx, diffIdx, label = '小兔子') {
   if (idx === diffIdx) {
-    trigger6yoVictory(10, "哇！淼淼火眼金睛，一下就把小兔子揪出来啦！棒棒哒！");
+    trigger6yoVictory(10, "哇！淼淼火眼金睛，一下就把不一样的那个小家伙揪出来啦！棒棒哒！");
   } else {
-    speakText("不是这个哦，再看哪个和其他人不一样？");
+    speakText("不是这个哦，再仔细看哪一个长得不一样？");
     showWrongToast();
   }
 }
@@ -707,7 +1015,7 @@ function checkMemory2yo(selected, correct) {
 
 function check2yoAssociation(selected, correct) {
   if (selected === correct) {
-    trigger6yoVictory(10, "太厉害啦！淼淼知道的好多，常识完全正确！奖励十颗星星！");
+    trigger6yoVictory(10, "太厉害啦！淼淼知道的好多，常识完全正确！奖励十个星星！");
   } else {
     speakText("不对哦，再仔细想一想它们有什么关联？");
     showWrongToast();
