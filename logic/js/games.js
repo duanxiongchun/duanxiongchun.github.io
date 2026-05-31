@@ -52,6 +52,12 @@ function speakText(text) {
 // ==================== 🏆 胜利引擎（统一入口）====================
 
 function trigger6yoVictory(ignoredStarParam, speechFeedback) {
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  if (currentPlayerId === 'erbao') {
+    trigger2yoVictory(window.currentGameTrack, speechFeedback);
+    return;
+  }
+
   const type = window.currentGameTrack;
   if (!type) { console.warn("currentGameTrack not set"); return; }
 
@@ -200,7 +206,9 @@ function launchTest(type) {
 
   window.isMixedMode = false;
   initAppState();
-  const player = appState.players.dabao;
+  
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const player = appState.players[currentPlayerId];
 
   if (!player.progress) {
     player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
@@ -216,16 +224,26 @@ function launchTest(type) {
   const container = document.getElementById("game-stage");
 
   if (level > 50) {
+    const isErbao = currentPlayerId === 'erbao';
+    const name = isErbao ? '淼淼' : '果果';
+    const returnFunc = isErbao ? 'loadErbaoHUD()' : 'loadDabaoHUD()';
+    const buttonGlow = isErbao ? 'glow-erbao' : 'glow-success';
     container.innerHTML = `
       <div class="glass-card" style="padding:40px;text-align:center;max-width:600px;margin:30px auto;border-color:#10b981;">
         <span style="font-size:5.5em;display:block;margin-bottom:15px;animation:pulseGlow 2s infinite;">🏆</span>
         <h2 style="color:#10b981;font-weight:800;">🎉 完美通关 50 关！</h2>
-        <p style="font-size:1.1em;color:#fff;margin:15px 0;">果果，你太牛啦！「${getTrackChineseName(type)}」全部攻克！</p>
-        <button class="mock-button glow-success" onclick="resetTrackProgress('${type}')" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
-        <button class="mock-button" onclick="loadDabaoHUD()" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
+        <p style="font-size:1.1em;color:#fff;margin:15px 0;">${name}，你太牛啦！「${getTrackChineseName(type)}」全部攻克！</p>
+        <button class="mock-button ${buttonGlow}" onclick="resetTrackProgress('${type}')" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
+        <button class="mock-button" onclick="${returnFunc}" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
       </div>
     `;
-    speakText(`恭喜果果！你已经完美通关了${getTrackChineseName(type)}的全部五十关，获得了荣誉大勋章！你太棒了！`);
+    speakText(`恭喜${name}！你已经完美通关了${getTrackChineseName(type)}的全部五十关，获得了荣誉大勋章！你太棒了！`);
+    return;
+  }
+
+  // Route erbao to launchErbaoSensory
+  if (currentPlayerId === 'erbao') {
+    launchErbaoSensory(type, level, container);
     return;
   }
 
@@ -246,7 +264,8 @@ function launchTest(type) {
 
 function resetTrackProgress(type) {
   initAppState();
-  const player = appState.players.dabao;
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const player = appState.players[currentPlayerId];
   player.progress[type] = 1;
   saveAppState();
   speakText(`已重置${getTrackChineseName(type)}，重新开始挑战吧！`);
@@ -267,7 +286,9 @@ function launchMixedMode() {
 
   window.isMixedMode = true;
   initAppState();
-  const player = appState.players.dabao;
+  
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const player = appState.players[currentPlayerId];
   if (!player.progress) {
     player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
   }
@@ -280,16 +301,20 @@ function launchMixedMode() {
   const container = document.getElementById("game-stage");
 
   if (mixedLevel > 400) {
+    const isErbao = currentPlayerId === 'erbao';
+    const name = isErbao ? '淼淼' : '果果';
+    const returnFunc = isErbao ? 'loadErbaoHUD()' : 'loadDabaoHUD()';
+    const buttonGlow = isErbao ? 'glow-erbao' : 'glow-success';
     container.innerHTML = `
       <div class="glass-card" style="padding:40px;text-align:center;max-width:600px;margin:30px auto;border-color:#10b981;">
         <span style="font-size:5.5em;display:block;margin-bottom:15px;animation:pulseGlow 2s infinite;">🏆</span>
         <h2 style="color:#10b981;font-weight:800;">🎉 完美通关 400 关综合特训航线！</h2>
-        <p style="font-size:1.1em;color:#fff;margin:15px 0;">果果，你太牛啦！你完成了北京八中超常班的全部 400 关特训任务，获得了终极大勋章！</p>
-        <button class="mock-button glow-success" onclick="resetMixedProgress()" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
-        <button class="mock-button" onclick="loadDabaoHUD()" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
+        <p style="font-size:1.1em;color:#fff;margin:15px 0;">${name}，你太牛啦！你完成了脑力乐园的全部 400 关特训任务，获得了终极大勋章！</p>
+        <button class="mock-button ${buttonGlow}" onclick="resetMixedProgress()" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
+        <button class="mock-button" onclick="${returnFunc}" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
       </div>
     `;
-    speakText(`恭喜果果！你已经完美通关了四百关综合特训航线的全部内容，你获得了终极大勋章！你是宇宙级逻辑小天才！`);
+    speakText(`恭喜${name}！你已经完美通关了四百关综合特训航线的全部内容，你获得了终极大勋章！你是宇宙级逻辑小天才！`);
     return;
   }
 
@@ -299,6 +324,12 @@ function launchMixedMode() {
   const trackLevel = Math.floor((mixedLevel - 1) / 8) + 1;
 
   window.currentGameTrack = type;
+
+  // Route erbao to launchErbaoSensory
+  if (currentPlayerId === 'erbao') {
+    launchErbaoSensory(type, trackLevel, container);
+    return;
+  }
 
   if (type === 'spatial') launchSpatial(trackLevel, container);
   else if (type === 'numeric') launchNumeric(trackLevel, container);
@@ -315,7 +346,9 @@ function launchMixedMode() {
 
 function resetMixedProgress() {
   initAppState();
-  appState.players.dabao.progress.mixed = 1;
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const player = appState.players[currentPlayerId];
+  player.progress.mixed = 1;
   saveAppState();
   speakText("已重置综合特训进度，重新开始挑战吧！");
   launchMixedMode();
