@@ -28,20 +28,23 @@ const DEFAULT_STATE = {
     }
   },
   rewards: [
-    // ── 淼淼专属奖励 (erbao) ────────────────────────────────
-    { id: "e1", title: "小贴纸一张 🌟",                    cost: 30,   target: "erbao" },
+    // ── 淼淼专属奖励 (erbao) ── 与果果同价格梯度，奖品内容不同
+    { id: "e1", title: "小贴纸一张 🌟",                    cost: 20,   target: "erbao" },
     { id: "e2", title: "喝一瓶小酸奶 🍼",                   cost: 60,   target: "erbao" },
-    { id: "e3", title: "去楼下坐摇摇车 2 次 🎠",            cost: 90,   target: "erbao" },
-    { id: "e4", title: "兑换一辆玩具小汽车 🚗",             cost: 150,  target: "erbao" },
-    { id: "e5", title: "兑换一台玩具挖掘机 🚧",             cost: 240,  target: "erbao" },
-    { id: "e6", title: "兑换一套玩具工程车队 (3辆) 🚛",     cost: 450,  target: "erbao" },
-    { id: "e7", title: "兑换超大号遥控挖掘机 🏗️",           cost: 750,  target: "erbao" },
-    // ── 果果专属奖励 (dabao) ────────────────────────────────
-    { id: "d1", title: "看动画片 30 分钟 📺",               cost: 180,  target: "dabao" },
-    { id: "d2", title: "吃美味冰淇淋 1 个 🍦",              cost: 450,  target: "dabao" },
-    { id: "d3", title: "兑换闪亮魔法水晶宝石 1 颗 💎",      cost: 750,  target: "dabao" },
-    { id: "d4", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" },
+    { id: "e3", title: "去楼下坐摇摇车 2 次 🎠",            cost: 100,  target: "erbao" },
+    { id: "e4", title: "兑换一辆玩具小汽车 🚗",             cost: 200,  target: "erbao" },
+    { id: "e5", title: "兑换一台玩具挖掘机 🚧",             cost: 400,  target: "erbao" },
+    { id: "e6", title: "兑换一套玩具工程车队 (3辆) 🚛",     cost: 800,  target: "erbao" },
+    { id: "e7", title: "兑换超大号遥控挖掘机 🏗️",           cost: 1500, target: "erbao" },
+    // ── 果果专属奖励 (dabao) ── 与淼淼同价格梯度，奖品内容不同
+    { id: "d1", title: "看动画片 30 分钟 📺",               cost: 20,   target: "dabao" },
+    { id: "d2", title: "吃美味冰淇淋 1 个 🍦",              cost: 60,   target: "dabao" },
+    { id: "d3", title: "去游乐场玩 1 次 🎡",                cost: 100,  target: "dabao" },
+    { id: "d4", title: "兑换一本喜欢的书 📖",               cost: 200,  target: "dabao" },
+    { id: "d5", title: "兑换闪亮魔法水晶宝石 1 颗 💎",      cost: 400,  target: "dabao" },
+    { id: "d6", title: "兑换七彩水晶洞 1 个 (自选颜色) 🔮", cost: 1320, target: "dabao" },
   ],
+
   redemptions: [],
   versionInfo: {
     major: 1,
