@@ -333,7 +333,7 @@ function guessSensorySound(guessedType) {
     const feedback = `答对啦！真的是【${window.sensoryTargetSound.name}】在叫！\n淼淼真棒！加十个星星！`;
     trigger6yoVictory(10, feedback);
   } else {
-    alert("❌ 不对哦。淼淼，再点小喇叭仔细听一下，猜猜这到底是谁的声音呢？🐰");
+    trigger6yoFailure(`这是【${window.sensoryTargetSound.name}】发出的声音哦！我们可以多点大喇叭，仔细听听它的叫声特点！`, `正确答案是【${window.sensoryTargetSound.name}】`);
   }
 }
 
@@ -428,7 +428,7 @@ function handleSensoryDrop(dragId, slot) {
     
     checkSensoryVictory();
   } else {
-    // Play error beep and display brief alert
+    // Play error beep and trigger central failure card
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const o = audioCtx.createOscillator();
@@ -442,7 +442,12 @@ function handleSensoryDrop(dragId, slot) {
       o.start();
       o.stop(audioCtx.currentTime + 0.2);
     } catch(err){}
-    alert("🐰 拖动的位置不对哦，再仔细对对看！");
+    
+    if (dragType === 'big' || dragType === 'small') {
+      trigger6yoFailure("大大的动物要住进大的箱子，小小的动物要住进小的箱子哦！可以用眼睛比一比它们谁的个子更大！", "大箱子配大动物，小箱子配小动物");
+    } else {
+      trigger6yoFailure("形状配对需要看清形状的轮廓哦，圆形要找圆圆的卡槽，三角形要找有三个尖尖角的卡槽！", "正确匹配形状卡槽");
+    }
   }
 }
 
@@ -822,6 +827,8 @@ function launchErbaoSensory(type, level, container) {
         </div>
       </div>
     `;
+    window.currentQuestionExplanation = "要在很多相同的图案中，找出那个细节长得不一样的细节图案小调皮哦！";
+    window.currentQuestionCorrectAnswer = config.diffEmoji;
     speakText(`淼淼，快找出那个不一样的小调皮！`);
   } 
   
@@ -876,6 +883,8 @@ function launchErbaoSensory(type, level, container) {
         </div>
       </div>
     `;
+    window.currentQuestionExplanation = "观察图案交替出现的规律（比如苹果、桔子、苹果、桔子），猜猜问号里面是什么？";
+    window.currentQuestionCorrectAnswer = config.ans;
     speakText('淼淼宝宝，问号的地方应该放哪个呢？');
   } 
   
@@ -901,6 +910,8 @@ function launchErbaoSensory(type, level, container) {
         </div>
       </div>
     `;
+    window.currentQuestionExplanation = "盯住这个可爱的图案，盖上问号后回忆刚才藏在底下的是哪一个哦！";
+    window.currentQuestionCorrectAnswer = config.targetEmoji;
     speakText('淼淼宝宝，仔细盯住这个图案！');
 
     let cd = 3;
@@ -973,6 +984,8 @@ function launchErbaoSensory(type, level, container) {
         </div>
       </div>
     `;
+    window.currentQuestionExplanation = config.hint || "根据生活中事物之间的关联（比如小狗爱啃骨头，小鱼是猫咪爱吃的），来找出对应的另一半哦！";
+    window.currentQuestionCorrectAnswer = config.ans;
     speakText(config.q);
   }
 }
@@ -981,8 +994,7 @@ function check2yoAnswer(selected, correct, name = '气球') {
   if (selected === correct) {
     trigger6yoVictory(10, `答对啦！真的是 ${correct} 个${name}！淼淼太棒了！加十个星星！`);
   } else {
-    speakText(`数错了哦，再仔细数一数${name}！`);
-    showWrongToast();
+    trigger6yoFailure(`数数的时候需要用指头指着${name}，一个一个认真数，不要漏掉哦！`, correct + " 个");
   }
 }
 
@@ -990,8 +1002,7 @@ function checkAttention2yo(idx, diffIdx, label = '小兔子') {
   if (idx === diffIdx) {
     trigger6yoVictory(10, "哇！淼淼火眼金睛，一下就把不一样的那个小家伙揪出来啦！棒棒哒！");
   } else {
-    speakText("不是这个哦，再仔细看哪一个长得不一样？");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "要在很多相同的图案中，找出那个细节长得不一样的细节图案小调皮哦！", window.currentQuestionCorrectAnswer || "那个不一样的图案");
   }
 }
 
@@ -999,8 +1010,7 @@ function checkPatternAnswer(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "规律找对啦！淼淼宝宝最聪明了！给你大大的赞！");
   } else {
-    speakText("不对哦，仔细观察规律是什么？");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "观察前面图案交替出现的规律（比如苹果、桔子、苹果、桔子），猜猜问号是什么？", window.currentQuestionCorrectAnswer || "正确图形");
   }
 }
 
@@ -1008,8 +1018,7 @@ function checkMemory2yo(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "哇！淼淼的小眼睛记得真牢！记忆力超级棒！");
   } else {
-    speakText("不对哦，再想一想刚才那个闪现的图案是什么？");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "盯住刚才那个可爱的闪现图案，盖上后回忆刚才看到的是哪一个哦！", window.currentQuestionCorrectAnswer || "正确的闪现图案");
   }
 }
 
@@ -1017,7 +1026,6 @@ function check2yoAssociation(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "太厉害啦！淼淼知道的好多，常识完全正确！奖励十个星星！");
   } else {
-    speakText("不对哦，再仔细想一想它们有什么关联？");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "根据生活中事物之间的关联来找出对应的另一半哦！", window.currentQuestionCorrectAnswer || "正确关联");
   }
 }

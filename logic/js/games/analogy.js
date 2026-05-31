@@ -4,8 +4,7 @@ function checkAnalogyAnswer(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "类比推理答对了！果果的逻辑太厉害了！");
   } else {
-    speakText("再想想它们的关系，换个答案试试！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再想想它们的关系，多观察它们之间的对应逻辑哦！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -21,6 +20,8 @@ function launchAnalogy(level, container) {
   }
 
   currentAnalogyAnswer = q.ans.toString();
+  window.currentQuestionExplanation = q.hint;
+  window.currentQuestionCorrectAnswer = q.opts[q.ans];
   const questionText = q.text;
 
   // Shuffling options

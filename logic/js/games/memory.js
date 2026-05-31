@@ -12,8 +12,7 @@ function checkMemoryChoice(selected, correct, feedback = "短时记忆答对了�
   if (selected === correct) {
     trigger6yoVictory(10, feedback);
   } else {
-    speakText("再回忆回忆，想一想再选！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再回忆回忆，想一想再选！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -35,13 +34,7 @@ function clickCoinCell(idx) {
       }
     }
   } else {
-    speakText("这里没有金币哦，再想想！");
-    const btn = document.getElementById(`coin-cell-${idx}`);
-    if (btn) {
-      btn.style.background = 'rgba(239, 68, 68, 0.3)';
-      setTimeout(() => { btn.style.background = ''; }, 400);
-    }
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "要记住金币藏在哪了哦！下一次可以用指头比着金币的位置，在脑海里多画几遍！", window.currentQuestionCorrectAnswer || "藏硬币的格子位置");
   }
 }
 
@@ -60,8 +53,7 @@ function clickBackwardRecall(num) {
       }, 300);
     }
   } else {
-    speakText("不对哦，倒过来背，想想最后一个数是哪个？");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "不对哦，倒过来背，想想最后一个数是哪个？", window.currentQuestionCorrectAnswer || "正确逆序");
   }
 }
 
@@ -180,8 +172,7 @@ function handleMemoryTap(emoji, dragBtn) {
     const slot = document.querySelector(`.memory-slot[data-slot-idx="${targetSlotIdx}"]`);
     fillMemorySlot(slot, emoji, dragBtn);
   } else {
-    speakText("再回忆回忆，试试别的图案！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "要记住图案的左右位置和排列顺序哦，可以用小指头指着屏幕，在大脑里多念几遍图案的名字！", window.currentQuestionCorrectAnswer || memoryExpected.join(" ➡️ "));
   }
 }
 
@@ -196,8 +187,7 @@ function handleMemoryDrop(emoji, slot, dragBtn) {
     }
     fillMemorySlot(slot, emoji, dragBtn);
   } else {
-    speakText("位置不对哦，再想一想！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "要记住图案的左右位置和排列顺序哦，可以用小指头指着屏幕，在大脑里多念几遍图案的名字！", window.currentQuestionCorrectAnswer || memoryExpected.join(" ➡️ "));
   }
 }
 
@@ -253,6 +243,8 @@ function launchMemory(level, container) {
     memoryPhase = 'show';
     memoryExpected = [...q.show];
     memoryCurrentIdx = 0;
+    window.currentQuestionExplanation = "观察并记住屏幕上图案的排列顺序，盖上后需要你按顺序点选或者拖拽回去哦！";
+    window.currentQuestionCorrectAnswer = q.show.join(" ➡️ ");
     questionText = q.q;
 
     container.innerHTML = `
@@ -291,6 +283,8 @@ function launchMemory(level, container) {
     const q = MEMORY_COIN_LEVELS[qIdx];
     coinsToFind = q.coins;
     coinsFound = [];
+    window.currentQuestionExplanation = "记住小硬币藏在哪了哦！可以在它们隐藏前用指头跟着硬币位置在空中画画，加强脑力记忆！";
+    window.currentQuestionCorrectAnswer = "金币位置在第 " + q.coins.map(c => c + 1).join(", ") + " 个格子上";
     questionText = `果果，记住金币躲在哪些格子里！马上要盖上木板喽！`;
 
     container.innerHTML = `
@@ -334,6 +328,9 @@ function launchMemory(level, container) {
   else if (phase === 3) {
     // 颜色位置配对记忆
     const q = MEMORY_PAIR_TEMPLATES[qIdx];
+    window.currentQuestionExplanation = "要仔细记住四件物品藏在哪个格子（角落）里哦！一会要你找出其中一件物品对应的格子位置。";
+    const correctIdx = q.items.indexOf(q.q);
+    window.currentQuestionCorrectAnswer = "【" + q.q + "】的位置是在第 " + (correctIdx + 1) + " 个格子里";
     questionText = `果果，记住这四样东西的摆放位置哦！一会要考考你！`;
     
     container.innerHTML = `
@@ -381,6 +378,8 @@ function launchMemory(level, container) {
   else if (phase === 4) {
     // 消失的那个是什么
     const q = MEMORY_MISSING_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = "有几个图案会被拿走，仔细对比原来和现在的图案序列，找出谁不见了。";
+    window.currentQuestionCorrectAnswer = q.ans;
     questionText = `果果，仔细看这几个图案，一会会有一个小调皮藏起来！`;
 
     container.innerHTML = `
@@ -429,6 +428,8 @@ function launchMemory(level, container) {
   else {
     // 逆序数字记忆复现 (Digit Span Backward)
     const q = MEMORY_BACKWARD_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = "倒背数序是数字工作记忆的脑力挑战。比如看到 4-9-1，倒过来念就是 1-9-4 哦！";
+    window.currentQuestionCorrectAnswer = "逆序倒背顺序是：" + q.ans.join(" ➡️ ");
     questionText = `果果，记住这三个数字！一会要倒着（从右往左）选出来哦！挑战性极强！`;
 
     container.innerHTML = `

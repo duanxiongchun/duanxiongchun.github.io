@@ -9,8 +9,7 @@ function checkDeductionChoice(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "逻辑推断完美！果果的推理分析能力超强！");
   } else {
-    speakText("再仔细想想，换个答案试试看！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再仔细想想，换个答案试试看！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -30,8 +29,8 @@ function verifyDabaoTimeline() {
   if (order === targetOrder) {
     trigger6yoVictory(10, "排序完美！果果因果逻辑超强，真棒！");
   } else {
-    speakText("顺序不太对哦，再仔细想想看！");
-    showWrongToast();
+    const correctSequenceText = [...deductionItems].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
+    trigger6yoFailure(window.currentQuestionExplanation || "顺序不太对哦，再仔细想想事件发生的先后因果关系！", correctSequenceText);
   }
 }
 
@@ -266,6 +265,8 @@ function launchDeduction(level, container) {
     deductionItems = q.items;
     deductionPool = [...q.items].sort(() => Math.random() - 0.5);
     deductionSlots = q.items.map(() => null);
+    window.currentQuestionExplanation = q.hint || "根据生活的因果规律，按时间发生的先后顺序摆放这些卡片哦！";
+    window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
 
     container.innerHTML = `
@@ -298,6 +299,8 @@ function launchDeduction(level, container) {
     deductionItems = q.items;
     deductionPool = [...q.items].sort(() => Math.random() - 0.5);
     deductionSlots = q.items.map(() => null);
+    window.currentQuestionExplanation = q.hint || "按照长度、大小或者速度属性来进行逻辑排序哦！";
+    window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
 
     container.innerHTML = `
@@ -332,6 +335,8 @@ function launchDeduction(level, container) {
     deductionItems = q.items;
     deductionPool = [...q.items].sort(() => Math.random() - 0.5);
     deductionSlots = q.items.map(() => null);
+    window.currentQuestionExplanation = q.hint || "通过两两比较的天平信息，串联起来推理出三个物体的轻重顺序！";
+    window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
 
     container.innerHTML = `
@@ -367,6 +372,8 @@ function launchDeduction(level, container) {
   else if (phase === 4) {
     // 因果判断单选题
     const q = DEDUCTION_CAUSAL_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
 
     container.innerHTML = `
@@ -392,6 +399,8 @@ function launchDeduction(level, container) {
   else {
     // 排队/排座位推理
     const q = DEDUCTION_QUEUE_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
 
     container.innerHTML = `

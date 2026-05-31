@@ -4,8 +4,7 @@ function checkPatternAnswer(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "图形规律找对了！果果的推理能力超级厉害！");
   } else {
-    speakText("再仔细看看规律，试试别的答案！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再仔细看看规律，试试别的答案！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -21,6 +20,8 @@ function launchPattern(level, container) {
   }
 
   currentPatternAnswer = q.ans.toString();
+  window.currentQuestionExplanation = q.hint;
+  window.currentQuestionCorrectAnswer = q.opts[q.ans];
   const questionText = q.text || '果果，观察图形变化规律，找出右下角问号处应该填哪个？';
 
   // Set global currentSpatialQuestion for parameter-less animation helper

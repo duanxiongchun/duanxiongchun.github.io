@@ -51,6 +51,46 @@ function speakText(text) {
 
 // ==================== 🏆 胜利引擎（统一入口）====================
 
+// ==================== 🏆 胜利 & 学习反馈引擎（统一入口）====================
+
+const COOLDOWN_MS = 2 * 24 * 60 * 60 * 1000; // 2天 = 172800000 毫秒
+
+function getNextAvailableLevel(playerId, type, currentLevel) {
+  const player = appState.players[playerId];
+  const wrongQuestions = player.wrongQuestions || {};
+  let testLevel = currentLevel;
+  while (testLevel <= 50) {
+    const key = `${type}-${testLevel}`;
+    const lastWrongTime = wrongQuestions[key];
+    if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
+      testLevel++; // 2天内答错的题目，跳过
+    } else {
+      break;
+    }
+  }
+  return testLevel;
+}
+
+function getNextAvailableMixedLevel(playerId, currentMixedLevel) {
+  const player = appState.players[playerId];
+  const wrongQuestions = player.wrongQuestions || {};
+  let testMixed = currentMixedLevel;
+  const tracks = ['spatial', 'numeric', 'attention', 'deduction', 'pattern', 'memory', 'language', 'analogy'];
+  while (testMixed <= 400) {
+    const tIdx = (testMixed - 1) % 8;
+    const type = tracks[tIdx];
+    const trackLevel = Math.floor((testMixed - 1) / 8) + 1;
+    const key = `${type}-${trackLevel}`;
+    const lastWrongTime = wrongQuestions[key];
+    if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
+      testMixed++; // 2天内答错的题目，跳过
+    } else {
+      break;
+    }
+  }
+  return testMixed;
+}
+
 function trigger6yoVictory(ignoredStarParam, speechFeedback) {
   const type = window.currentGameTrack;
   if (!type) { console.warn("currentGameTrack not set"); return; }
@@ -63,7 +103,7 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
     player.progress = { spatial:1, numeric:1, attention:1, deduction:1, pattern:1, memory:1, language:1, analogy:1, mixed:1 };
   }
   
-  const level = window.isMixedMode ? (player.progress.mixed || 1) : (player.progress[type] || 1);
+  const level = window.currentGameLevel || 1;
 
   // Graded point calculation (based on developmental flow state)
   let calculatedStars = 2; // Default Easy: Level 1-12
@@ -98,11 +138,19 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
   }
 
   // Update State progress
-  if (window.isMixedMode) {
-    player.progress.mixed = (player.progress.mixed || 1) + 1;
+  if (window.isReviewMode && window.reviewLevelKey) {
+    // Review mode solved correctly! Remove it from the wrong pool
+    delete player.wrongQuestions[window.reviewLevelKey];
+    window.isReviewMode = false;
+    window.reviewLevelKey = null;
   } else {
-    if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
-    player.progress[type]++;
+    // Normal progress advancement
+    if (window.isMixedMode) {
+      player.progress.mixed = (player.progress.mixed || 1) + 1;
+    } else {
+      if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
+      player.progress[type]++;
+    }
   }
   
   player.stars = (player.stars || 0) + baseEarned;
@@ -162,15 +210,109 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
     } else {
       launchTest(type);
     }
-  }, 1800); // Extended slightly to let them read the cool breakdown
+  }, 1800);
+}
+
+function trigger6yoFailure(speechExplanation, correctValueExplanation) {
+  const type = window.currentGameTrack;
+  if (!type) { console.warn("currentGameTrack not set"); return; }
+
+  const currentPlayerId = window.currentPlayerId || 'dabao';
+  const isErbao = currentPlayerId === 'erbao';
+  const player = appState.players[currentPlayerId];
+  const level = window.currentGameLevel || 1;
+
+  if (!player.wrongQuestions) player.wrongQuestions = {};
+  
+  // Record wrong question with timestamp
+  const key = `${type}-${level}`;
+  player.wrongQuestions[key] = Date.now();
+
+  // Advance level progress so child doesn't get stuck (except in review mode!)
+  if (window.isReviewMode && window.reviewLevelKey) {
+    window.isReviewMode = false;
+    window.reviewLevelKey = null;
+  } else {
+    // Normal progress advancement
+    if (window.isMixedMode) {
+      player.progress.mixed = (player.progress.mixed || 1) + 1;
+    } else {
+      if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
+      player.progress[type]++;
+    }
+  }
+  
+  saveAppState();
+
+  // Play failure sound
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(392.00, ctx.currentTime); // G4
+    o.frequency.setValueAtTime(329.63, ctx.currentTime + 0.15); // E4
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+    o.start(); o.stop(ctx.currentTime + 0.45);
+  } catch(e) {}
+
+  const themeColor = '#6366f1'; // Indigo for learning moment
+  const bgColor = 'rgba(99, 102, 241, 0.08)';
+  const avatar = isErbao ? '🐰' : '🦁';
+  const titleName = '脑力大讲堂 💡';
+  
+  const levelText = window.isMixedMode 
+    ? `综合第 ${level} 关` 
+    : `第 ${level} 关`;
+
+  const container = document.getElementById("game-stage");
+  container.innerHTML = `
+    <div class="glass-card animate-pop" style="padding:40px; text-align:center; max-width:550px; margin:40px auto; border-color:${themeColor}; background:${bgColor}; border-width:2px; box-shadow:0 10px 40px rgba(99,102,241,0.25);">
+      <span style="font-size:4.5em; display:block; margin-bottom:10px;">${avatar}</span>
+      <h2 style="color:${themeColor}; font-weight:800; margin-bottom:5px;">${titleName}</h2>
+      <div style="font-size:0.85em; font-weight:bold; color:#a5b4fc; margin-bottom:15px;">本关答案学习 · ${levelText}</div>
+      
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:18px; margin:20px 0; text-align:left;">
+         <div style="margin-bottom:12px;">
+           <span style="font-size:0.8em; color:#a5b4fc; font-weight:700; display:block; margin-bottom:4px;">🎯 正确答案：</span>
+           <span style="font-size:1.15em; font-weight:800; color:#fff;">${correctValueExplanation}</span>
+         </div>
+         <div>
+           <span style="font-size:0.8em; color:#f472b6; font-weight:700; display:block; margin-bottom:4px;">🔍 脑力小课堂：</span>
+           <span style="font-size:0.95em; color:#cbd5e1; line-height:1.6; display:block;">${speechExplanation}</span>
+         </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:12px; margin:15px 0; font-size:0.85em; color:#94a3b8;">
+        <div style="font-size:1.2em; font-weight:bold; color:#cbd5e1;">本次获得奖励：🪙 +0 星星</div>
+        <div style="font-size:0.85em; color:#64748b; margin-top:4px;">(没关系！先学懂它，2天后本题会重新出现供你挑战哦！)</div>
+      </div>
+      
+      <button class="mock-button glow-success" onclick="close6yoFailureMoment()" style="width:100%; font-size:1.1em; font-weight:700; padding:12px; margin-top:20px;">
+        我知道啦，开启下一关 🚀
+      </button>
+    </div>
+  `;
+
+  // Speech feedback integration
+  speakText(`别气馁，我们先学习一下吧。本关正确答案是：${correctValueExplanation}。脑力小课堂说：${speechExplanation}`);
+
+  window.close6yoFailureMoment = () => {
+    if (window.isMixedMode) {
+      launchMixedMode();
+    } else {
+      launchTest(type);
+    }
+  };
 }
 
 function check6yoAnswer(ans) {
   if (ans === currentAnswer6yo) {
     trigger6yoVictory(10, "答对啦！果果太棒了！加十个星星！");
   } else {
-    speakText("再仔细想想，换个答案试试吧，你可以的！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再仔细算一算，找出数字或图形之间的规律哦！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -219,7 +361,29 @@ function launchTest(type) {
     if (typeof player.progress[k] !== 'number') { player.progress[k] = 1; saveAppState(); }
   });
 
-  const level = player.progress[type] || 1;
+  // 1. Spaced Repetition checking: check for any expired wrong questions first!
+  let reviewLevel = null;
+  const wrongQuestions = player.wrongQuestions || {};
+  for (let l = 1; l <= 50; l++) {
+    const key = `${type}-${l}`;
+    const lastWrongTime = wrongQuestions[key];
+    if (lastWrongTime && (Date.now() - lastWrongTime >= COOLDOWN_MS)) {
+      reviewLevel = l;
+      break;
+    }
+  }
+
+  let level;
+  if (reviewLevel !== null) {
+    window.isReviewMode = true;
+    window.reviewLevelKey = `${type}-${reviewLevel}`;
+    level = reviewLevel;
+  } else {
+    window.isReviewMode = false;
+    window.reviewLevelKey = null;
+    level = getNextAvailableLevel(currentPlayerId, type, player.progress[type] || 1);
+  }
+  window.currentGameLevel = level;
   window.currentGameTrack = type;
   const container = document.getElementById("game-stage");
 
@@ -298,33 +462,64 @@ function launchMixedMode() {
     saveAppState();
   }
 
-  const mixedLevel = player.progress.mixed;
-  const container = document.getElementById("game-stage");
-
-  if (mixedLevel > 400) {
-    const isErbao = currentPlayerId === 'erbao';
-    const name = isErbao ? '淼淼' : '果果';
-    const returnFunc = isErbao ? 'loadErbaoHUD()' : 'loadDabaoHUD()';
-    const buttonGlow = isErbao ? 'glow-erbao' : 'glow-success';
-    container.innerHTML = `
-      <div class="glass-card" style="padding:40px;text-align:center;max-width:600px;margin:30px auto;border-color:#10b981;">
-        <span style="font-size:5.5em;display:block;margin-bottom:15px;animation:pulseGlow 2s infinite;">🏆</span>
-        <h2 style="color:#10b981;font-weight:800;">🎉 完美通关 400 关综合特训航线！</h2>
-        <p style="font-size:1.1em;color:#fff;margin:15px 0;">${name}，你太牛啦！你完成了脑力乐园的全部 400 关特训任务，获得了终极大勋章！</p>
-        <button class="mock-button ${buttonGlow}" onclick="resetMixedProgress()" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
-        <button class="mock-button" onclick="${returnFunc}" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
-      </div>
-    `;
-    speakText(`恭喜${name}！你已经完美通关了四百关综合特训航线的全部内容，你获得了终极大勋章！你是宇宙级逻辑小天才！`);
-    return;
+  // 1. Spaced Repetition check: see if there are any expired wrong questions in ANY track
+  let reviewType = null;
+  let reviewLevel = null;
+  const wrongQuestions = player.wrongQuestions || {};
+  const tracks = ['spatial', 'numeric', 'attention', 'deduction', 'pattern', 'memory', 'language', 'analogy'];
+  for (const t of tracks) {
+    for (let l = 1; l <= 50; l++) {
+      const key = `${t}-${l}`;
+      const lastWrongTime = wrongQuestions[key];
+      if (lastWrongTime && (Date.now() - lastWrongTime >= COOLDOWN_MS)) {
+        reviewType = t;
+        reviewLevel = l;
+        break;
+      }
+    }
+    if (reviewLevel !== null) break;
   }
 
-  const tracks = ['spatial', 'numeric', 'attention', 'deduction', 'pattern', 'memory', 'language', 'analogy'];
-  const tIdx = (mixedLevel - 1) % 8;
-  const type = tracks[tIdx];
-  const trackLevel = Math.floor((mixedLevel - 1) / 8) + 1;
+  let type;
+  let trackLevel;
+  if (reviewLevel !== null) {
+    window.isReviewMode = true;
+    window.reviewLevelKey = `${reviewType}-${reviewLevel}`;
+    type = reviewType;
+    trackLevel = reviewLevel;
+  } else {
+    window.isReviewMode = false;
+    window.reviewLevelKey = null;
+    const mixedLevel = getNextAvailableMixedLevel(currentPlayerId, player.progress.mixed || 1);
+    
+    // Check if total mixed completed
+    if (mixedLevel > 400) {
+      const isErbao = currentPlayerId === 'erbao';
+      const name = isErbao ? '淼淼' : '果果';
+      const returnFunc = isErbao ? 'loadErbaoHUD()' : 'loadDabaoHUD()';
+      const buttonGlow = isErbao ? 'glow-erbao' : 'glow-success';
+      const container = document.getElementById("game-stage");
+      container.innerHTML = `
+        <div class="glass-card" style="padding:40px;text-align:center;max-width:600px;margin:30px auto;border-color:#10b981;">
+          <span style="font-size:5.5em;display:block;margin-bottom:15px;animation:pulseGlow 2s infinite;">🏆</span>
+          <h2 style="color:#10b981;font-weight:800;">🎉 完美通关 400 关综合特训航线！</h2>
+          <p style="font-size:1.1em;color:#fff;margin:15px 0;">${name}，你太牛啦！你完成了脑力乐园的全部 400 关特训任务，获得了终极大勋章！</p>
+          <button class="mock-button ${buttonGlow}" onclick="resetMixedProgress()" style="width:100%;font-size:1.05em;padding:12px;margin-bottom:12px;">🛸 重置并重新挑战</button>
+          <button class="mock-button" onclick="${returnFunc}" style="width:100%;border-color:transparent;color:#64748b;">返回特训大厅</button>
+        </div>
+      `;
+      speakText(`恭喜${name}！你已经完美通关了四百关综合特训航线的全部内容，你获得了终极大勋章！你是宇宙级逻辑小天才！`);
+      return;
+    }
+
+    const tIdx = (mixedLevel - 1) % 8;
+    type = tracks[tIdx];
+    trackLevel = Math.floor((mixedLevel - 1) / 8) + 1;
+  }
 
   window.currentGameTrack = type;
+  window.currentGameLevel = trackLevel;
+  const container = document.getElementById("game-stage");
 
   // Route erbao to launchErbaoSensory
   if (currentPlayerId === 'erbao') {

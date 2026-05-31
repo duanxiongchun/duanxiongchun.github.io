@@ -4,8 +4,7 @@ function checkLanguageAnswer(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "答对了！果果的语言理解能力真棒！");
   } else {
-    speakText("再想想，换个答案试试！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再想想，仔细看清题目要求哦！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -21,6 +20,8 @@ function launchLanguage(level, container) {
   }
 
   currentLanguageAnswer = q.ans.toString();
+  window.currentQuestionExplanation = q.hint;
+  window.currentQuestionCorrectAnswer = q.opts[q.ans];
   const questionText = q.text;
 
   // Shuffling options

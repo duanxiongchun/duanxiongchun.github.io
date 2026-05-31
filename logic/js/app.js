@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
       lastTrainedDate: null,
       medals: ["spatial_rookie"],
       solvedQuestions: [], // Tracks successfully solved logic level IDs for Guoguo
+      wrongQuestions: {}, // Tracks incorrectly solved logic levels with their last attempt timestamp
       progress: { spatial: 1, numeric: 1, attention: 1, deduction: 1, pattern: 1, memory: 1, language: 1, analogy: 1, mixed: 1 }, // 8大维度各50关 + 1个400关综合航线
       stats: { spatial: 75, numeric: 60, attention: 85, deduction: 50 }
     },
@@ -22,6 +23,7 @@ const DEFAULT_STATE = {
       stars: 30, // default initial reward stars for trial
       stickers: ["happy_bunny"],
       solvedQuestions: [], // Tracks successfully solved sensory level IDs for Miaomiao
+      wrongQuestions: {}, // Tracks incorrectly solved sensory levels with their last attempt timestamp
       lastTrainedDate: null
     }
   },
@@ -37,7 +39,7 @@ const DEFAULT_STATE = {
   versionInfo: {
     major: 1,
     minor: 4,
-    build: 78 // We will auto-increment this representing total publish counts
+    build: 79 // We will auto-increment this representing total publish counts
   }
 };
 
@@ -58,6 +60,9 @@ function initAppState() {
           if (!appState.players.dabao.solvedQuestions) {
             appState.players.dabao.solvedQuestions = [];
           }
+          if (!appState.players.dabao.wrongQuestions) {
+            appState.players.dabao.wrongQuestions = {};
+          }
           // 确保所有8个维度的进度字段都存在
           if (!appState.players.dabao.progress) {
             appState.players.dabao.progress = {};
@@ -75,6 +80,9 @@ function initAppState() {
           }
           if (!appState.players.erbao.solvedQuestions) {
             appState.players.erbao.solvedQuestions = [];
+          }
+          if (!appState.players.erbao.wrongQuestions) {
+            appState.players.erbao.wrongQuestions = {};
           }
         }
       }

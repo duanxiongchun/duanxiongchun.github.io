@@ -19,8 +19,7 @@ function checkAttentionChoice(selected, correct, feedback = "注意力扫描答�
   if (selected === correct) {
     trigger6yoVictory(10, feedback);
   } else {
-    speakText("再仔细看一看，想一想再选！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再仔细看一看，专注地找出不一样的细节哦！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -53,6 +52,8 @@ function launchAttention(level, container) {
   else if (phase === 2) {
     // 找不同符号
     const t = ATTENTION_SPOT_TEMPLATES[qIdx];
+    window.currentQuestionExplanation = "要在很多相同的图案中找出那个长得不一样的细节图案哦！小兔子需要你专注去观察细节。";
+    window.currentQuestionCorrectAnswer = t.diff;
     questionText = `果果，${t.q}`;
     
     // Create a 4x4 array of base emojis
@@ -82,6 +83,8 @@ function launchAttention(level, container) {
     // 快速视觉计数
     const q = getDynamicAttention(qIdx, 3);
     currentAnswer6yo = q.ans;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans + " 个";
     questionText = `果果，${q.q}`;
     
     const min = Math.max(1, q.ans - 3);
@@ -109,6 +112,8 @@ function launchAttention(level, container) {
   else if (phase === 4) {
     // 相同图形双双配对 (寻找双胞胎)
     const q = getDynamicAttention(qIdx, 4);
+    window.currentQuestionExplanation = "观察每个图案出现的次数，有一个图案在这里偷偷出现了两次（是一对完全相同的双胞胎哦）！";
+    window.currentQuestionCorrectAnswer = q.ans;
     questionText = q.text;
     
     // Draw options
@@ -138,6 +143,8 @@ function launchAttention(level, container) {
   else {
     // 视网膜迷宫路径追踪 (SVG lines crossing)
     const q = ATTENTION_TRACK_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans;
     questionText = `果果，顺着细细的连线看一看，哪只小动物能吃到【${q.targetFood}】呢？`;
     
     const correctIdx = q.options.indexOf(q.ans);

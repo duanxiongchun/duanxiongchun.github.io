@@ -8,6 +8,8 @@ function launchNumeric(level, container) {
   if (phase === 1 || phase === 2) {
     const q = getDynamicNumeric(qIdx, phase);
     currentAnswer6yo = q.ans;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans.toString();
     questionText = `果果，请根据数字排队的规律，猜猜蓝色问号泡泡里面应该填哪个数字？`;
     const min = Math.max(0, q.ans - 5);
     const opts = Array.from({length:10}, (_,i) => min + i).filter(v => v >= 0);
@@ -38,6 +40,8 @@ function launchNumeric(level, container) {
     // 天平称重平衡
     const q = getDynamicNumeric(qIdx, 3);
     currentAnswer6yo = q.ans;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans.toString();
     questionText = `果果，天平要左右平衡哦！请算出右边问号里面填哪个数字，天平两边才一样重？`;
     
     const leftText = q.left.map(v => v === null ? '❓' : v).join(' + ');
@@ -88,6 +92,8 @@ function launchNumeric(level, container) {
     // 图形代数
     const q = getDynamicNumeric(qIdx, 4);
     currentAnswer6yo = q.ans;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans.toString();
     questionText = `果果，请开动脑筋，算一算图画代表什么数字？${q.q}`;
     
     const min = Math.max(0, q.ans - 4);
@@ -120,6 +126,8 @@ function launchNumeric(level, container) {
     // 数字金字塔
     const q = getDynamicNumeric(qIdx, 5);
     currentAnswer6yo = q.ans;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.ans.toString();
     questionText = `果果，这是好玩的数字金字塔！下面相邻两个数加起来等于上面的数，请算算问号应该是多少？`;
     
     const min = Math.max(0, q.ans - 4);

@@ -44,8 +44,7 @@ function checkSpatialChoice(selected, correct) {
   if (selected === correct) {
     trigger6yoVictory(10, "太棒了！空间推理答对啦！果果的空间感超强！");
   } else {
-    speakText("再仔细看看，想一想再选！");
-    showWrongToast();
+    trigger6yoFailure(window.currentQuestionExplanation || "再仔细看一看图形在方向、对称或展开上的变化规律哦！", window.currentQuestionCorrectAnswer || "正确选项");
   }
 }
 
@@ -58,6 +57,8 @@ function launchSpatial(level, container) {
     // 题型A：3D积木计数
     const cubes = getSpatialStack(qIdx + 1);
     currentAnswer6yo = cubes.length;
+    window.currentQuestionExplanation = "从上往下数数，注意数出被压在底下的隐藏方块！";
+    window.currentQuestionCorrectAnswer = cubes.length + " 个";
     const q = `果果，请数一数这堆立方体积木总共有多少个？被压在下面的也要数哦！`;
     const svgHTML = renderIsometricSVG(cubes);
     const min = Math.max(1, currentAnswer6yo - 3);
@@ -82,6 +83,8 @@ function launchSpatial(level, container) {
     // 题型B：镜像对称
     const q = MIRROR_QUESTIONS[qIdx];
     window.currentSpatialQuestion = q;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.correct.replace(/\n/g, ' / ');
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
@@ -121,6 +124,8 @@ function launchSpatial(level, container) {
     // 题型C：图形旋转
     const q = ROTATION_QUESTIONS[qIdx];
     window.currentSpatialQuestion = q;
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.correct.replace(/\n/g, ' / ');
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.title}`;
@@ -149,6 +154,8 @@ function launchSpatial(level, container) {
   else if (phase === 4) {
     // 题型D：图形序列补全
     const q = COMPLETION_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.correct;
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.desc}`;
@@ -178,6 +185,9 @@ function launchSpatial(level, container) {
   else {
     // 题型E：立体展开图 / 空间想象
     const q = UNFOLDING_QUESTIONS[qIdx];
+    window.currentQuestionExplanation = q.hint;
+    window.currentQuestionCorrectAnswer = q.correct;
+
     const opts = q.optEmoji;
     const questionText = `果果，${q.title}`;
     container.innerHTML = `
