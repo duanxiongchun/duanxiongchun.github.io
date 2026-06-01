@@ -112,7 +112,10 @@ function launchSpatial(level, container) {
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:1.3em;line-height:1.6;padding:12px;border-radius:12px;white-space:pre;font-family:monospace;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:1.3em;line-height:1.6;padding:12px;padding-right:45px;border-radius:12px;white-space:pre;font-family:monospace;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
@@ -143,7 +146,10 @@ function launchSpatial(level, container) {
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:${q.isText?'1em':'1.3em'};padding:15px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:${q.isText?'1em':'1.3em'};padding:15px;padding-right:45px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
@@ -174,7 +180,10 @@ function launchSpatial(level, container) {
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto;">
           ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="font-size:0.95em;padding:14px;border-radius:12px;line-height:1.4;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;line-height:1.4;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
@@ -203,7 +212,10 @@ function launchSpatial(level, container) {
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
           ${opts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="font-size:0.95em;padding:14px;border-radius:12px;font-weight:700;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;font-weight:700;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>

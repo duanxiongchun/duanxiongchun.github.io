@@ -62,8 +62,9 @@ function launchPattern(level, container) {
       </p>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:360px;margin:0 auto;">
         ${shuffled.map((item) => `
-          <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;border-radius:10px;min-height:55px;">
+          <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="position:relative;font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;padding-right:42px;border-radius:10px;min-height:55px;">
             ${item.o}
+            <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.o.replace(/['"]/g," ")}')" title="朗读选项">🔊</span>
           </button>
         `).join('')}
       </div>

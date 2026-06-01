@@ -420,7 +420,10 @@ function launchMemory(level, container) {
         optsDiv.style.display = 'grid';
         const correctIdx = q.opts.findIndex(o => o.startsWith(q.ans));
         optsDiv.innerHTML = q.opts.map((opt, idx) => `
-          <button class="mock-button glow-dabao" onclick="checkMemoryChoice(${idx}, ${correctIdx}, '真聪明！果果的记忆追踪能力一流！')" style="font-size:0.95em;padding:12px 6px;border-radius:10px;font-weight:700;">${opt}</button>
+          <button class="mock-button glow-dabao" onclick="checkMemoryChoice(${idx}, ${correctIdx}, '真聪明！果果的记忆追踪能力一流！')" style="position:relative;font-size:0.95em;padding:12px 6px;padding-right:38px;border-radius:10px;font-weight:700;">
+            ${opt}
+            <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:0.8em;padding:2px 4px;" title="朗读选项">🔊</span>
+          </button>
         `).join('');
       }
     }, 3000);

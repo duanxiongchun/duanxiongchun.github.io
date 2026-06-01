@@ -242,7 +242,10 @@ function renderRewardsList(playerId) {
     return `
     <div class="glass-card" style="padding:14px;margin-bottom:10px;border-color:${borderColor};transition:border-color 0.3s;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
-        <span style="font-weight:700;font-size:0.92em;color:#fff;line-height:1.35;flex:1;">${r.title}</span>
+        <span style="font-weight:700;font-size:0.92em;color:#fff;line-height:1.35;flex:1;display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span>${r.title}</span>
+          <span class="option-speak-btn" style="position:static;transform:none;padding:2px 4px;font-size:0.7em;display:inline-flex;" onclick="event.stopPropagation(); speakText('${r.title.replace(/['"\n]/g," ")}')" title="朗读奖品">🔊</span>
+        </span>
         <span style="font-size:0.95em;color:#fbbf24;font-weight:800;font-family:var(--font-fira);white-space:nowrap;">🪙 ${r.cost}</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">

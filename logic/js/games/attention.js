@@ -179,7 +179,10 @@ function launchAttention(level, container) {
         <p style="font-size:0.8em;color:#64748b;margin-bottom:15px;">💡 ${q.hint}</p>
         <div style="display:flex;justify-content:center;gap:12px;max-width:320px;margin:0 auto;">
           ${q.options.map((opt, idx) => `
-            <button class="mock-button glow-dabao" onclick="checkAttentionChoice(${idx}, ${correctIdx}, '太神奇了！果果的小眼睛追踪线条又快又准！')" style="font-size:1.1em;padding:12px 18px;border-radius:12px;font-weight:700;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkAttentionChoice(${idx}, ${correctIdx}, '太神奇了！果果的小眼睛追踪线条又快又准！')" style="position:relative;font-size:1.1em;padding:12px 18px;padding-right:45px;border-radius:12px;font-weight:700;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>

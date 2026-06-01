@@ -105,12 +105,15 @@ function rerenderDeductionSlots() {
   slotsContainer.innerHTML = deductionSlots.map((item, idx) => {
     if (item) {
       return `
-        <div class="deduction-slot filled glass-card pulse-hover" data-slot-idx="${idx}" onclick="returnDeductionItemToPool(${idx})" style="padding:14px 18px; border:2px solid #a855f7; background:rgba(168,85,247,0.12); border-radius:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; min-height:64px; box-shadow:0 4px 15px rgba(168,85,247,0.15); transition: all 0.2s;">
+        <div class="deduction-slot filled glass-card pulse-hover" data-slot-idx="${idx}" onclick="returnDeductionItemToPool(${idx})" style="position:relative; padding:14px 18px; padding-right:110px; border:2px solid #a855f7; background:rgba(168,85,247,0.12); border-radius:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; min-height:64px; box-shadow:0 4px 15px rgba(168,85,247,0.15); transition: all 0.2s;">
           <div style="display:flex; align-items:center; gap:10px;">
             <span style="background:#a855f7; color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.85em; font-weight:800; box-shadow: 0 2px 8px rgba(168,85,247,0.4);">#${idx+1}</span>
             <span style="font-weight:700; color:#fff; font-size:1.02em; text-align:left;">${item.text}</span>
           </div>
-          <span style="font-size:0.8em; color:#f87171; font-weight:800; white-space:nowrap; margin-left:10px;">点击移出 ❌</span>
+          <div style="position:absolute; right:10px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px;">
+            <span class="option-speak-btn" style="position:static; transform:none; padding:4px 8px;" onclick="event.stopPropagation(); speakText('${item.text.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            <span style="font-size:0.8em; color:#f87171; font-weight:800; white-space:nowrap;">移出 ❌</span>
+          </div>
         </div>
       `;
     } else {
@@ -132,9 +135,10 @@ function rerenderDeductionSlots() {
   } else {
     poolContainer.innerHTML = deductionPool.map((item) => {
       return `
-        <div id="deduction-drag-${item.id}" class="deduction-drag-item glass-card pulse-hover" data-item-id="${item.id}" onclick="placeDeductionItemInSlot('${item.id}')" style="touch-action: none; padding:14px 18px; border:1px solid rgba(168,85,247,0.3); background:linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.04)); border-radius:16px; cursor:grab; font-weight:700; color:#fff; font-size:1.02em; display:flex; align-items:center; gap:12px; transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.08); user-select:none;">
+        <div id="deduction-drag-${item.id}" class="deduction-drag-item glass-card pulse-hover" data-item-id="${item.id}" onclick="placeDeductionItemInSlot('${item.id}')" style="position:relative; touch-action: none; padding:14px 18px; padding-right:48px; border:1px solid rgba(168,85,247,0.3); background:linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.04)); border-radius:16px; cursor:grab; font-weight:700; color:#fff; font-size:1.02em; display:flex; align-items:center; gap:12px; transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow:0 4px 12px rgba(168,85,247,0.08); user-select:none;">
           <span style="font-size:1.25em;">👉</span>
           <span style="text-align:left; flex:1;">${item.text}</span>
+          <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.text.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
         </div>
       `;
     }).join('');
@@ -388,7 +392,10 @@ function launchDeduction(level, container) {
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 提示：${q.hint}</p>
         <div style="display:flex;flex-direction:column;gap:12px;max-width:440px;margin:0 auto;">
           ${q.opts.map((opt, idx) => `
-            <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="font-size:1.05em;padding:15px;border-radius:12px;font-weight:700;text-align:left;margin-top:0;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="position:relative;font-size:1.05em;padding:15px;padding-right:45px;border-radius:12px;font-weight:700;text-align:left;margin-top:0;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
@@ -415,7 +422,10 @@ function launchDeduction(level, container) {
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 提示：${q.hint}</p>
         <div style="display:grid;grid-template-columns:1fr;gap:10px;max-width:440px;margin:0 auto;">
           ${q.opts.map((opt, idx) => `
-            <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="font-size:1.1em;padding:15px;border-radius:12px;font-weight:700;margin-top:0;">${opt}</button>
+            <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="position:relative;font-size:1.1em;padding:15px;padding-right:45px;border-radius:12px;font-weight:700;margin-top:0;">
+              ${opt}
+              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
+            </button>
           `).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>

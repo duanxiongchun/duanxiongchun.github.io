@@ -334,3 +334,34 @@ body {
 .pulse-hover:hover {
   transform: translateY(-3px);
 }
+
+/* 🔊 Option Speak Button */
+.option-speak-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 0.8em;
+  cursor: pointer;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+.option-speak-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.option-speak-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+

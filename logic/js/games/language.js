@@ -39,8 +39,9 @@ function launchLanguage(level, container) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto;">
         ${shuffled.map(item => `
-          <button class="mock-button glow-dabao" onclick="checkLanguageAnswer(${item.i},${q.ans})" style="font-size:1em;padding:15px;border-radius:12px;font-weight:700;line-height:1.4;text-align:left;">
+          <button class="mock-button glow-dabao" onclick="checkLanguageAnswer(${item.i},${q.ans})" style="position:relative;font-size:1em;padding:15px;padding-right:45px;border-radius:12px;font-weight:700;line-height:1.4;text-align:left;">
             ${item.o}
+            <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.o.replace(/['"]/g," ")}')" title="朗读选项">🔊</span>
           </button>
         `).join('')}
       </div>
