@@ -23,6 +23,7 @@ function launchAnalogy(level, container) {
   window.currentQuestionExplanation = q.hint;
   window.currentQuestionCorrectAnswer = q.opts[q.ans];
   const questionText = q.text;
+  window.currentQuestionText = questionText;
 
   // Shuffling options
   const optsWithIdx = q.opts.map((o, i) => ({o, i}));

@@ -272,6 +272,7 @@ function launchDeduction(level, container) {
     window.currentQuestionExplanation = q.hint || "根据生活的因果规律，按时间发生的先后顺序摆放这些卡片哦！";
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -306,6 +307,7 @@ function launchDeduction(level, container) {
     window.currentQuestionExplanation = q.hint || "按照长度、大小或者速度属性来进行逻辑排序哦！";
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -342,6 +344,7 @@ function launchDeduction(level, container) {
     window.currentQuestionExplanation = q.hint || "通过两两比较的天平信息，串联起来推理出三个物体的轻重顺序！";
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -379,6 +382,7 @@ function launchDeduction(level, container) {
     window.currentQuestionExplanation = q.hint;
     window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -409,6 +413,7 @@ function launchDeduction(level, container) {
     window.currentQuestionExplanation = q.hint;
     window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">

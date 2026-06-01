@@ -246,6 +246,7 @@ function launchMemory(level, container) {
     window.currentQuestionExplanation = "观察并记住屏幕上图案的排列顺序，盖上后需要你按顺序点选或者拖拽回去哦！";
     window.currentQuestionCorrectAnswer = q.show.join(" ➡️ ");
     questionText = q.q;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -286,6 +287,7 @@ function launchMemory(level, container) {
     window.currentQuestionExplanation = "记住小硬币藏在哪了哦！可以在它们隐藏前用指头跟着硬币位置在空中画画，加强脑力记忆！";
     window.currentQuestionCorrectAnswer = "金币位置在第 " + q.coins.map(c => c + 1).join(", ") + " 个格子上";
     questionText = `果果，记住金币躲在哪些格子里！马上要盖上木板喽！`;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -332,6 +334,7 @@ function launchMemory(level, container) {
     const correctIdx = q.items.indexOf(q.q);
     window.currentQuestionCorrectAnswer = "【" + q.q + "】的位置是在第 " + (correctIdx + 1) + " 个格子里";
     questionText = `果果，记住这四样东西的摆放位置哦！一会要考考你！`;
+    window.currentQuestionText = questionText;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -381,6 +384,7 @@ function launchMemory(level, container) {
     window.currentQuestionExplanation = "有几个图案会被拿走，仔细对比原来和现在的图案序列，找出谁不见了。";
     window.currentQuestionCorrectAnswer = q.ans;
     questionText = `果果，仔细看这几个图案，一会会有一个小调皮藏起来！`;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -433,6 +437,7 @@ function launchMemory(level, container) {
     window.currentQuestionExplanation = "倒背数序是数字工作记忆的脑力挑战。比如看到 4-9-1，倒过来念就是 1-9-4 哦！";
     window.currentQuestionCorrectAnswer = "逆序倒背顺序是：" + q.ans.join(" ➡️ ");
     questionText = `果果，记住这三个数字！一会要倒着（从右往左）选出来哦！挑战性极强！`;
+    window.currentQuestionText = questionText;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">

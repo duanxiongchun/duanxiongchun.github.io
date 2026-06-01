@@ -274,6 +274,13 @@ function trigger6yoFailure(speechExplanation, correctValueExplanation) {
       <h2 style="color:${themeColor}; font-weight:800; margin-bottom:5px;">${titleName}</h2>
       <div style="font-size:0.85em; font-weight:bold; color:#a5b4fc; margin-bottom:15px;">本关答案学习 · ${levelText}</div>
       
+      ${window.currentQuestionText ? `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:14px; margin-bottom:15px; text-align:left;">
+         <span style="font-size:0.8em; color:#818cf8; font-weight:700; display:block; margin-bottom:4px;">❓ 题目问题：</span>
+         <span style="font-size:1.02em; font-weight:600; color:#fff; line-height:1.45; display:block;">${window.currentQuestionText}</span>
+      </div>
+      ` : ''}
+      
       <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:18px; margin:20px 0; text-align:left;">
          <div style="margin-bottom:12px;">
            <span style="font-size:0.8em; color:#a5b4fc; font-weight:700; display:block; margin-bottom:4px;">🎯 正确答案：</span>

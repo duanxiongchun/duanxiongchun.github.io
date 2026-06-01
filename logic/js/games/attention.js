@@ -31,6 +31,7 @@ function launchAttention(level, container) {
   if (phase === 1) {
     // 舒尔特格 1-9
     questionText = '果果，请从小到大，按顺序快速点击一到九的数字格子！';
+    window.currentQuestionText = questionText;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -55,6 +56,7 @@ function launchAttention(level, container) {
     window.currentQuestionExplanation = "要在很多相同的图案中找出那个长得不一样的细节图案哦！小兔子需要你专注去观察细节。";
     window.currentQuestionCorrectAnswer = t.diff;
     questionText = `果果，${t.q}`;
+    window.currentQuestionText = questionText;
     
     // Create a 4x4 array of base emojis
     const size = 16;
@@ -86,6 +88,7 @@ function launchAttention(level, container) {
     window.currentQuestionExplanation = q.hint;
     window.currentQuestionCorrectAnswer = q.ans + " 个";
     questionText = `果果，${q.q}`;
+    window.currentQuestionText = questionText;
     
     const min = Math.max(1, q.ans - 3);
     const opts = Array.from({length: 6}, (_, i) => min + i);
@@ -115,6 +118,7 @@ function launchAttention(level, container) {
     window.currentQuestionExplanation = "观察每个图案出现的次数，有一个图案在这里偷偷出现了两次（是一对完全相同的双胞胎哦）！";
     window.currentQuestionCorrectAnswer = q.ans;
     questionText = q.text;
+    window.currentQuestionText = questionText;
     
     // Draw options
     const uniqueItems = Array.from(new Set(q.pool));
@@ -146,6 +150,7 @@ function launchAttention(level, container) {
     window.currentQuestionExplanation = q.hint;
     window.currentQuestionCorrectAnswer = q.ans;
     questionText = `果果，顺着细细的连线看一看，哪只小动物能吃到【${q.targetFood}】呢？`;
+    window.currentQuestionText = questionText;
     
     const correctIdx = q.options.indexOf(q.ans);
     

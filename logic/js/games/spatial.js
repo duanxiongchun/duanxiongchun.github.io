@@ -60,6 +60,7 @@ function launchSpatial(level, container) {
     window.currentQuestionExplanation = "从上往下数数，注意数出被压在底下的隐藏方块！";
     window.currentQuestionCorrectAnswer = cubes.length + " 个";
     const q = `果果，请数一数这堆立方体积木总共有多少个？被压在下面的也要数哦！`;
+    window.currentQuestionText = q;
     const svgHTML = renderIsometricSVG(cubes);
     const min = Math.max(1, currentAnswer6yo - 3);
     const opts = Array.from({length:8}, (_,i) => min+i);
@@ -88,6 +89,7 @@ function launchSpatial(level, container) {
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
+    window.currentQuestionText = questionText;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -132,6 +134,7 @@ function launchSpatial(level, container) {
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.title}`;
+    window.currentQuestionText = questionText;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -165,6 +168,7 @@ function launchSpatial(level, container) {
     const allOpts = [q.correct, ...q.wrong].sort(() => Math.random() - 0.5);
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.desc}`;
+    window.currentQuestionText = questionText;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -199,6 +203,7 @@ function launchSpatial(level, container) {
 
     const opts = q.optEmoji;
     const questionText = `果果，${q.title}`;
+    window.currentQuestionText = questionText;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">

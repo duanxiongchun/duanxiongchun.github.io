@@ -23,6 +23,7 @@ function launchPattern(level, container) {
   window.currentQuestionExplanation = q.hint;
   window.currentQuestionCorrectAnswer = q.opts[q.ans];
   const questionText = q.text || '果果，观察图形变化规律，找出右下角问号处应该填哪个？';
+  window.currentQuestionText = questionText;
 
   // Set global currentSpatialQuestion for parameter-less animation helper
   window.currentSpatialQuestion = {
