@@ -63,12 +63,16 @@ function launchPattern(level, container) {
         ${helpBtnHTML}
       </p>
       <div class="responsive-options-grid max-360">
-        ${shuffled.map((item) => `
-          <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="position:relative;font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;padding-right:42px;border-radius:10px;min-height:55px;">
-            ${item.o}
-            <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.o.replace(/['"]/g," ")}')" title="朗读选项">🔊</span>
-          </button>
-        `).join('')}
+        ${shuffled.map((item) => {
+          const hasChinese = /[\u4e00-\u9fa5]/.test(item.o);
+          const padRight = hasChinese ? 'padding-right:42px;' : '';
+          return `
+            <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="position:relative;font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;${padRight}border-radius:10px;min-height:55px;">
+              ${item.o}
+              ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.o.replace(/['"]/g," ")}')" title="朗读选项">🔊</span>` : ''}
+            </button>
+          `;
+        }).join('')}
       </div>
       <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
     </div>

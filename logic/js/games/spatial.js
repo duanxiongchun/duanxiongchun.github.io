@@ -115,12 +115,16 @@ function launchSpatial(level, container) {
           <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
         <div class="responsive-options-grid max-420">
-          ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:1.3em;line-height:1.6;padding:12px;padding-right:45px;border-radius:12px;white-space:pre;font-family:monospace;">
-              ${opt}
-              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
-            </button>
-          `).join('')}
+          ${allOpts.map((opt,i) => {
+            const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
+            const padRight = hasChinese ? 'padding-right:45px;' : '';
+            return `
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:1.3em;line-height:1.6;padding:12px;${padRight}border-radius:12px;white-space:pre;font-family:monospace;">
+                ${opt}
+                ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
+              </button>
+            `;
+          }).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
@@ -151,12 +155,16 @@ function launchSpatial(level, container) {
           <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
         <div class="responsive-options-grid max-420">
-          ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:${q.isText?'1em':'1.3em'};padding:15px;padding-right:45px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">
-              ${opt}
-              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
-            </button>
-          `).join('')}
+          ${allOpts.map((opt,i) => {
+            const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
+            const padRight = hasChinese ? 'padding-right:45px;' : '';
+            return `
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:${q.isText?'1em':'1.3em'};padding:15px;${padRight}border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">
+                ${opt}
+                ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
+              </button>
+            `;
+          }).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
@@ -187,12 +195,16 @@ function launchSpatial(level, container) {
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
         <div class="responsive-options-grid max-440">
-          ${allOpts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;line-height:1.4;">
-              ${opt}
-              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
-            </button>
-          `).join('')}
+          ${allOpts.map((opt,i) => {
+            const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
+            const padRight = hasChinese ? 'padding-right:45px;' : '';
+            return `
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:0.95em;padding:14px;${padRight}border-radius:12px;line-height:1.4;">
+                ${opt}
+                ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
+              </button>
+            `;
+          }).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
@@ -221,12 +233,16 @@ function launchSpatial(level, container) {
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
         <div class="responsive-options-grid max-420">
-          ${opts.map((opt,i) => `
-            <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;font-weight:700;">
-              ${opt}
-              <span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>
-            </button>
-          `).join('')}
+          ${opts.map((opt,i) => {
+            const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
+            const padRight = hasChinese ? 'padding-right:45px;' : '';
+            return `
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="position:relative;font-size:0.95em;padding:14px;${padRight}border-radius:12px;font-weight:700;">
+                ${opt}
+                ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
+              </button>
+            `;
+          }).join('')}
         </div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
