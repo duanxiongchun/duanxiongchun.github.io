@@ -273,6 +273,7 @@ function launchDeduction(level, container) {
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = deductionPool.map(item => item.text);
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -308,6 +309,7 @@ function launchDeduction(level, container) {
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = deductionPool.map(item => item.text);
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -345,6 +347,7 @@ function launchDeduction(level, container) {
     window.currentQuestionCorrectAnswer = [...q.items].sort((a,b) => a.id.localeCompare(b.id)).map((item, idx) => `第${idx+1}步: ${item.text}`).join(' ➡️ ');
     questionText = q.text;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = deductionPool.map(item => item.text);
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -383,6 +386,7 @@ function launchDeduction(level, container) {
     window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = q.opts;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
@@ -414,6 +418,7 @@ function launchDeduction(level, container) {
     window.currentQuestionCorrectAnswer = q.opts[q.ans];
     questionText = q.text;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = q.opts;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">

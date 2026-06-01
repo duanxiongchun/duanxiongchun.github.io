@@ -71,6 +71,7 @@ function startMemoryRecall(originalSeq) {
   const allEmojis = ['🍎','🐱','🌟','🔴','🔵','🟡','🟢','🐘','🦁','🐯','🐶','⭐','🌙','☀️','🌈','🍊','🍋','🍇','🍓','🍑','🏠','🚗','✈️','🚢','🎈','🎁','🎂','🎊','🎉','1','2','3','4','5','6','7','8','9'];
   const distractors = allEmojis.filter(e => !originalSeq.includes(e));
   const opts = [...originalSeq, ...distractors.slice(0, 4)].sort(() => Math.random() - 0.5);
+  window.currentQuestionOptions = opts;
 
   recallArea.innerHTML = `
     <p style="font-size:0.9em;color:#f472b6;font-weight:700;margin-bottom:15px;">🎯 拖拽图案到正确的位置，或直接轻点它！</p>
@@ -288,6 +289,7 @@ function launchMemory(level, container) {
     window.currentQuestionCorrectAnswer = "金币位置在第 " + q.coins.map(c => c + 1).join(", ") + " 个格子上";
     questionText = `果果，记住金币躲在哪些格子里！马上要盖上木板喽！`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = Array.from({length:9}, (_, i) => `格子 ${i+1}`);
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -335,6 +337,7 @@ function launchMemory(level, container) {
     window.currentQuestionCorrectAnswer = "【" + q.q + "】的位置是在第 " + (correctIdx + 1) + " 个格子里";
     questionText = `果果，记住这四样东西的摆放位置哦！一会要考考你！`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = q.items;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -385,6 +388,7 @@ function launchMemory(level, container) {
     window.currentQuestionCorrectAnswer = q.ans;
     questionText = `果果，仔细看这几个图案，一会会有一个小调皮藏起来！`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = q.opts;
 
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
@@ -473,6 +477,7 @@ function launchMemory(level, container) {
         
         // Options: sorted numbers
         const pool = [...q.show].sort(() => Math.random() - 0.5);
+        window.currentQuestionOptions = pool;
         recallArea.innerHTML = `
           <div id="backward-ans-display" style="display:flex;justify-content:center;gap:12px;margin:15px 0;min-height:50px;">
             ${q.show.map((_, i) => `<div id="back-slot-${i}" class="glass-card" style="width:50px;height:50px;border:2px dashed rgba(255,255,255,0.15);border-radius:10px;font-size:1.6em;font-weight:bold;color:#f472b6;display:flex;align-items:center;justify-content:center;">❓</div>`).join('')}

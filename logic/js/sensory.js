@@ -792,6 +792,7 @@ function launchErbaoSensory(type, level, container) {
   if (type === 'spatial') {
     const config = getErbaoSpatialConfig(level);
     window.currentQuestionText = '请把图形积木拖放到对应的虚线卡槽中';
+    window.currentQuestionOptions = config.draggables.map(d => d.label);
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -821,6 +822,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'numeric') {
     const config = getErbaoNumericConfig(level);
     window.currentQuestionText = `数一数，这里有几个【${config.itemName} ${config.icon}】呢？`;
+    window.currentQuestionOptions = config.options.map(n => n + ' 个');
     
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
@@ -847,6 +849,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'attention') {
     const config = getErbaoAttentionConfig(level);
     window.currentQuestionText = '谁和别人长得不一样？快把它点出来！';
+    window.currentQuestionOptions = Array.from(new Set(config.items));
     const cols = config.gridSize;
     const btnSize = cols === 2 ? '90px' : '70px';
     const btnFontSize = cols === 2 ? '3.5em' : '2.8em';
@@ -875,6 +878,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'deduction') {
     const config = getErbaoDeductionConfig(level);
     window.currentQuestionText = `大动物住大箱子，小动物住小箱子：把大${config.bigName}和小${config.smallName}放进箱子`;
+    window.currentQuestionOptions = [config.bigName, config.smallName];
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -906,6 +910,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'pattern') {
     const config = getErbaoPatternConfig(level);
     window.currentQuestionText = '观察规律，问号处应该填什么呢？';
+    window.currentQuestionOptions = [config.a, config.b];
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -933,6 +938,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'memory') {
     const config = getErbaoMemoryConfig(level);
     window.currentQuestionText = `闪现记忆：记住这个可爱的【${config.catName}】图案并找出来`;
+    window.currentQuestionOptions = config.pool;
     
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">
@@ -980,6 +986,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'language') {
     const config = getErbaoLanguageConfig(level);
     window.currentQuestionText = '点击大喇叭听声音，猜猜是谁在叫？';
+    window.currentQuestionOptions = config.pool.map(s => s.name);
     const targetSound = config.targetSound;
     window.sensoryTargetSound = targetSound;
     const pool = config.pool;
@@ -1011,6 +1018,7 @@ function launchErbaoSensory(type, level, container) {
   else if (type === 'analogy') {
     const config = getErbaoAnalogyQuestion(level);
     window.currentQuestionText = config.q;
+    window.currentQuestionOptions = config.opts;
 
     container.innerHTML = `
       <div class="glass-card" style="padding:30px; text-align:center; max-width:600px; margin:20px auto; border-color: rgba(251, 191, 36, 0.3);">

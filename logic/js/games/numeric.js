@@ -14,6 +14,7 @@ function launchNumeric(level, container) {
     window.currentQuestionText = questionText;
     const min = Math.max(0, q.ans - 5);
     const opts = Array.from({length:10}, (_,i) => min + i).filter(v => v >= 0);
+    window.currentQuestionOptions = opts;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
@@ -51,6 +52,7 @@ function launchNumeric(level, container) {
     
     const min = Math.max(0, q.ans - 4);
     const opts = Array.from({length:9}, (_,i) => min + i).filter(v => v >= 0);
+    window.currentQuestionOptions = opts;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
@@ -101,6 +103,7 @@ function launchNumeric(level, container) {
     
     const min = Math.max(0, q.ans - 4);
     const opts = Array.from({length:9}, (_,i) => min + i).filter(v => v >= 0);
+    window.currentQuestionOptions = opts;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
@@ -136,6 +139,7 @@ function launchNumeric(level, container) {
     
     const min = Math.max(0, q.ans - 4);
     const opts = Array.from({length:9}, (_,i) => min + i).filter(v => v >= 0);
+    window.currentQuestionOptions = opts;
     
     const botVal1 = q.bottom[0];
     const botVal2 = q.bottom[1];

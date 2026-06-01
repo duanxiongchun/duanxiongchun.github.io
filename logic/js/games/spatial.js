@@ -64,6 +64,7 @@ function launchSpatial(level, container) {
     const svgHTML = renderIsometricSVG(cubes);
     const min = Math.max(1, currentAnswer6yo - 3);
     const opts = Array.from({length:8}, (_,i) => min+i);
+    window.currentQuestionOptions = opts.map(n => n + ' 个');
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -90,6 +91,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = allOpts;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -135,6 +137,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.title}`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = allOpts;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -169,6 +172,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.desc}`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = allOpts;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
@@ -204,6 +208,7 @@ function launchSpatial(level, container) {
     const opts = q.optEmoji;
     const questionText = `果果，${q.title}`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = opts;
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">

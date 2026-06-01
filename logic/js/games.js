@@ -281,6 +281,28 @@ function trigger6yoFailure(speechExplanation, correctValueExplanation) {
       </div>
       ` : ''}
       
+      ${window.currentQuestionOptions && window.currentQuestionOptions.length > 0 ? `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:14px; margin-bottom:15px; text-align:left;">
+         <span style="font-size:0.8em; color:#a855f7; font-weight:700; display:block; margin-bottom:8px;">🎈 关卡选项候选：</span>
+         <div style="display:flex; flex-wrap:wrap; gap:8px;">
+           ${window.currentQuestionOptions.map(opt => {
+             const cleanOpt = opt.toString().trim();
+             const cleanCorrect = correctValueExplanation.toString().trim();
+             const isCorrect = (cleanOpt === cleanCorrect) || 
+                               (cleanCorrect.startsWith(cleanOpt) && cleanOpt.length > 0) ||
+                               (cleanOpt.includes(cleanCorrect) && cleanCorrect.length > 0) ||
+                               (cleanCorrect.includes(cleanOpt) && cleanOpt.length > 0);
+             const border = isCorrect ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.08)';
+             const bg = isCorrect ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)';
+             const color = isCorrect ? '#34d399' : '#cbd5e1';
+             return `<span style="padding:6px 12px; border-radius:8px; border:${border}; background:${bg}; color:${color}; font-size:0.88em; font-weight:700; display:inline-flex; align-items:center; gap:5px;">
+               ${opt} ${isCorrect ? '✅' : ''}
+             </span>`;
+           }).join('')}
+         </div>
+      </div>
+      ` : ''}
+      
       <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:16px; padding:18px; margin:20px 0; text-align:left;">
          <div style="margin-bottom:12px;">
            <span style="font-size:0.8em; color:#a5b4fc; font-weight:700; display:block; margin-bottom:4px;">🎯 正确答案：</span>
@@ -354,6 +376,8 @@ function launchTest(type) {
   lockViewportScrolling();
 
   window.isMixedMode = false;
+  window.currentQuestionText = "";
+  window.currentQuestionOptions = [];
   initAppState();
   
   const currentPlayerId = window.currentPlayerId || 'dabao';
@@ -457,6 +481,8 @@ function launchMixedMode() {
   lockViewportScrolling();
 
   window.isMixedMode = true;
+  window.currentQuestionText = "";
+  window.currentQuestionOptions = [];
   initAppState();
   
   const currentPlayerId = window.currentPlayerId || 'dabao';

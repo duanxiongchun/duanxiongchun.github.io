@@ -55,8 +55,9 @@ function launchAttention(level, container) {
     const t = ATTENTION_SPOT_TEMPLATES[qIdx];
     window.currentQuestionExplanation = "要在很多相同的图案中找出那个长得不一样的细节图案哦！小兔子需要你专注去观察细节。";
     window.currentQuestionCorrectAnswer = t.diff;
-    questionText = `果果，${t.q}`;
+    const questionText = `果果，${t.q}`;
     window.currentQuestionText = questionText;
+    window.currentQuestionOptions = [t.base, t.diff];
     
     // Create a 4x4 array of base emojis
     const size = 16;
@@ -92,6 +93,7 @@ function launchAttention(level, container) {
     
     const min = Math.max(1, q.ans - 3);
     const opts = Array.from({length: 6}, (_, i) => min + i);
+    window.currentQuestionOptions = opts.map(n => n + ' 个');
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
@@ -123,6 +125,7 @@ function launchAttention(level, container) {
     // Draw options
     const uniqueItems = Array.from(new Set(q.pool));
     const correctIdx = uniqueItems.indexOf(q.ans);
+    window.currentQuestionOptions = uniqueItems;
     
     container.innerHTML = `
       <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
@@ -153,6 +156,7 @@ function launchAttention(level, container) {
     window.currentQuestionText = questionText;
     
     const correctIdx = q.options.indexOf(q.ans);
+    window.currentQuestionOptions = q.options;
     
     // Draw SVG
     let svgHTML = `<svg width="100%" height="150" viewBox="0 0 300 150" style="background:rgba(15,23,42,0.4);border-radius:12px;display:block;margin:auto;">`;
