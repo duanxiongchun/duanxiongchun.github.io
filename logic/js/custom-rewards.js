@@ -295,3 +295,36 @@ function redeemReward(rewardId) {
   // Update local view coins
   document.getElementById("star-count").innerText = `🪙 ${player.stars}`;
 }
+
+function requestRedemption(playerId, rewardId) {
+  initAppState();
+  const reward = appState.rewards.find(r => r.id === rewardId);
+  if (!reward) return false;
+  
+  const player = appState.players[playerId];
+  if (!player) return false;
+  
+  if (player.stars < reward.cost) {
+    return false;
+  }
+  
+  // Deduct stars
+  player.stars -= reward.cost;
+  
+  // Submit request to parent
+  appState.redemptions.push({
+    id: `redemp_${Date.now()}`,
+    playerId: playerId,
+    playerName: player.name,
+    rewardId: reward.id,
+    rewardTitle: reward.title,
+    cost: reward.cost,
+    date: new Date().toISOString().slice(0, 10),
+    status: "pending"
+  });
+  
+  // Save progress
+  saveAppState();
+  
+  return true;
+}

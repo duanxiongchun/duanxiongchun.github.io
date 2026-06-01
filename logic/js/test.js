@@ -283,7 +283,11 @@ while ((match = varRegex.exec(cleanCode)) !== null) {
 // Generate explicit exports to global scope
 let exportCode = '\n// --- AUTO GENERATED EXPORTS TO GLOBAL SCOPE ---\n';
 for (const name of declaredNames) {
-  exportCode += `if (typeof ${name} !== 'undefined') { global.${name} = ${name}; }\n`;
+  if (name === 'appState') {
+    exportCode += `if (typeof appState !== 'undefined') { Object.defineProperty(global, 'appState', { get: () => appState, set: (v) => { appState = v; }, configurable: true }); }\n`;
+  } else {
+    exportCode += `if (typeof ${name} !== 'undefined') { global.${name} = ${name}; }\n`;
+  }
 }
 
 combinedCode += exportCode;
@@ -317,3 +321,75 @@ assert.strictEqual(global.appState.players.dabao.name, "果果 (6岁)", "Dabao's
 assert.strictEqual(global.appState.players.erbao.name, "淼淼 (2岁)", "Erbao's name should be migrated/initialized to Miaomiao.");
 
 console.log("🚀 Mocks and scripts loaded successfully!");
+
+// --- TEST SUITE A: STATE, PERSISTENCE, AND REDEMPTIONS ---
+console.log("\n--- Running Test Suite A: State & Rewards ---");
+
+let passedTests = 0;
+let failedTests = 0;
+
+function test(name, fn) {
+  try {
+    localStorage.clear();
+    // Reset appState to a fresh copy of DEFAULT_STATE
+    global.appState = JSON.parse(JSON.stringify(global.DEFAULT_STATE));
+    fn();
+    console.log(`\x1b[32m  ✓ [PASS] ${name}\x1b[0m`);
+    passedTests++;
+  } catch (err) {
+    console.error(`\x1b[31m  ✗ [FAIL] ${name}\x1b[0m`);
+    console.error(err.stack);
+    failedTests++;
+  }
+}
+
+// Test 1: Default state initialization
+test("Default state initialization", () => {
+  global.initAppState();
+  assert.strictEqual(global.appState.players.dabao.stars, 0);
+  assert.strictEqual(global.appState.players.dabao.streaks, 2);
+  assert.ok(Array.isArray(global.appState.redemptions));
+  assert.strictEqual(global.appState.redemptions.length, 0);
+});
+
+// Test 2: Data serialization and persistence
+test("Data serialization and persistence", () => {
+  global.initAppState();
+  global.appState.players.dabao.stars = 99;
+  global.saveAppState();
+  
+  const rawStore = localStorage.getItem("kids_logic_lab_state");
+  assert.ok(rawStore, "LocalStorage should contain the state string");
+  const stored = JSON.parse(rawStore);
+  assert.strictEqual(stored.players.dabao.stars, 99);
+});
+
+// Test 3: Insufficient stars redemption failure
+test("Insufficient stars redemption failure", () => {
+  global.initAppState();
+  global.appState.players.dabao.stars = 10;
+  global.saveAppState();
+  
+  const success = global.requestRedemption('dabao', 'd1');
+  assert.strictEqual(success, false);
+  assert.strictEqual(global.appState.players.dabao.stars, 10);
+  assert.strictEqual(global.appState.redemptions.length, 0);
+});
+
+// Test 4: Sufficient stars redemption success
+test("Sufficient stars redemption success", () => {
+  global.initAppState();
+  global.appState.players.dabao.stars = 50;
+  global.saveAppState();
+  
+  const success = global.requestRedemption('dabao', 'd1');
+  assert.strictEqual(success, true);
+  assert.strictEqual(global.appState.players.dabao.stars, 30);
+  assert.strictEqual(global.appState.redemptions.length, 1);
+  assert.strictEqual(global.appState.redemptions[0].rewardId, 'd1');
+});
+
+console.log(`\n📊 Suite A Summary: Passed ${passedTests}, Failed ${failedTests}`);
+if (failedTests > 0) {
+  process.exit(1);
+}
