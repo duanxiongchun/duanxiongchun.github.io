@@ -390,6 +390,241 @@ test("Sufficient stars redemption success", () => {
 });
 
 console.log(`\n📊 Suite A Summary: Passed ${passedTests}, Failed ${failedTests}`);
-if (failedTests > 0) {
+const suiteAFailed = failedTests;
+const suiteAPassed = passedTests;
+
+// --- TEST SUITE B: PROGRESSION, STREAKS, MILESTONES, AND SPACED REPETITION ---
+console.log("\n--- Running Test Suite B: Progression & Spaced Repetition ---");
+
+// Mock setTimeout globally to prevent process hangs or async state changes during the tests
+const originalSetTimeout = global.setTimeout;
+global.setTimeout = () => {};
+
+// Reset counters for Suite B
+let suiteBPassed = 0;
+let suiteBFailed = 0;
+
+function testB(name, fn) {
+  try {
+    localStorage.clear();
+    // Reset appState to a fresh copy of DEFAULT_STATE
+    global.appState = JSON.parse(JSON.stringify(global.DEFAULT_STATE));
+    // Reset currentGameTrack, currentPlayerId, isMixedMode, isReviewMode, reviewLevelKey, etc.
+    window.currentGameTrack = 'spatial';
+    window.currentPlayerId = 'dabao';
+    window.currentGameLevel = 1;
+    window.isMixedMode = false;
+    window.isReviewMode = false;
+    window.reviewLevelKey = null;
+    
+    fn();
+    console.log(`\x1b[32m  ✓ [PASS] ${name}\x1b[0m`);
+    suiteBPassed++;
+  } catch (err) {
+    console.error(`\x1b[31m  ✗ [FAIL] ${name}\x1b[0m`);
+    console.error(err.stack);
+    suiteBFailed++;
+  }
+}
+
+// Test 5: Base stars per difficulty level
+testB("Base stars per difficulty level (Level 5 -> 2, Level 15 -> 5, Level 30 -> 12, Level 45 -> 30)", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  window.isMixedMode = false;
+  
+  // Set streak to 1 to ensure multiplier is 1.0x
+  global.appState.players.dabao.streaks = 1;
+
+  // Level 5: Easy (Level 1-12) -> +2 stars
+  global.appState.players.dabao.stars = 0;
+  window.currentGameLevel = 5;
+  global.trigger6yoVictory(10, 'Level 5 Easy');
+  assert.strictEqual(global.appState.players.dabao.stars, 2);
+
+  // Level 15: Medium (Level 13-28) -> +5 stars
+  global.appState.players.dabao.stars = 0;
+  window.currentGameLevel = 15;
+  global.trigger6yoVictory(10, 'Level 15 Medium');
+  assert.strictEqual(global.appState.players.dabao.stars, 5);
+
+  // Level 30: Hard (Level 29-42) -> +12 stars
+  global.appState.players.dabao.stars = 0;
+  window.currentGameLevel = 30;
+  global.trigger6yoVictory(10, 'Level 30 Hard');
+  assert.strictEqual(global.appState.players.dabao.stars, 12);
+
+  // Level 45: Ultimate (Level 43-50) -> +30 stars
+  global.appState.players.dabao.stars = 0;
+  window.currentGameLevel = 45;
+  global.trigger6yoVictory(10, 'Level 45 Ultimate');
+  assert.strictEqual(global.appState.players.dabao.stars, 30);
+});
+
+// Test 6: Streak multipliers (1.0x, 1.2x, 1.5x)
+testB("Streak multipliers (1.0x, 1.2x, 1.5x)", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  window.isMixedMode = false;
+  window.currentGameLevel = 45; // Ultimate base stars = 30
+
+  // Streak 1 (1.0x) -> 30 stars
+  global.appState.players.dabao.stars = 0;
+  global.appState.players.dabao.streaks = 1;
+  global.trigger6yoVictory(10, 'Streak 1');
+  assert.strictEqual(global.appState.players.dabao.stars, 30);
+
+  // Streak 3 (1.2x) -> Math.round(30 * 1.2) = 36 stars
+  global.appState.players.dabao.stars = 0;
+  global.appState.players.dabao.streaks = 3;
+  global.trigger6yoVictory(10, 'Streak 3');
+  assert.strictEqual(global.appState.players.dabao.stars, 36);
+
+  // Streak 7 (1.5x) -> Math.round(30 * 1.5) = 45 stars
+  global.appState.players.dabao.stars = 0;
+  global.appState.players.dabao.streaks = 7;
+  global.trigger6yoVictory(10, 'Streak 7');
+  assert.strictEqual(global.appState.players.dabao.stars, 45);
+});
+
+// Test 7: Milestone +150 stars bonus on Level 50 normal mode victory vs mixed mode
+testB("Milestone +150 stars bonus on Level 50 normal mode victory", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  window.currentGameLevel = 50; // Ultimate base stars = 30
+  global.appState.players.dabao.streaks = 1; // 1.0x multiplier
+
+  // Part A: Normal mode victory -> 30 base + 150 milestone = 180 stars
+  window.isMixedMode = false;
+  global.appState.players.dabao.stars = 0;
+  global.trigger6yoVictory(10, 'Normal Level 50 Milestone');
+  assert.strictEqual(global.appState.players.dabao.stars, 180);
+
+  // Part B: Mixed mode victory -> 30 base stars, NO milestone bonus
+  window.isMixedMode = true;
+  global.appState.players.dabao.stars = 0;
+  global.trigger6yoVictory(10, 'Mixed Level 50 No Milestone');
+  assert.strictEqual(global.appState.players.dabao.stars, 30);
+});
+
+// Test 8: Single progress increment vs. progress.mixed 综合航线 increment
+testB("Single progress increment vs. progress.mixed increment", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  
+  // Part A: Normal mode -> advances specific game track progress
+  window.isMixedMode = false;
+  window.currentGameLevel = 5;
+  global.appState.players.dabao.progress.spatial = 5;
+  global.trigger6yoVictory(10, 'Normal victory');
+  assert.strictEqual(global.appState.players.dabao.progress.spatial, 6);
+
+  // Part B: Mixed mode -> advances progress.mixed progress
+  window.isMixedMode = true;
+  window.currentGameLevel = 5;
+  window.currentGameMixedLevel = 10;
+  global.appState.players.dabao.progress.mixed = 10;
+  global.trigger6yoVictory(10, 'Mixed victory');
+  assert.strictEqual(global.appState.players.dabao.progress.mixed, 11);
+});
+
+// Test 9: Failure wrong questions log with timestamps
+testB("Failure wrong questions log with timestamps", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  window.isMixedMode = false;
+  window.currentGameLevel = 8;
+  global.appState.players.dabao.progress.spatial = 8;
+
+  const originalDateNow = Date.now;
+  const mockTimestamp = 1600000000000;
+  Date.now = () => mockTimestamp;
+
+  try {
+    global.trigger6yoFailure('Failed attempt', 'Explanation');
+    // Timestamp should be recorded accurately
+    assert.strictEqual(global.appState.players.dabao.wrongQuestions['spatial-8'], mockTimestamp);
+    // Failure advances level progress normally in normal mode (to prevent child frustration)
+    assert.strictEqual(global.appState.players.dabao.progress.spatial, 9);
+  } finally {
+    Date.now = originalDateNow;
+  }
+});
+
+// Test 10: 48-hour wrong question cooldown skipping vs. revival review modes (isReviewMode)
+testB("48-hour wrong question cooldown skipping vs. revival review modes", () => {
+  global.initAppState();
+  window.currentGameTrack = 'spatial';
+  window.currentPlayerId = 'dabao';
+  window.isMixedMode = false;
+
+  const now = Date.now();
+
+  // Part A: Skipping question failed within 48-hour cooldown (1 hour ago)
+  global.appState.players.dabao.solvedQuestions = [];
+  global.appState.players.dabao.wrongQuestions = {
+    'spatial-5': now - 3600 * 1000 // failed 1 hr ago (within 2 days)
+  };
+  let nextLevel = global.getNextAvailableLevel('dabao', 'spatial', 5);
+  assert.strictEqual(nextLevel, 6, "Should skip level 5 because it was failed within 48 hours");
+
+  // Part B: Repeating question failed outside 48-hour cooldown (50 hours ago)
+  global.appState.players.dabao.wrongQuestions = {
+    'spatial-5': now - 50 * 3600 * 1000 // failed 50 hrs ago (> 48 hours)
+  };
+  nextLevel = global.getNextAvailableLevel('dabao', 'spatial', 5);
+  assert.strictEqual(nextLevel, 5, "Should NOT skip level 5 because 48-hour cooldown expired");
+
+  // Part C: Successful review mode removes question from wrong pool
+  global.appState.players.dabao.wrongQuestions = {
+    'spatial-5': now - 3600 * 1000
+  };
+  window.currentGameLevel = 5;
+  window.isReviewMode = true;
+  window.reviewLevelKey = 'spatial-5';
+
+  global.trigger6yoVictory(10, 'Review success');
+
+  assert.strictEqual(global.appState.players.dabao.wrongQuestions['spatial-5'], undefined, "Successful review should remove question from wrong pool");
+  assert.strictEqual(window.isReviewMode, false, "Should turn off review mode");
+  assert.strictEqual(window.reviewLevelKey, null, "Should clear reviewLevelKey");
+
+  // Part D: Unsuccessful review mode keeps question in wrong pool and does NOT advance level progress
+  global.appState.players.dabao.wrongQuestions = {
+    'spatial-5': now - 3600 * 1000
+  };
+  global.appState.players.dabao.progress.spatial = 5;
+  window.currentGameLevel = 5;
+  window.isReviewMode = true;
+  window.reviewLevelKey = 'spatial-5';
+
+  global.trigger6yoFailure('Review failed', 'Explanation');
+
+  assert.ok(global.appState.players.dabao.wrongQuestions['spatial-5'] >= now, "Should update wrong question timestamp to current time");
+  assert.strictEqual(window.isReviewMode, false, "Should turn off review mode");
+  assert.strictEqual(window.reviewLevelKey, null, "Should clear reviewLevelKey");
+  assert.strictEqual(global.appState.players.dabao.progress.spatial, 5, "Level progress should NOT advance on review mode failure");
+});
+
+// Restore setTimeout
+global.setTimeout = originalSetTimeout;
+
+console.log(`\n📊 Suite B Summary: Passed ${suiteBPassed}, Failed ${suiteBFailed}`);
+
+// --- CONSOLIDATED TEST REPORT ---
+const totalPassed = suiteAPassed + suiteBPassed;
+const totalFailed = suiteAFailed + suiteBFailed;
+console.log("\n==============================================");
+console.log(`🏆 FINAL TEST REPORT: Passed ${totalPassed}, Failed ${totalFailed}`);
+console.log("==============================================");
+
+if (totalFailed > 0) {
   process.exit(1);
+} else {
+  process.exit(0);
 }
