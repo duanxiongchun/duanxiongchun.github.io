@@ -58,11 +58,14 @@ const COOLDOWN_MS = 2 * 24 * 60 * 60 * 1000; // 2天 = 172800000 毫秒
 function getNextAvailableLevel(playerId, type, currentLevel) {
   const player = appState.players[playerId];
   const wrongQuestions = player.wrongQuestions || {};
+  const solvedQuestions = player.solvedQuestions || [];
   let testLevel = currentLevel;
   while (testLevel <= 50) {
     const key = `${type}-${testLevel}`;
     const lastWrongTime = wrongQuestions[key];
-    if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
+    if (solvedQuestions.includes(key)) {
+      testLevel++; // 已正确解答的题目，跳过
+    } else if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
       testLevel++; // 2天内答错的题目，跳过
     } else {
       break;
@@ -74,6 +77,7 @@ function getNextAvailableLevel(playerId, type, currentLevel) {
 function getNextAvailableMixedLevel(playerId, currentMixedLevel) {
   const player = appState.players[playerId];
   const wrongQuestions = player.wrongQuestions || {};
+  const solvedQuestions = player.solvedQuestions || [];
   let testMixed = currentMixedLevel;
   const tracks = ['spatial', 'numeric', 'attention', 'deduction', 'pattern', 'memory', 'language', 'analogy'];
   while (testMixed <= 400) {
@@ -82,7 +86,9 @@ function getNextAvailableMixedLevel(playerId, currentMixedLevel) {
     const trackLevel = Math.floor((testMixed - 1) / 8) + 1;
     const key = `${type}-${trackLevel}`;
     const lastWrongTime = wrongQuestions[key];
-    if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
+    if (solvedQuestions.includes(key)) {
+      testMixed++; // 已正确解答的题目，跳过
+    } else if (lastWrongTime && (Date.now() - lastWrongTime < COOLDOWN_MS)) {
       testMixed++; // 2天内答错的题目，跳过
     } else {
       break;
@@ -137,6 +143,13 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
     isMilestone = true;
   }
 
+  // Record solved question to prevent repetition in both modes
+  const qKey = `${type}-${level}`;
+  if (!player.solvedQuestions) player.solvedQuestions = [];
+  if (!player.solvedQuestions.includes(qKey)) {
+    player.solvedQuestions.push(qKey);
+  }
+
   // Update State progress
   if (window.isReviewMode && window.reviewLevelKey) {
     // Review mode solved correctly! Remove it from the wrong pool
@@ -146,10 +159,11 @@ function trigger6yoVictory(ignoredStarParam, speechFeedback) {
   } else {
     // Normal progress advancement
     if (window.isMixedMode) {
-      player.progress.mixed = (player.progress.mixed || 1) + 1;
+      const playedMixed = window.currentGameMixedLevel || player.progress.mixed || 1;
+      player.progress.mixed = Math.max(player.progress.mixed || 1, playedMixed + 1);
     } else {
       if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
-      player.progress[type]++;
+      player.progress[type] = Math.max(player.progress[type], level + 1);
     }
   }
   
@@ -235,10 +249,11 @@ function trigger6yoFailure(speechExplanation, correctValueExplanation) {
   } else {
     // Normal progress advancement
     if (window.isMixedMode) {
-      player.progress.mixed = (player.progress.mixed || 1) + 1;
+      const playedMixed = window.currentGameMixedLevel || player.progress.mixed || 1;
+      player.progress.mixed = Math.max(player.progress.mixed || 1, playedMixed + 1);
     } else {
       if (typeof player.progress[type] !== 'number') player.progress[type] = 1;
-      player.progress[type]++;
+      player.progress[type] = Math.max(player.progress[type], level + 1);
     }
   }
   
@@ -405,6 +420,7 @@ function launchTest(type) {
   }
 
   let level;
+  window.currentGameMixedLevel = null;
   if (reviewLevel !== null) {
     window.isReviewMode = true;
     window.reviewLevelKey = `${type}-${reviewLevel}`;
@@ -413,6 +429,8 @@ function launchTest(type) {
     window.isReviewMode = false;
     window.reviewLevelKey = null;
     level = getNextAvailableLevel(currentPlayerId, type, player.progress[type] || 1);
+    player.progress[type] = level;
+    saveAppState();
   }
   window.currentGameLevel = level;
   window.currentGameTrack = type;
@@ -463,6 +481,21 @@ function resetTrackProgress(type) {
   const currentPlayerId = window.currentPlayerId || 'dabao';
   const player = appState.players[currentPlayerId];
   player.progress[type] = 1;
+  
+  // Clear solved questions for this track
+  if (player.solvedQuestions) {
+    player.solvedQuestions = player.solvedQuestions.filter(qKey => !qKey.startsWith(`${type}-`));
+  }
+  
+  // Clear wrong questions for this track
+  if (player.wrongQuestions) {
+    Object.keys(player.wrongQuestions).forEach(qKey => {
+      if (qKey.startsWith(`${type}-`)) {
+        delete player.wrongQuestions[qKey];
+      }
+    });
+  }
+
   saveAppState();
   speakText(`已重置${getTrackChineseName(type)}，重新开始挑战吧！`);
   launchTest(type);
@@ -515,6 +548,7 @@ function launchMixedMode() {
 
   let type;
   let trackLevel;
+  window.currentGameMixedLevel = null;
   if (reviewLevel !== null) {
     window.isReviewMode = true;
     window.reviewLevelKey = `${reviewType}-${reviewLevel}`;
@@ -544,6 +578,10 @@ function launchMixedMode() {
       speakText(`恭喜${name}！你已经完美通关了四百关综合特训航线的全部内容，你获得了终极大勋章！你是宇宙级逻辑小天才！`);
       return;
     }
+
+    player.progress.mixed = mixedLevel;
+    saveAppState();
+    window.currentGameMixedLevel = mixedLevel;
 
     const tIdx = (mixedLevel - 1) % 8;
     type = tracks[tIdx];
@@ -579,6 +617,17 @@ function resetMixedProgress() {
   const currentPlayerId = window.currentPlayerId || 'dabao';
   const player = appState.players[currentPlayerId];
   player.progress.mixed = 1;
+  
+  // Reset all individual track progress to 1
+  const tracks = ['spatial', 'numeric', 'attention', 'deduction', 'pattern', 'memory', 'language', 'analogy'];
+  tracks.forEach(t => {
+    player.progress[t] = 1;
+  });
+
+  // Clear all solved and wrong questions
+  player.solvedQuestions = [];
+  player.wrongQuestions = {};
+
   saveAppState();
   speakText("已重置综合特训进度，重新开始挑战吧！");
   launchMixedMode();
