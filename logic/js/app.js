@@ -49,7 +49,7 @@ const DEFAULT_STATE = {
   versionInfo: {
     major: 1,
     minor: 5,
-    build: 21 // We will auto-increment this representing total publish counts
+    build: 22 // We will auto-increment this representing total publish counts
   }
 };
 
