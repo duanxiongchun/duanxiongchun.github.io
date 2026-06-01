@@ -17,10 +17,10 @@ const MIRROR_QUESTIONS = [
 ];
 
 const ROTATION_QUESTIONS = [
-  { title:'把下面的图案旋转90°（向右转一格），变成哪个？', original:'➡️⬜\n⬆️⬜', correct:'⬆️➡️\n⬜⬜', wrong:['⬜⬆️\n⬜➡️','⬜⬜\n➡️⬆️','⬆️⬜\n➡️⬜'], hint:'向右旋转90°：上面变右边，右边变下面' },
+  { title:'把下面的图案旋转90°（向右转一格），变成哪个？', original:'➡️⬜\n⬆️⬜', correct:'➡️⬇️\n⬜⬜', wrong:['⬆️➡️\n⬜⬜','⬇️➡️\n⬜⬜','⬜⬜\n➡️⬇️'], hint:'向右旋转90°：上面变右边，右边变下面，且箭头自身也会跟着顺时针旋转哦！' },
   { title:'这个箭头转了多少度？从「↑」变成了「→」', original:'↑', correct:'90°（四分之一圈）', wrong:['45°（八分之一圈）','180°（半圈）','270°（四分之三圈）'], hint:'从上到右，是四分之一圈转动', isText:true },
-  { title:'这个图案旋转180°后，变成哪个？', original:'▲\n⬜⬜', correct:'⬜⬜\n▽', wrong:['▲\n⬜⬜','⬜▲\n⬜⬜','⬜⬜\n▲'], hint:'旋转180°就是整个翻转过来，上下颠倒' },
-  { title:'「b」旋转后变成哪个字母？', original:'b', correct:'d', wrong:['q','p','g'], hint:'b左右镜像变d，上下翻转变p', isText:true },
+  { title:'这个图案旋转180°后，变成哪个？', original:'▲⬜\n⬜⬜', correct:'⬜⬜\n⬜▽', wrong:['▲⬜\n⬜⬜','⬜▲\n⬜⬜','⬜⬜\n▽⬜'], hint:'旋转180°就是整个翻转过来，上下颠倒，左上角变右下角' },
+  { title:'「b」字旋转180°（转半圈）后，变成哪个字母？', original:'b', correct:'q', wrong:['d','p','g'], hint:'b旋转180°，上下颠倒且左右对调，变成了q！', isText:true },
   { title:'「p」旋转180°变成哪个？', original:'p', correct:'d', wrong:['b','q','g'], hint:'p转180°，上下颠倒后变成d', isText:true },
   { title:'小汽车向右开，转了半圈后朝向哪边？', original:'🚗→', correct:'←🚗', wrong:['🚗→','↑🚗','🚗↓'], hint:'半圈就是180°，方向完全反过来', isText:true },
   { title:'把「L」形状向右旋转90°变成哪个？', original:'⬛⬜\n⬛⬜\n⬛⬛', correct:'⬛⬛⬛\n⬛⬜⬜', wrong:['⬛⬛\n⬜⬛\n⬜⬛','⬛⬛\n⬛⬜\n⬛⬜','⬜⬜⬛\n⬛⬛⬛'], hint:'L形向右转：竖的变横的，横的变竖的' },
