@@ -51,14 +51,23 @@ graph TD
       "name": "果果 (6岁)",
       "avatar": "🦁",
       "stars": 120,
-      "progress": { "spatial": 5, "numeric": 8, "attention": 12, "mixed": 15 },
-      "medals": ["spatial_rookie"]
+      "streaks": 5,
+      "lastTrainedDate": 1717112000000,
+      "progress": { "spatial": 5, "numeric": 8, "attention": 12, "deduction": 4, "mixed": 15 },
+      "medals": ["spatial_rookie"],
+      "solvedQuestions": ["spatial-5", "numeric-3"],
+      "wrongQuestions": { "spatial-6": 1717111000000 },
+      "stats": { "spatial": 75, "numeric": 60, "attention": 85, "deduction": 50 }
     },
     "erbao": {
       "name": "淼淼 (2岁)",
       "avatar": "🐰",
       "stars": 30,
-      "stickers": ["happy_bunny"]
+      "streaks": 2,
+      "lastTrainedDate": null,
+      "stickers": ["happy_bunny"],
+      "solvedQuestions": ["sensory-1"],
+      "wrongQuestions": {}
     }
   },
   "rewards": [
@@ -73,17 +82,23 @@ graph TD
       "cost": 180,
       "date": "2026-05-31 07:15"
     }
-  ]
+  ],
+  "versionInfo": {
+    "major": 1,
+    "minor": 5,
+    "build": 23
+  }
 }
 ```
 
 ### 2. 积分与奖励接口定义 (API Hooks)
 系统提供以下全局 API，任何子游戏模块均可无缝调用以增减金币：
 
-* **果果金币与胜利分发器**：`trigger6yoVictory(starEarned, speechFeedback)`
-  * *职责*：增加金币 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 语音赞赏 ➔ 自动切换并载入下一关（果果特训版）。
-* **淼淼金币与胜利分发器**：`trigger2yoVictory(type, speechFeedback)`
-  * *职责*：增加金币 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 萌兔卡片渲染 ➔ 语音赞赏 ➔ 延时 2 秒后自动重新加载同轨道的下一题，实现无感连续出题（淼淼启蒙版）。
+* **统一金币与胜利分发器**：`trigger6yoVictory(ignoredStarParam, speechFeedback)`
+  * *职责*：增加金币 ➔ 记录已做关卡防止重复 ➔ 写入 LocalStorage ➔ 刷新屏幕 HUD 显示 ➔ 语音赞赏 ➔ 自动切换并载入下一关。
+  * *统一逻辑说明*：需要特别注意的是，**`trigger2yoVictory` 并不存在于代码库中**。为了降低维护成本和避免冗余代码，系统实现了统一的 `trigger6yoVictory(ignoredStarParam, speechFeedback)` 接口，它在内部动态检查 `window.currentPlayerId`：
+    * 若当前为**淼淼（Erbao，2岁）**：自动切换为黄橙暖色色调框架（`#fbbf24`）、展现萌兔卡片（`🐰`）及“回答正确！淼淼真棒！”标题，并以温柔的 TTS 语音播报，延时 1.8 秒后自动进入同轨道的下一题，实现无感连续答题；
+    * 若当前为**果果（Dabao，6岁）**：采用翡翠绿冷色调（`#10b981`）、展现探索星星（`🌟`）及“回答正确！”标题，并以慷慨激昂的 TTS 语音播报，随后切换载入下一关。
 * **奖励兑换申请**：`requestRedemption(playerId, rewardId)`
   * *职责*：核对余额是否足够 ➔ 扣除虚拟金币 ➔ 将申请推入 `redemptions` 审核队列 ➔ 触发页面渲染。
 * **家长端确认发放**：`approveRedemption(index)`
@@ -201,6 +216,17 @@ function generateDynamicWeight(level) {
 * **任意顺序拖拽**：在序列闪现记忆复现题型中，允许孩子以任意顺序将选项卡片拖拽入对应的空置槽位中。如果卡片与其落点槽位的正确序列值吻合，则即刻锁定成功。
 * **指针穿透与定位**：拖拽至槽位上方时，通过临时声明卡片的 `pointerEvents = 'none'` 并使用 `document.elementFromPoint` 探测下方的 `.memory-slot` 元素，精准解耦物理布局，消除 iPadOS Safari 的点击溢出风险。
 * **一键重置 (State Flushing)**：提供“一键清空重新选择”交互控件，一键清除所有已填槽位样式及文本，并将下方全部备选项卡片重置为可用状态，给予孩子无挫败感的高阶重试通路。
+
+### 5. `deduction.js` 逻辑排列的混合手势实战设计 (Deduction Hybrid Gestures Implementation)
+在“逻辑演绎与时序排序”模块 (`deduction.js`) 中，系统完美融合了 **'Tap-to-Move' (轻触点击飞入)** 与 **'Touch Drag-and-Drop' (触屏拖动放置)** 的高保真双重容错混合手势交互模型：
+* **'Tap-to-Move' (轻点/轻触槽位飞入机制)**：
+  * **备选池卡片点击飞入**：点击下方备选池卡片 (`onclick="placeDeductionItemInSlot('${item.id}')"`)，触发音效，卡片自动“飞入”上方首个空置的目标步骤槽 (`deductionSlots` 中第一个 `null` 位置)；
+  * **目标槽卡片点击撤回**：点击已填充目标槽中的卡片 (`onclick="returnDeductionItemToPool(${idx})"`)，触发撤回音效，该卡片立刻移出槽位并安全归还到下方的备选卡片池 (`deductionPool`)；
+  * **一键清空重置**：点击 `🔄 一键清空重新选择`，通过清空槽位数组 (`deductionSlots`) 并洗牌备选池 (`deductionPool`)，迅速恢复初始答题状态。
+* **'Touch Drag-and-Drop' (触屏物理拖拽交互)**：
+  * **触屏原生手势映射**：移动端在 `touchstart`、`touchmove`、`touchend` 的事件流中，利用 GPU 加速的 `translate3d(dx, dy, 0)` 实现 high-fidelity 位移跟随，并调用 `e.preventDefault()` 阻止 iPadOS Safari 的弹性视口滚动与系统长按手势冲突；
+  * **绝对坐标槽位探测 (Pointer Penetration & Probe)**：在拖拽手指抬起时 (`touchend`)，利用 CSS 指针穿透技术，首先将拖拽元素自身的 `pointerEvents` 暂时声明为 `'none'`，接着调用 `document.elementFromPoint(touch.clientX, touch.clientY)` 精准探测并捕获指尖坐标正下方的 DOM 元素；
+  * **最近容器匹配**：使用 `closest('.deduction-slot')` 方法向上匹配被触碰的目标步骤槽。一旦匹配成功，即调用 `handleDeductionDrop(itemId, slot)` 将卡片插入对应槽位；若未匹配到有效槽位，则利用 CSS `transform` 顺滑动画让卡片自动弹回初始位置，确保视觉过渡平滑、零挫败感。
 
 ---
 
