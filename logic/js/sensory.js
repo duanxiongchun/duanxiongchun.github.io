@@ -128,7 +128,44 @@ function launchSensory(type) {
 }
 
 // Custom real-time audio synthesizer using Web Audio API (Offline-first & High quality!)
+// Premium recorded sound player with offline synthesizer fallback
 function playSensorySound(type) {
+  try {
+    let url = "";
+    if (type === 'cat') {
+      url = "https://actions.google.com/sounds/v1/animals/cat_meow.ogg";
+    } else if (type === 'dog') {
+      url = "https://actions.google.com/sounds/v1/animals/dog_bark.ogg";
+    } else if (type === 'beep') {
+      url = "https://actions.google.com/sounds/v1/transportation/car_horn.ogg";
+    } else if (type === 'sheep') {
+      url = "https://actions.google.com/sounds/v1/animals/sheep_bleating.ogg";
+    } else if (type === 'bird') {
+      url = "https://actions.google.com/sounds/v1/animals/bird_calling.ogg";
+    }
+
+    if (url) {
+      const audio = new Audio(url);
+      audio.volume = 0.55;
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.warn("CDN audio playback failed, falling back to offline synthesizer...", err);
+          playSynthesizedSensorySound(type);
+        });
+      }
+    } else {
+      playSynthesizedSensorySound(type);
+    }
+  } catch (e) {
+    console.warn("HTML5 Audio failed, falling back to offline synthesizer...", e);
+    playSynthesizedSensorySound(type);
+  }
+}
+
+// Custom real-time audio synthesizer using Web Audio API (Offline-first & High quality!)
+function playSynthesizedSensorySound(type) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     
