@@ -248,7 +248,7 @@ function launchMemory(level, container) {
     questionText = q.q;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(236,72,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#f472b6;font-weight:800;margin:0;">${getLevelTitle(level, '🧠 短时记忆', '闪现复现')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -288,7 +288,7 @@ function launchMemory(level, container) {
     questionText = `果果，记住金币躲在哪些格子里！马上要盖上木板喽！`;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(236,72,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#f472b6;font-weight:800;margin:0;">${getLevelTitle(level, '🪙 短时记忆', '藏金币')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -334,7 +334,7 @@ function launchMemory(level, container) {
     questionText = `果果，记住这四样东西的摆放位置哦！一会要考考你！`;
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(236,72,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#f472b6;font-weight:800;margin:0;">${getLevelTitle(level, '📦 短时记忆', '位置绑定')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -383,7 +383,7 @@ function launchMemory(level, container) {
     questionText = `果果，仔细看这几个图案，一会会有一个小调皮藏起来！`;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(236,72,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#f472b6;font-weight:800;margin:0;">${getLevelTitle(level, '🕵️‍♂️ 短时记忆', '谁不见了')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -392,8 +392,7 @@ function launchMemory(level, container) {
         <div id="missing-display" style="display:flex;justify-content:center;gap:15px;margin:25px 0;flex-wrap:wrap;">
           ${q.show.map(s => `<div class="glass-card" style="font-size:2.5em;border:2px solid rgba(255,255,255,0.15);width:70px;height:70px;display:flex;align-items:center;justify-content:center;">${s}</div>`).join('')}
         </div>
-        <div id="missing-countdown" style="font-size:1.05em;color:#f472b6;font-weight:700;">👀 倒计时，3 秒后有人消失...</div>
-        <div id="missing-opts" style="display:none;grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px;margin:20px auto 0;"></div>
+        <div id="missing-opts" class="responsive-options-grid" style="display:none;max-width:360px;margin:20px auto 0;"></div>
         <button class="mock-button" onclick="loadDabaoHUD()" style="margin-top:25px;width:100%;border-color:transparent;">🛰️ 返回特训大厅</button>
       </div>
     `;
@@ -436,7 +435,7 @@ function launchMemory(level, container) {
     questionText = `果果，记住这三个数字！一会要倒着（从右往左）选出来哦！挑战性极强！`;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(236,72,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(236,72,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#f472b6;font-weight:800;margin:0;">${getLevelTitle(level, '⏪ 短时记忆', '数字逆序倒背')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>

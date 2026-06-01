@@ -32,7 +32,7 @@ function launchAttention(level, container) {
     // 舒尔特格 1-9
     questionText = '果果，请从小到大，按顺序快速点击一到九的数字格子！';
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(52,211,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#34d399;font-weight:800;margin:0;">${getLevelTitle(level, '⚡ 注意力', '舒尔特格')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -63,7 +63,7 @@ function launchAttention(level, container) {
     list[diffIdx] = t.diff;
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(52,211,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#34d399;font-weight:800;margin:0;">${getLevelTitle(level, '🎯 注意力', '符号侦探')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -91,7 +91,7 @@ function launchAttention(level, container) {
     const opts = Array.from({length: 6}, (_, i) => min + i);
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(52,211,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#34d399;font-weight:800;margin:0;">${getLevelTitle(level, '🔢 注意力', '视觉快速计数')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -121,7 +121,7 @@ function launchAttention(level, container) {
     const correctIdx = uniqueItems.indexOf(q.ans);
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(52,211,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#34d399;font-weight:800;margin:0;">${getLevelTitle(level, '👯 注意力', '寻找双胞胎')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -169,7 +169,7 @@ function launchAttention(level, container) {
     svgHTML += `</svg>`;
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(52,211,153,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(52,211,153,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#34d399;font-weight:800;margin:0;">${getLevelTitle(level, '🕸️ 注意力', '视网膜路径追踪')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -177,7 +177,7 @@ function launchAttention(level, container) {
         <p style="font-size:0.9em;color:#a1a1aa;margin-bottom:15px;">🦁 顺着彩色波浪线看一看：谁能吃到【${q.targetFood}】？</p>
         <div style="margin-bottom:20px;">${svgHTML}</div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:15px;">💡 ${q.hint}</p>
-        <div style="display:flex;justify-content:center;gap:12px;max-width:320px;margin:0 auto;">
+        <div class="responsive-options-grid">
           ${q.options.map((opt, idx) => `
             <button class="mock-button glow-dabao" onclick="checkAttentionChoice(${idx}, ${correctIdx}, '太神奇了！果果的小眼睛追踪线条又快又准！')" style="position:relative;font-size:1.1em;padding:12px 18px;padding-right:45px;border-radius:12px;font-weight:700;">
               ${opt}

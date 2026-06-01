@@ -43,7 +43,7 @@ function launchPattern(level, container) {
   }
 
   container.innerHTML = `
-    <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(251,191,36,0.3);">
+    <div class="glass-card game-stage-card" style="border-color:rgba(251,191,36,0.3);">
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
         <h3 style="color:#fbbf24;font-weight:800;margin:0;">${getLevelTitle(level, '🎨 图形矩阵推理', '找寻矩阵规律')}</h3>
         <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -60,7 +60,7 @@ function launchPattern(level, container) {
         <span>💡 ${q.hint}</span>
         ${helpBtnHTML}
       </p>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:360px;margin:0 auto;">
+      <div class="responsive-options-grid max-360">
         ${shuffled.map((item) => `
           <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="position:relative;font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;padding-right:42px;border-radius:10px;min-height:55px;">
             ${item.o}

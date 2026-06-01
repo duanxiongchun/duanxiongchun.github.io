@@ -33,7 +33,7 @@ function loadDabaoHUD() {
 
   const container = document.getElementById('game-stage');
   container.innerHTML = `
-    <div style="display:grid;grid-template-columns:2.4fr 1fr;gap:25px;padding-top:20px;">
+    <div class="responsive-main-grid">
       <div>
         <div class="glass-card" style="padding:25px;border-color:rgba(99,102,241,0.25);margin-bottom:25px;">
           <h2 style="color:#818cf8;font-weight:800;display:flex;align-items:center;gap:10px;margin:0;">
@@ -65,7 +65,7 @@ function loadDabaoHUD() {
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+          <div class="responsive-track-grid">
             ${tracks.map(t => {
               const lv = clamp(p[t.key] || 1);
               const pc = pct(p[t.key] || 1);
@@ -139,7 +139,7 @@ function loadErbaoHUD() {
 
   const container = document.getElementById('game-stage');
   container.innerHTML = `
-    <div style="display:grid;grid-template-columns:2.4fr 1fr;gap:25px;padding-top:20px;">
+    <div class="responsive-main-grid">
       <div>
         <div class="glass-card" style="padding:25px;border-color:rgba(251,191,36,0.25);margin-bottom:25px;">
           <h2 style="color:#fbbf24;font-weight:800;display:flex;align-items:center;gap:10px;margin:0;">
@@ -171,7 +171,7 @@ function loadErbaoHUD() {
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+          <div class="responsive-track-grid">
             ${tracks.map(t => {
               const lv = clamp(p[t.key] || 1);
               const pc = pct(p[t.key] || 1);

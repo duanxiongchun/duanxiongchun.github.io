@@ -15,7 +15,7 @@ function launchNumeric(level, container) {
     const opts = Array.from({length:10}, (_,i) => min + i).filter(v => v >= 0);
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(6,182,212,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#22d3ee;font-weight:800;margin:0;">${getLevelTitle(level, '🧮 数字规律', '数列排队')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -51,7 +51,7 @@ function launchNumeric(level, container) {
     const opts = Array.from({length:9}, (_,i) => min + i).filter(v => v >= 0);
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(6,182,212,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#22d3ee;font-weight:800;margin:0;">${getLevelTitle(level, '⚖️ 数字规律', '天平平衡')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -100,7 +100,7 @@ function launchNumeric(level, container) {
     const opts = Array.from({length:9}, (_,i) => min + i).filter(v => v >= 0);
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(6,182,212,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#22d3ee;font-weight:800;margin:0;">${getLevelTitle(level, '🍎 数字规律', '图形代数')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -141,7 +141,7 @@ function launchNumeric(level, container) {
     const topVal = q.top;
     
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(6,182,212,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(6,182,212,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#22d3ee;font-weight:800;margin:0;">${getLevelTitle(level, '🔺 数字规律', '数字金字塔')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}')" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>

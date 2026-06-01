@@ -274,7 +274,7 @@ function launchDeduction(level, container) {
     questionText = q.text;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(168,85,247,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#d8b4fe;font-weight:800;margin:0;">${getLevelTitle(level, '🔍 逻辑排序', '故事发生顺序')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -308,7 +308,7 @@ function launchDeduction(level, container) {
     questionText = q.text;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(168,85,247,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#d8b4fe;font-weight:800;margin:0;">${getLevelTitle(level, '📏 逻辑排序', '属性比较')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -344,7 +344,7 @@ function launchDeduction(level, container) {
     questionText = q.text;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(168,85,247,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#d8b4fe;font-weight:800;margin:0;">${getLevelTitle(level, '⚖️ 逻辑排序', '天平轻重推理')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -381,16 +381,16 @@ function launchDeduction(level, container) {
     questionText = q.text;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(168,85,247,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#d8b4fe;font-weight:800;margin:0;">${getLevelTitle(level, '💭 逻辑推理', '因果判断')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <div class="glass-card" style="padding:15px;margin:20px 0;background:rgba(168,85,247,0.06);border-color:rgba(168,85,247,0.2);">
-          <p style="font-size:1.1em;color:#fff;font-weight:700;line-height:1.5;margin:0;">${q.text}</p>
+          <p style="font-size:1.15em;color:#fff;font-weight:700;line-height:1.5;margin:0;">${q.text}</p>
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 提示：${q.hint}</p>
-        <div style="display:flex;flex-direction:column;gap:12px;max-width:440px;margin:0 auto;">
+        <div class="responsive-options-grid">
           ${q.opts.map((opt, idx) => `
             <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="position:relative;font-size:1.05em;padding:15px;padding-right:45px;border-radius:12px;font-weight:700;text-align:left;margin-top:0;">
               ${opt}
@@ -411,16 +411,16 @@ function launchDeduction(level, container) {
     questionText = q.text;
 
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(168,85,247,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(168,85,247,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#d8b4fe;font-weight:800;margin:0;">${getLevelTitle(level, '🐾 逻辑推理', '队列排座位')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <div class="glass-card" style="padding:18px;margin:20px 0;background:rgba(168,85,247,0.06);border-color:rgba(168,85,247,0.2);">
-          <p style="font-size:1.05em;color:#fff;font-weight:700;line-height:1.5;margin:0;">${q.text}</p>
+          <p style="font-size:1.15em;color:#fff;font-weight:700;line-height:1.5;margin:0;">${q.text}</p>
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 提示：${q.hint}</p>
-        <div style="display:grid;grid-template-columns:1fr;gap:10px;max-width:440px;margin:0 auto;">
+        <div class="responsive-options-grid">
           ${q.opts.map((opt, idx) => `
             <button class="mock-button glow-dabao" onclick="checkDeductionChoice(${idx}, ${q.ans})" style="position:relative;font-size:1.1em;padding:15px;padding-right:45px;border-radius:12px;font-weight:700;margin-top:0;">
               ${opt}

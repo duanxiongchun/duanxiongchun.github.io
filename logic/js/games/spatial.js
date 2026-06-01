@@ -64,7 +64,7 @@ function launchSpatial(level, container) {
     const min = Math.max(1, currentAnswer6yo - 3);
     const opts = Array.from({length:8}, (_,i) => min+i);
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#818cf8;font-weight:800;margin:0;">${getLevelTitle(level, '🧱 空间推理', '积木计数')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${q.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -89,7 +89,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，左边是原图，哪一个选项是它的镜像（照镜子的样子）？`;
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#818cf8;font-weight:800;margin:0;">${getLevelTitle(level, '🪞 空间推理', '镜像对称')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -110,7 +110,7 @@ function launchSpatial(level, container) {
           <span>💡 ${q.hint}</span>
           <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('mirror')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+        <div class="responsive-options-grid max-420">
           ${allOpts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:1.3em;line-height:1.6;padding:12px;padding-right:45px;border-radius:12px;white-space:pre;font-family:monospace;">
               ${opt}
@@ -133,7 +133,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.title}`;
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#818cf8;font-weight:800;margin:0;">${getLevelTitle(level, '🔄 空间推理', '图形旋转')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -144,7 +144,7 @@ function launchSpatial(level, container) {
           <span>💡 ${q.hint}</span>
           <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
         </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+        <div class="responsive-options-grid max-420">
           ${allOpts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:${q.isText?'1em':'1.3em'};padding:15px;padding-right:45px;border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">
               ${opt}
@@ -166,7 +166,7 @@ function launchSpatial(level, container) {
     const correctIdx = allOpts.indexOf(q.correct);
     const questionText = `果果，${q.desc}`;
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#818cf8;font-weight:800;margin:0;">${getLevelTitle(level, '🧩 空间推理', '规律补全')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -178,7 +178,7 @@ function launchSpatial(level, container) {
           `).join('')}
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto;">
+        <div class="responsive-options-grid max-440">
           ${allOpts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;line-height:1.4;">
               ${opt}
@@ -200,7 +200,7 @@ function launchSpatial(level, container) {
     const opts = q.optEmoji;
     const questionText = `果果，${q.title}`;
     container.innerHTML = `
-      <div class="glass-card" style="padding:30px;text-align:center;max-width:600px;margin:20px auto;border-color:rgba(99,102,241,0.3);">
+      <div class="glass-card game-stage-card" style="border-color:rgba(99,102,241,0.3);">
         <div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
           <h3 style="color:#818cf8;font-weight:800;margin:0;">${getLevelTitle(level, '📦 空间推理', '立体想象')}</h3>
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
@@ -210,7 +210,7 @@ function launchSpatial(level, container) {
           <p style="font-size:1.05em;color:#fff;font-weight:600;margin:0;">${q.title}</p>
         </div>
         <p style="font-size:0.8em;color:#64748b;margin-bottom:20px;">💡 ${q.hint}</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto;">
+        <div class="responsive-options-grid max-420">
           ${opts.map((opt,i) => `
             <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${q.ans})" style="position:relative;font-size:0.95em;padding:14px;padding-right:45px;border-radius:12px;font-weight:700;">
               ${opt}
