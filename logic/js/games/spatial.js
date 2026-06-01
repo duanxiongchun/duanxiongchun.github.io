@@ -1,5 +1,30 @@
 /* 🧠 脑力认知研究所 - 空间图形推理模块 Spatial Games Engine */
 
+function renderOptionContent(opt) {
+  if (typeof opt !== 'string' || !opt.includes('\n')) {
+    return opt;
+  }
+  const rows = opt.trim().split('\n');
+  const firstRowCells = Array.from(rows[0].trim());
+  const colsCount = firstRowCells.length;
+  
+  // Dynamic cell sizing based on grid dimensions for maximum visual appeal
+  const cellSize = colsCount > 2 ? '28px' : '34px';
+  const fontSize = colsCount > 2 ? '1.3em' : '1.5em';
+  const gap = '2px';
+  
+  let gridHTML = `<div style="display: grid; grid-template-columns: repeat(${colsCount}, ${cellSize}); gap: ${gap}; justify-content: center; align-items: center; margin: 0 auto; line-height: 1;">`;
+  for (const row of rows) {
+    const cells = Array.from(row.trim());
+    for (const cell of cells) {
+      // Flexbox container ensures the emoji is centered down to the pixel regardless of render width variations
+      gridHTML += `<div style="width: ${cellSize}; height: ${cellSize}; display: flex; align-items: center; justify-content: center; font-size: ${fontSize};">${cell}</div>`;
+    }
+  }
+  gridHTML += `</div>`;
+  return gridHTML;
+}
+
 function getSpatialStack(level) {
   if (level === 1) return [{x:0,y:0,z:0},{x:0,y:0,z:1}];
   if (level === 2) return [{x:0,y:0,z:0},{x:1,y:0,z:0},{x:0,y:0,z:1}];
@@ -102,12 +127,12 @@ function launchSpatial(level, container) {
         <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin:20px 0;">
           <div style="text-align:center;">
             <div style="font-size:0.75em;color:#64748b;margin-bottom:8px;">原图</div>
-            <div class="glass-card" style="padding:15px;font-size:1.8em;line-height:1.6;white-space:pre;font-family:monospace;min-width:100px;">${q.original}</div>
+            <div class="glass-card" style="padding:15px;display:flex;align-items:center;justify-content:center;min-width:110px;min-height:110px;margin:0 auto;">${renderOptionContent(q.original)}</div>
           </div>
           <div style="font-size:2em;color:#818cf8;">🪞</div>
           <div style="text-align:center;">
             <div style="font-size:0.75em;color:#64748b;margin-bottom:8px;">镜像是？</div>
-            <div class="glass-card" style="padding:15px;font-size:1.8em;line-height:1.6;border:2px dashed #6366f1;min-width:100px;color:#818cf8;font-weight:800;">❓</div>
+            <div class="glass-card" style="padding:15px;display:flex;align-items:center;justify-content:center;min-width:110px;min-height:110px;border:2px dashed #6366f1;color:#818cf8;font-weight:800;margin:0 auto;">❓</div>
           </div>
         </div>
         <p style="font-size:0.85em;color:#94a3b8;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
@@ -119,8 +144,8 @@ function launchSpatial(level, container) {
             const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
             const padRight = hasChinese ? 'padding-right:45px;' : '';
             return `
-              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:1.3em;line-height:1.6;padding:12px;${padRight}border-radius:12px;white-space:pre;font-family:monospace;">
-                ${opt}
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;padding:15px;${padRight}border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:110px;min-height:110px;">
+                ${renderOptionContent(opt)}
                 ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
               </button>
             `;
@@ -149,7 +174,7 @@ function launchSpatial(level, container) {
           <button class="mock-button glow-dabao" onclick="speakText('${questionText.replace(/'/g,"\\'")}');" style="padding:4px 10px;font-size:0.8em;border-radius:15px;">🔊</button>
         </div>
         <p style="font-size:0.95em;color:#a1a1aa;margin-bottom:15px;">🦁 ${q.title}</p>
-        <div class="glass-card" style="padding:20px;font-size:2.5em;line-height:1.6;margin:15px auto;max-width:200px;white-space:pre;font-family:monospace;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);">${q.original}</div>
+        <div class="glass-card" style="padding:20px;margin:15px auto;max-width:200px;display:flex;align-items:center;justify-content:center;min-height:120px;background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);">${renderOptionContent(q.original)}</div>
         <p style="font-size:0.85em;color:#94a3b8;margin:12px 0 20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
           <span>💡 ${q.hint}</span>
           <button class="mock-button glow-success" onclick="showSpatialHelpAnimation('rotate')" style="padding:3px 10px;font-size:0.8em;margin-top:0;border-radius:15px;display:inline-flex;align-items:center;gap:4px;">🎬 观看动画演示</button>
@@ -159,8 +184,8 @@ function launchSpatial(level, container) {
             const hasChinese = /[\u4e00-\u9fa5]/.test(opt);
             const padRight = hasChinese ? 'padding-right:45px;' : '';
             return `
-              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;font-size:${q.isText?'1em':'1.3em'};padding:15px;${padRight}border-radius:12px;line-height:1.4;white-space:pre;font-family:monospace;">
-                ${opt}
+              <button class="mock-button glow-dabao" onclick="checkSpatialChoice(${i},${correctIdx})" style="position:relative;padding:15px;${padRight}border-radius:12px;display:flex;align-items:center;justify-content:center;min-height:110px;font-size:${q.isText?'1em':'1.3em'};">
+                ${renderOptionContent(opt)}
                 ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${opt.replace(/['"\n]/g," ")}')" title="朗读选项">🔊</span>` : ''}
               </button>
             `;
