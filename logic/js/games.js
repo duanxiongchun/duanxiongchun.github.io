@@ -11,6 +11,30 @@ function getLevelTitle(level, trackName, subName) {
   return `${trackName}·${subName} — 第 ${level} / 50 关`;
 }
 
+function renderOptionContent(opt) {
+  if (typeof opt !== 'string' || !opt.includes('\n')) {
+    return opt;
+  }
+  const rows = opt.trim().split('\n');
+  const firstRowCells = Array.from(rows[0].trim());
+  const colsCount = firstRowCells.length;
+  
+  // Dynamic cell sizing based on grid dimensions for maximum visual appeal
+  const cellSize = colsCount > 2 ? '28px' : '34px';
+  const fontSize = colsCount > 2 ? '1.3em' : '1.5em';
+  const gap = '2px';
+  
+  let gridHTML = `<div style="display: grid; grid-template-columns: repeat(${colsCount}, ${cellSize}); gap: ${gap}; justify-content: center; align-items: center; margin: 0 auto; line-height: 1;">`;
+  for (const row of rows) {
+    const cells = Array.from(row.trim());
+    for (const cell of cells) {
+      gridHTML += `<div style="width: ${cellSize}; height: ${cellSize}; display: flex; align-items: center; justify-content: center; font-size: ${fontSize};">${cell}</div>`;
+    }
+  }
+  gridHTML += `</div>`;
+  return gridHTML;
+}
+
 // ==================== 🔊 中文语音引擎 ====================
 
 let bestChineseVoice = null;
@@ -743,7 +767,7 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
         <!-- Left Side: Original -->
         <div style="text-align:center; flex:1;">
           <div style="font-size:0.75em; color:#94a3b8; margin-bottom:8px; font-weight:700;">原图</div>
-          <div class="glass-card" style="padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.06); font-weight:bold; text-align:center;">${original}</div>
+          <div class="glass-card" style="padding:15px; display:flex; align-items:center; justify-content:center; min-width:90px; min-height:90px; background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.06); margin: 0 auto;">${renderOptionContent(original)}</div>
         </div>
         
         <!-- Center Mirror Axis -->
@@ -754,11 +778,11 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
         <!-- Right Side: Destination Mirror -->
         <div style="text-align:center; flex:1;">
           <div style="font-size:0.75em; color:#94a3b8; margin-bottom:8px; font-weight:700;">对称镜面</div>
-          <div class="glass-card" style="padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; border:2px dashed rgba(129,140,248,0.3); background:rgba(129,140,248,0.02); color:rgba(129,140,248,0.4); font-weight:bold; text-align:center;">❓</div>
+          <div class="glass-card" style="padding:15px; display:flex; align-items:center; justify-content:center; min-width:90px; min-height:90px; border:2px dashed rgba(129,140,248,0.3); background:rgba(129,140,248,0.02); color:rgba(129,140,248,0.4); font-weight:bold; margin: 0 auto;">❓</div>
         </div>
         
         <!-- Floating Animated Card -->
-        <div class="glass-card" style="position:absolute; left: calc(50% - 150px); top: 22px; padding:15px; font-size:1.6em; line-height:1.5; white-space:pre; font-family:monospace; min-width:90px; background:rgba(129,140,248,0.25); border:2px solid #818cf8; color:#fff; font-weight:bold; text-align:center; pointer-events:none; z-index:10; animation: mirrorFlip 3.5s infinite ease-in-out; transform-origin: 50% 50%;">${original}</div>
+        <div class="glass-card" style="position:absolute; left: calc(50% - 150px); top: 22px; padding:15px; display:flex; align-items:center; justify-content:center; min-width:90px; min-height:90px; background:rgba(129,140,248,0.25); border:2px solid #818cf8; color:#fff; font-weight:bold; pointer-events:none; z-index:10; animation: mirrorFlip 3.5s infinite ease-in-out; transform-origin: 50% 50%;">${renderOptionContent(original)}</div>
       </div>
       <p style="font-size:0.95em; color:#a5b4fc; font-weight:bold; margin-bottom:10px;">🦋 左右两边像蝴蝶的翅膀一样翻转对称过来啦！</p>
     `;
@@ -774,7 +798,7 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
         </div>
         
         <!-- Rotating Card -->
-        <div class="glass-card" style="padding:20px; font-size:2em; line-height:1.5; white-space:pre; font-family:monospace; min-width:110px; background:rgba(129,140,248,0.18); border:2px solid #818cf8; color:#fff; font-weight:bold; text-align:center; animation: ${animName} 3.5s infinite ease-in-out; transform-origin: 50% 50%; z-index:10; box-shadow:0 0 20px rgba(129,140,248,0.25);">${original}</div>
+        <div class="glass-card" style="padding:20px; display:flex; align-items:center; justify-content:center; min-width:110px; min-height:110px; background:rgba(129,140,248,0.18); border:2px solid #818cf8; color:#fff; font-weight:bold; animation: ${animName} 3.5s infinite ease-in-out; transform-origin: 50% 50%; z-index:10; box-shadow:0 0 20px rgba(129,140,248,0.25); margin: 0 auto;">${renderOptionContent(original)}</div>
       </div>
       <p style="font-size:0.95em; color:#a5b4fc; font-weight:bold; margin-bottom:10px;">🔄 像小风车/时针一样顺时针转动了 ${angleText}！</p>
     `;
