@@ -5,10 +5,10 @@ const assert = require('assert');
 console.log("🔨 Setting up browser sandbox mock environment...");
 
 // 1. Setup standard browser API mocks on Node's 'global' scope:
-const localStorageStore = {};
+const localStorageStore = Object.create(null);
 const localStorageMock = {
   getItem(key) {
-    return localStorageStore.hasOwnProperty(key) ? localStorageStore[key] : null;
+    return Object.prototype.hasOwnProperty.call(localStorageStore, key) ? localStorageStore[key] : null;
   },
   setItem(key, value) {
     localStorageStore[key] = String(value);
@@ -33,10 +33,19 @@ function createDummyDOMElement(tagName = 'div') {
     style: {},
     className: "",
     classList: {
-      add() {},
-      remove() {},
-      toggle() {},
-      contains() { return false; }
+      classes: new Set(),
+      add(cls) { this.classes.add(cls); },
+      remove(cls) { this.classes.delete(cls); },
+      toggle(cls) {
+        if (this.classes.has(cls)) {
+          this.classes.delete(cls);
+          return false;
+        } else {
+          this.classes.add(cls);
+          return true;
+        }
+      },
+      contains(cls) { return this.classes.has(cls); }
     },
     childNodes: [],
     parentNode: null,
@@ -68,7 +77,7 @@ function createDummyDOMElement(tagName = 'div') {
       return createDummyDOMElement();
     },
     querySelectorAll() {
-      return [];
+      return [createDummyDOMElement()];
     },
     getAttribute() {
       return null;
@@ -100,24 +109,30 @@ function createDummyDOMElement(tagName = 'div') {
 }
 
 const elementCache = {};
-
 const mockDocument = {
   body: createDummyDOMElement('body'),
   documentElement: createDummyDOMElement('html'),
   getElementById(id) {
-    if (!elementCache[id]) {
-      elementCache[id] = createDummyDOMElement();
+    const key = `#${id}`;
+    if (!elementCache[key]) {
+      elementCache[key] = createDummyDOMElement();
     }
-    return elementCache[id];
+    return elementCache[key];
   },
   createElement(tagName) {
     return createDummyDOMElement(tagName);
   },
-  querySelectorAll() {
-    return [];
+  querySelector(selector) {
+    if (!elementCache[selector]) {
+      elementCache[selector] = createDummyDOMElement();
+    }
+    return elementCache[selector];
   },
-  querySelector() {
-    return createDummyDOMElement();
+  querySelectorAll(selector) {
+    if (!elementCache[selector]) {
+      elementCache[selector] = [createDummyDOMElement()];
+    }
+    return elementCache[selector];
   },
   addEventListener() {},
   removeEventListener() {}
@@ -274,8 +289,14 @@ for (const name of declaredNames) {
 combinedCode += exportCode;
 
 // Compile and run the concatenated script within a new Function wrapper
-const evalFn = new Function(combinedCode);
-evalFn();
+// Compile and run the concatenated script within a new Function wrapper
+try {
+  const evalFn = new Function(combinedCode);
+  evalFn();
+} catch (error) {
+  console.error("❌ Failed to compile or execute sandbox code:", error);
+  throw error;
+}
 
 console.log("⚡ Verification tests starting...");
 
