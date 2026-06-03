@@ -727,6 +727,8 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow-y: auto;
+        padding: 20px;
         animation: fadeInModal 0.3s ease-out;
       }
 
@@ -745,6 +747,7 @@ function showSpatialHelpAnimation(type, original, hint, title = '') {
         padding: 30px;
         text-align: center;
         position: relative;
+        margin: auto;
       }
     `;
     document.head.appendChild(style);

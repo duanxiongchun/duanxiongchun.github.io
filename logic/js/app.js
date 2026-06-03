@@ -168,17 +168,15 @@ function preventScrollHandler(e) {
 }
 
 function lockViewportScrolling() {
-  document.addEventListener('touchmove', preventScrollHandler, { passive: false });
-  document.documentElement.style.overflow = 'hidden';
-  document.body.style.overflow = 'hidden';
-  document.body.style.height = '100%';
+  // Allow vertical scrolling so that large questions, options and cards can be scrolled and viewed fully.
+  // We only restrict horizontal overflow to prevent accidental page swiping.
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
 }
 
 function unlockViewportScrolling() {
-  document.removeEventListener('touchmove', preventScrollHandler, { passive: false });
-  document.documentElement.style.overflow = '';
-  document.body.style.overflow = '';
-  document.body.style.height = '';
+  document.documentElement.style.overflowX = '';
+  document.body.style.overflowX = '';
 }
 
 function clearAllHistory() {
