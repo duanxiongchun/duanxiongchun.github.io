@@ -611,6 +611,27 @@ testB("48-hour wrong question cooldown skipping vs. revival review modes", () =>
   assert.strictEqual(global.appState.players.dabao.progress.spatial, 5, "Level progress should NOT advance on review mode failure");
 });
 
+// Test 11: Grapheme-safe splitting, missing grid symbols, and column safeguarding in renderOptionContent
+testB("Grapheme-safe splitting, missing grid symbols, and column safeguarding in renderOptionContent", () => {
+  // Check if renderOptionContent is defined
+  assert.strictEqual(typeof global.renderOptionContent, 'function');
+
+  // Test 1: Grid symbols including 'g' should be recognized as grid
+  // An option with 'g' and <= 6 chars should be treated as grid
+  const renderG = global.renderOptionContent('g');
+  assert.ok(renderG.includes('<svg'), "Option with 'g' should render as a grid SVG");
+
+  // Test 2: Grapheme-safe splitting with variation selectors (e.g. ➡️ which is \u27A1\uFE0F)
+  // Arrow with variation selector should be treated as 1 cell, not 2
+  const renderArrow = global.renderOptionContent('➡️');
+  assert.ok(renderArrow.includes('viewBox="0 0 40 40"'), "Should render a 1x1 grid SVG (40x40) for a single arrow emoji");
+
+  // Test 3: ColCount safeguard against 0 columns (e.g., empty string or spaces/newlines)
+  // If we pass whitespace or newline, we should still return correct/safeguarded dimensions
+  const renderEmpty = global.renderOptionContent('\n');
+  assert.ok(renderEmpty.includes('viewBox="0 0 40 40"'), "Empty rows should fall back to at least 1 column");
+});
+
 // Restore setTimeout
 global.setTimeout = originalSetTimeout;
 
