@@ -1,28 +1,104 @@
 /* 🧠 脑力认知研究所 - 空间图形推理模块 Spatial Games Engine */
 
 function renderOptionContent(opt) {
-  if (typeof opt !== 'string' || !opt.includes('\n')) {
+  if (typeof opt !== 'string') {
     return opt;
   }
+  
+  // Set of symbols that qualify as grid items
+  const gridSymbols = new Set([
+    '⬜', '⬛', '🔴', '🟢', '🟡', '🔵', '⭐', '🌟', '🍊', '🎈', '☀️', '🌙',
+    '➡️', '⬅️', '⬆️', '⬇️', '↗️', '↘️', '↖️', '↙️', '🟪', '🟨', '🟧', '🔹', '🔸',
+    '🔺', '🔻', '⭕', '🔲', '▲', '▼', '◀️', '▶️', '◀', '▶', '⚫', '⚪',
+    '🅰️', '🅱️', '➕', '➖', '🟰', '╳', '┃', '━', 'd', 'p', 'q', 'b', 'L', 'T', '?',
+    '🚗', '🐱', '🐶', '🐰', '🍒', '🍎', '🍇', '🍌', '🍯', '🐻', '🛹', '🚲', '🛴',
+    '🛵', '🍦', '🍨', '🧑', '🧢', '👧', '🎀', '👦', '🕶', '👓', '🕛', '🕒', '🕕', '🕘'
+  ]);
+  
+  const hasGridSymbol = Array.from(opt).some(char => gridSymbols.has(char));
+  const isGrid = opt.includes('\n') || (opt.length <= 6 && hasGridSymbol);
+  
+  if (!isGrid) {
+    return opt;
+  }
+  
   const rows = opt.trim().split('\n');
-  const firstRowCells = Array.from(rows[0].trim());
-  const colsCount = firstRowCells.length;
+  const rowCount = rows.length;
+  const colCount = Math.max(...rows.map(r => Array.from(r.trim()).length));
   
-  // Dynamic cell sizing based on grid dimensions for maximum visual appeal
-  const cellSize = colsCount > 2 ? '28px' : '34px';
-  const fontSize = colsCount > 2 ? '1.3em' : '1.5em';
-  const gap = '2px';
+  const cellSize = 40;
+  const totalWidth = colCount * cellSize;
+  const totalHeight = rowCount * cellSize;
   
-  let gridHTML = `<div style="display: grid; grid-template-columns: repeat(${colsCount}, ${cellSize}); gap: ${gap}; justify-content: center; align-items: center; margin: 0 auto; line-height: 1;">`;
-  for (const row of rows) {
-    const cells = Array.from(row.trim());
-    for (const cell of cells) {
-      // Flexbox container ensures the emoji is centered down to the pixel regardless of render width variations
-      gridHTML += `<div style="width: ${cellSize}; height: ${cellSize}; display: flex; align-items: center; justify-content: center; font-size: ${fontSize};">${cell}</div>`;
+  let svg = `<svg viewBox="0 0 ${totalWidth} ${totalHeight}" style="display:block; width:100%; height:100%; max-width:${totalWidth}px; margin:0 auto;" class="spatial-svg-grid">`;
+  
+  const colors = {
+    '🔴': '#f87171', // soft red
+    '🟢': '#34d399', // soft green
+    '🟡': '#fbbf24', // soft yellow
+    '🔵': '#60a5fa', // soft blue
+    '🟪': '#c084fc', // purple
+    '🟨': '#fbbf24', // yellow
+    '🟧': '#fb923c', // orange
+    '⚫': '#3f3f46', // dark grey
+    '⚪': '#f4f4f5', // light grey
+  };
+  
+  for (let r = 0; r < rowCount; r++) {
+    const row = rows[r].trim();
+    const cells = Array.from(row);
+    for (let c = 0; c < colCount; c++) {
+      const cell = cells[c] || '⬜';
+      const x = c * cellSize;
+      const y = r * cellSize;
+      
+      let rectFill = 'rgba(255, 255, 255, 0.03)';
+      let rectStroke = 'rgba(255, 255, 255, 0.08)';
+      let rx = 6;
+      
+      if (cell === '⬛') {
+        rectFill = 'rgba(99, 102, 241, 0.1)';
+        rectStroke = 'rgba(99, 102, 241, 0.35)';
+      } else if (cell === '⬜') {
+        rectFill = 'rgba(255, 255, 255, 0.02)';
+        rectStroke = 'rgba(255, 255, 255, 0.06)';
+      }
+      
+      svg += `<rect x="${x + 2}" y="${y + 2}" width="${cellSize - 4}" height="${cellSize - 4}" rx="${rx}" fill="${rectFill}" stroke="${rectStroke}" stroke-width="1.5" />`;
+      
+      if (cell === '⬜' || cell === '⬛') {
+        continue;
+      }
+      
+      const cx = x + cellSize / 2;
+      const cy = y + cellSize / 2;
+      
+      if (colors[cell]) {
+        svg += `<circle cx="${cx}" cy="${cy}" r="12" fill="${colors[cell]}" />`;
+      } else if (cell === '⭐' || cell === '🌟') {
+        svg += `<path d="M ${cx} ${cy - 12} L ${cx + 3.5} ${cy - 3.5} L ${cx + 12} ${cy - 3.5} L ${cx + 5} ${cy + 1.5} L ${cx + 7.5} ${cy + 10} L ${cx} ${cy + 5} L ${cx - 7.5} ${cy + 10} L ${cx - 5} ${cy + 1.5} L ${cx - 12} ${cy - 3.5} L ${cx - 3.5} ${cy - 3.5} Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1" stroke-linejoin="round" />`;
+      } else if (['➡️', '⬅️', '⬆️', '⬇️', '↗️', '↘️', '↖️', '↙️', '▶️', '◀️', '▲', '▼', '◀', '▶'].includes(cell)) {
+        let angle = 0;
+        if (cell === '➡️' || cell === '▶️' || cell === '▶') angle = 0;
+        else if (cell === '⬇️' || cell === '▼') angle = 90;
+        else if (cell === '⬅️' || cell === '◀️' || cell === '◀') angle = 180;
+        else if (cell === '⬆️' || cell === '▲') angle = 270;
+        else if (cell === '↗️') angle = 315;
+        else if (cell === '↘️') angle = 45;
+        else if (cell === '↙️') angle = 135;
+        else if (cell === '↖️') angle = 225;
+        
+        svg += `<g transform="rotate(${angle}, ${cx}, ${cy})">`;
+        svg += `<path d="M ${cx - 10} ${cy - 3} L ${cx + 4} ${cy - 3} L ${cx + 1} ${cy - 8} L ${cx + 11} ${cy} L ${cx + 1} ${cy + 8} L ${cx + 4} ${cy + 3} L ${cx - 10} ${cy + 3} Z" fill="#818cf8" stroke="#6366f1" stroke-width="1" stroke-linejoin="round" />`;
+        svg += `</g>`;
+      } else {
+        svg += `<text x="${cx}" y="${cy}" font-size="20" dominant-baseline="central" text-anchor="middle" fill="#ffffff" style="font-family:'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; line-height:1;">${cell}</text>`;
+      }
     }
   }
-  gridHTML += `</div>`;
-  return gridHTML;
+  
+  svg += `</svg>`;
+  return svg;
 }
 
 function getSpatialStack(level) {
