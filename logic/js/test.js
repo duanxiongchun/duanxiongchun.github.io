@@ -641,6 +641,10 @@ testB("Grapheme-safe splitting, missing grid symbols, and column safeguarding in
     const rendered = global.renderOptionContent(sym);
     assert.ok(rendered.includes('<svg'), `Symbol ${sym} should be recognized as a grid item`);
   }
+
+  // Test 6: Emoji strings of length > 3 (using grapheme count)
+  const resLength4 = global.renderOptionContent('🟩🟩🟩🟩');
+  assert.ok(resLength4.startsWith("<svg"), "Should render 4 emojis as an SVG grid");
 });
 
 // Restore setTimeout

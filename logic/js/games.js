@@ -44,8 +44,9 @@ function renderOptionContent(opt) {
     '🟩', '🟥', '🟦', '🍏', '◯', '⊕', '⊞', '❌', '✳️', '📈', '📉', '→', '←', '↓', '↑', '📁', '📄', '📂'
   ]);
   
-  const hasGridSymbol = splitGraphemes(opt).some(char => gridSymbols.has(char));
-  const isGrid = opt.includes('\n') || (opt.length <= 6 && hasGridSymbol);
+  const graphemes = splitGraphemes(opt);
+  const hasGridSymbol = graphemes.some(char => gridSymbols.has(char));
+  const isGrid = opt.includes('\n') || (graphemes.length <= 6 && hasGridSymbol);
   
   if (!isGrid) {
     return opt;
