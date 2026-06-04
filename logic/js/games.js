@@ -16,17 +16,31 @@ function renderOptionContent(opt) {
     return opt;
   }
   
+  function splitGraphemes(str) {
+    const clean = str.replace(/\r/g, '');
+    const result = [];
+    const chars = Array.from(clean);
+    for (let i = 0; i < chars.length; i++) {
+      if (chars[i] === '\uFE0F' && result.length > 0) {
+        result[result.length - 1] += '\uFE0F';
+      } else {
+        result.push(chars[i]);
+      }
+    }
+    return result;
+  }
+
   // Set of symbols that qualify as grid items
   const gridSymbols = new Set([
     '⬜', '⬛', '🔴', '🟢', '🟡', '🔵', '⭐', '🌟', '🍊', '🎈', '☀️', '🌙',
     '➡️', '⬅️', '⬆️', '⬇️', '↗️', '↘️', '↖️', '↙️', '🟪', '🟨', '🟧', '🔹', '🔸',
     '🔺', '🔻', '⭕', '🔲', '▲', '▼', '◀️', '▶️', '◀', '▶', '⚫', '⚪',
-    '🅰️', '🅱️', '➕', '➖', '🟰', '╳', '┃', '━', 'd', 'p', 'q', 'b', 'L', 'T', '?',
+    '🅰️', '🅱️', '➕', '➖', '🟰', '╳', '┃', '━', 'g', 'd', 'p', 'q', 'b', 'L', 'T', '?',
     '🚗', '🐱', '🐶', '🐰', '🍒', '🍎', '🍇', '🍌', '🍯', '🐻', '🛹', '🚲', '🛴',
     '🛵', '🍦', '🍨', '🧑', '🧢', '👧', '🎀', '👦', '🕶', '👓', '🕛', '🕒', '🕕', '🕘'
   ]);
   
-  const hasGridSymbol = Array.from(opt).some(char => gridSymbols.has(char));
+  const hasGridSymbol = splitGraphemes(opt).some(char => gridSymbols.has(char));
   const isGrid = opt.includes('\n') || (opt.length <= 6 && hasGridSymbol);
   
   if (!isGrid) {
@@ -35,7 +49,7 @@ function renderOptionContent(opt) {
   
   const rows = opt.trim().split('\n');
   const rowCount = rows.length;
-  const colCount = Math.max(...rows.map(r => Array.from(r.trim()).length));
+  const colCount = Math.max(1, ...rows.map(r => splitGraphemes(r.trim()).length));
   
   const cellSize = 40;
   const totalWidth = colCount * cellSize;
@@ -57,7 +71,7 @@ function renderOptionContent(opt) {
   
   for (let r = 0; r < rowCount; r++) {
     const row = rows[r].trim();
-    const cells = Array.from(row);
+    const cells = splitGraphemes(row);
     for (let c = 0; c < colCount; c++) {
       const cell = cells[c] || '⬜';
       const x = c * cellSize;
