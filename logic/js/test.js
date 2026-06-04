@@ -630,6 +630,17 @@ testB("Grapheme-safe splitting, missing grid symbols, and column safeguarding in
   // If we pass whitespace or newline, we should still return correct/safeguarded dimensions
   const renderEmpty = global.renderOptionContent('\n');
   assert.ok(renderEmpty.includes('viewBox="0 0 40 40"'), "Empty rows should fall back to at least 1 column");
+
+  // Test 4: Chinese character ignore check (should immediately return the raw option string)
+  const renderChinese = global.renderOptionContent('你好🟩');
+  assert.strictEqual(renderChinese, '你好🟩', "Chinese characters in option should bypass grid rendering");
+
+  // Test 5: Newly whitelisted gridSymbols
+  const newSymbols = ['🟩', '🟥', '🟦', '🍏', '◯', '⊕', '⊞', '❌', '✳️', '📈', '📉', '→', '←', '↓', '↑', '📁', '📄', '📂'];
+  for (const sym of newSymbols) {
+    const rendered = global.renderOptionContent(sym);
+    assert.ok(rendered.includes('<svg'), `Symbol ${sym} should be recognized as a grid item`);
+  }
 });
 
 // Restore setTimeout

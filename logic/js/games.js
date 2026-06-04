@@ -15,6 +15,9 @@ function renderOptionContent(opt) {
   if (typeof opt !== 'string') {
     return opt;
   }
+  if (/[\u4e00-\u9fa5]/.test(opt)) {
+    return opt;
+  }
   
   function splitGraphemes(str) {
     const clean = str.replace(/\r/g, '');
@@ -37,7 +40,8 @@ function renderOptionContent(opt) {
     '🔺', '🔻', '⭕', '🔲', '▲', '▼', '◀️', '▶️', '◀', '▶', '⚫', '⚪',
     '🅰️', '🅱️', '➕', '➖', '🟰', '╳', '┃', '━', 'g', 'd', 'p', 'q', 'b', 'L', 'T', '?',
     '🚗', '🐱', '🐶', '🐰', '🍒', '🍎', '🍇', '🍌', '🍯', '🐻', '🛹', '🚲', '🛴',
-    '🛵', '🍦', '🍨', '🧑', '🧢', '👧', '🎀', '👦', '🕶', '👓', '🕛', '🕒', '🕕', '🕘'
+    '🛵', '🍦', '🍨', '🧑', '🧢', '👧', '🎀', '👦', '🕶', '👓', '🕛', '🕒', '🕕', '🕘',
+    '🟩', '🟥', '🟦', '🍏', '◯', '⊕', '⊞', '❌', '✳️', '📈', '📉', '→', '←', '↓', '↑', '📁', '📄', '📂'
   ]);
   
   const hasGridSymbol = splitGraphemes(opt).some(char => gridSymbols.has(char));
