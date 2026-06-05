@@ -7,7 +7,7 @@
   
   <!-- SEO & Author -->
   <meta name="author" content="duanxiongchun">
-  <meta name="description" content="深入探索基于 QUIC 和 Rust 的高性能安全网关的设计与核心原理，包含多流隔离可靠传输与广域网段性能优化，内置交互式网络动画演示。">
+  <meta name="description" content="深入探索基于 Rust、boringtun 和 smoltcp 的高性能全用户态安全代理网关的设计与核心原理，包含多流隔离可靠传输与多队列 Run-to-Completion 性能优化，内置交互式网络动画演示。">
   <link rel="icon" href="/img/favicon.ico">
   
   <!-- Modern Fonts -->
@@ -902,9 +902,9 @@
 
     <!-- Article Content (Left Column) -->
     <article class="content" id="article-body">
-      <p>在现代安全网络隧道与 VPN 技术中，<strong>内核态的三层（L3）VPN（如 WireGuard）</strong>以其极简的设计、极低的延迟和极佳的吞吐量成为了业界新宠。然而，在跨地域、跨运营商的真实广域网（WAN）传输中，传统的 L3 VPN 在面对丢包抖动和大规模并发流量时，仍然容易遭遇明显的性能瓶颈。其根本症结在于：传统三层 VPN 隧道<strong>“只透传不优化”</strong>，且整条隧道被限制在单管单通道的设计内，缺乏对长距离网络时延（RTT）及随机丢包的主动优化手段。</p>
-
-      <p>为了彻底打破这一吞吐瓶颈，我设计并实现了我的第一个高性能网关项目：<code>new_proxy</code>。这是一个<strong>基于 Rust 编写的混合 L3/L4 高性能安全代理网关</strong>。它巧妙地将内核态的极速三层封装与用户态的 QUIC 协议融为一体。它不仅通过“代理中继”打断了传统的 TCP “长细管道”限制，更充分利用了 QUIC 在用户态实现的<strong>快速可靠传输</strong>与<strong>独立多流拥塞控制</strong>能力，从而在恶劣物理链路上释放出令人惊叹的带宽效率。</p>
+      <p>在现代安全网络隧道与 VPN 技术中，三层（L3）VPN（如 WireGuard）以其极简的设计、极低的延迟 and 极佳的吞吐量成为了安全互联的首选。然而，在跨地域、跨运营商的真实广域网（WAN）传输中，传统的 L3 VPN 在面对丢包抖动和大规模并发流量时，仍然容易遭遇明显的性能瓶颈。其根本症结在于：传统三层 VPN 隧道<strong>“只透传不优化”</strong>，且整条隧道被限制在单管单通道的设计内，缺乏对长距离网络时延（RTT）及随机丢包的主动优化手段。</p>
+ 
+      <p>为了彻底打破这一吞吐瓶颈，我设计并实现了我的第一个高性能网关项目：<code>new_proxy</code>。这是一个<strong>基于 Rust 编写的完全运行在用户态的混合 L3/L4 高性能安全代理网关</strong>。它免除了内核态 WireGuard 模块以及复杂的 `iptables`/`TPROXY` 规则注入，巧妙地将基于 <code>boringtun</code> 的用户态三层隧道与基于 QUIC（<code>quinn</code>）及 <code>smoltcp</code> 用户态协议栈的四层多路复用网关融为一体。它不仅通过“代理中继”打断了传统的 TCP “长细管道”限制，更充分利用了 QUIC 在用户态实现的<strong>快速可靠传输</strong>与<strong>独立多流拥塞控制</strong>能力，在恶劣物理链路上释放出令人惊叹的带宽效率。</p>
 
       <p>本文将深入拆解 <code>new_proxy</code> 的技术架构、设计原理以及在追求极限性能方面所做的核心优化。</p>
 
