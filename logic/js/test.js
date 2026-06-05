@@ -614,11 +614,92 @@ testB("48-hour wrong question cooldown skipping vs. revival review modes", () =>
 // Restore setTimeout
 global.setTimeout = originalSetTimeout;
 
+// --- Running Test Suite C: SVG Grid Renderer ---
+console.log("\n--- Running Test Suite C: SVG Grid Renderer ---");
+let suiteCPassed = 0;
+let suiteCFailed = 0;
+
+function testC(name, fn) {
+  try {
+    fn();
+    console.log(`  ✓ [PASS] ${name}`);
+    suiteCPassed++;
+  } catch (e) {
+    console.error(`  ✗ [FAIL] ${name}`);
+    console.error(e);
+    suiteCFailed++;
+  }
+}
+
+testC("Should ignore standard plain text", () => {
+  const raw = "90°";
+  const res = global.renderOptionContent(raw);
+  assert.strictEqual(res, raw);
+});
+
+testC("Should render multi-line grid with expected SVG tags", () => {
+  const grid = "⭐⬜\n⬜⭐";
+  const res = global.renderOptionContent(grid);
+  assert.ok(res.startsWith("<svg"));
+  assert.ok(res.includes("viewBox=\"0 0 80 80\""));
+  assert.ok(res.includes("<rect"));
+  assert.ok(res.includes("<path")); // stars render as path
+});
+
+testC("Should render single-line grid with grid symbols", () => {
+  const grid = "⬜⭐";
+  const res = global.renderOptionContent(grid);
+  assert.ok(res.startsWith("<svg"));
+  assert.ok(res.includes("viewBox=\"0 0 80 40\""));
+});
+
+testC("Should fallback to centered text for normal emojis", () => {
+  const grid = "🍊⬜";
+  const res = global.renderOptionContent(grid);
+  assert.ok(res.includes("dominant-baseline=\"central\""));
+  assert.ok(res.includes("text-anchor=\"middle\""));
+  assert.ok(res.includes("🍊"));
+});
+
+testC("Should support newly whitelisted gridSymbols and 'g'", () => {
+  const newSymbols = ['g', '🟩', '🟥', '🟦', '🍏', '◯', '⊕', '⊞', '❌', '✳️', '📈', '📉', '→', '←', '↓', '↑', '📁', '📄', '📂'];
+  for (const sym of newSymbols) {
+    const rendered = global.renderOptionContent(sym);
+    assert.ok(rendered.includes('<svg'), `Symbol ${sym} should be recognized as a grid item`);
+  }
+});
+
+testC("Should bypass Chinese character options", () => {
+  const renderChinese = global.renderOptionContent('你好🟩');
+  assert.strictEqual(renderChinese, '你好🟩', "Chinese characters in option should bypass grid rendering");
+});
+
+testC("Should support emoji strings of length up to 6 (using grapheme count)", () => {
+  const resLength4 = global.renderOptionContent('🟩🟩🟩🟩');
+  assert.ok(resLength4.startsWith("<svg"), "Should render 4 emojis as an SVG grid");
+  const resLength6 = global.renderOptionContent('🟩🟩🟩🟩🟩🟩');
+  assert.ok(resLength6.startsWith("<svg"), "Should render 6 emojis as an SVG grid");
+  // 7 emojis should not render as a grid
+  const resLength7 = global.renderOptionContent('🟩🟩🟩🟩🟩🟩🟩');
+  assert.ok(!resLength7.startsWith("<svg"), "Should NOT render 7 emojis as a grid");
+});
+
+testC("Should safeguard colCount against 0 columns", () => {
+  const renderEmpty = global.renderOptionContent('\n');
+  assert.ok(renderEmpty.includes('viewBox="0 0 40 40"'), "Empty rows should fall back to at least 1 column");
+});
+
+testC("Should handle grapheme-safe variation selector splitting (e.g. ➡️)", () => {
+  const renderArrow = global.renderOptionContent('➡️');
+  assert.ok(renderArrow.includes('viewBox="0 0 40 40"'), "Should render a 1x1 grid SVG (40x40) for a single arrow emoji");
+});
+
 console.log(`\n📊 Suite B Summary: Passed ${suiteBPassed}, Failed ${suiteBFailed}`);
+console.log(`📊 Suite C Summary: Passed ${suiteCPassed}, Failed ${suiteCFailed}`);
 
 // --- CONSOLIDATED TEST REPORT ---
-const totalPassed = suiteAPassed + suiteBPassed;
-const totalFailed = suiteAFailed + suiteBFailed;
+const totalPassed = suiteAPassed + suiteBPassed + suiteCPassed;
+const totalFailed = suiteAFailed + suiteBFailed + suiteCFailed;
 console.log("\n==============================================");
 console.log(`🏆 FINAL TEST REPORT: Passed ${totalPassed}, Failed ${totalFailed}`);
 console.log("==============================================");

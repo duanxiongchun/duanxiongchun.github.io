@@ -54,7 +54,7 @@ function launchPattern(level, container) {
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:0 auto 25px;">
         ${q.matrix.map((cell, i) => `
           <div class="glass-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;font-size:${cell.length > 4 ? '0.9em' : '1.5em'};min-height:60px;display:flex;align-items:center;justify-content:center;${i===8?'border:2px dashed #fbbf24;color:#fbbf24;font-weight:800;':''}">
-            ${i===8 ? '❓' : cell}
+            ${i===8 ? '❓' : renderOptionContent(cell)}
           </div>
         `).join('')}
       </div>
@@ -68,7 +68,7 @@ function launchPattern(level, container) {
           const padRight = hasChinese ? 'padding-right:42px;' : '';
           return `
             <button class="mock-button glow-dabao" onclick="checkPatternAnswer(${item.i},${q.ans})" style="position:relative;font-size:${item.o.length>4?'0.85em':'1.2em'};padding:12px;${padRight}border-radius:10px;min-height:55px;">
-              ${item.o}
+              ${renderOptionContent(item.o)}
               ${hasChinese ? `<span class="option-speak-btn" onclick="event.stopPropagation(); speakText('${item.o.replace(/['"]/g," ")}')" title="朗读选项">🔊</span>` : ''}
             </button>
           `;

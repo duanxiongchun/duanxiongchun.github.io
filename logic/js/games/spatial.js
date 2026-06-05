@@ -1,30 +1,5 @@
 /* 🧠 脑力认知研究所 - 空间图形推理模块 Spatial Games Engine */
 
-function renderOptionContent(opt) {
-  if (typeof opt !== 'string' || !opt.includes('\n')) {
-    return opt;
-  }
-  const rows = opt.trim().split('\n');
-  const firstRowCells = Array.from(rows[0].trim());
-  const colsCount = firstRowCells.length;
-  
-  // Dynamic cell sizing based on grid dimensions for maximum visual appeal
-  const cellSize = colsCount > 2 ? '28px' : '34px';
-  const fontSize = colsCount > 2 ? '1.3em' : '1.5em';
-  const gap = '2px';
-  
-  let gridHTML = `<div style="display: grid; grid-template-columns: repeat(${colsCount}, ${cellSize}); gap: ${gap}; justify-content: center; align-items: center; margin: 0 auto; line-height: 1;">`;
-  for (const row of rows) {
-    const cells = Array.from(row.trim());
-    for (const cell of cells) {
-      // Flexbox container ensures the emoji is centered down to the pixel regardless of render width variations
-      gridHTML += `<div style="width: ${cellSize}; height: ${cellSize}; display: flex; align-items: center; justify-content: center; font-size: ${fontSize};">${cell}</div>`;
-    }
-  }
-  gridHTML += `</div>`;
-  return gridHTML;
-}
-
 function getSpatialStack(level) {
   if (level === 1) return [{x:0,y:0,z:0},{x:0,y:0,z:1}];
   if (level === 2) return [{x:0,y:0,z:0},{x:1,y:0,z:0},{x:0,y:0,z:1}];
