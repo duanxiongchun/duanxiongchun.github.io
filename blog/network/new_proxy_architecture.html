@@ -922,12 +922,17 @@
         传统三层 VPN 是一个<b>“哑管道”</b>，它不参与 any 传输层优化。而在长距离、高延迟的网络环境中，我们必须利用更先进的传输协议在用户态对流量进行智能调度与隔离，才能彻底榨干物理网卡的每一兆带宽。
       </div>
 
-      <h2 id="section-2">2. new_proxy 的解法：基于 QUIC 的可靠传输与多流并发</h2>
-      <p>为了攻克传统 VPN 的广域网瓶颈，<code>new_proxy</code> 引入了<strong>三层/四层混合分流与用户态 L4 拦截</strong>机制：将无状态、轻量级的 UDP/ICMP 流量留在内核态 L3 通道中，而将重状态、占大头的 TCP 业务流量剥离出来，透明拦至用户态，并通过以下三大技术支柱实现吞吐量的极限释放：</p>
+      <h2 id="section-2">2. new_proxy 的解法：完全用户态的双轨架构与多流并发</h2>
+      <p>为了攻克传统 VPN 的广域网瓶颈，同时避免对操作系统底层模块（如 WireGuard 内核模块）和敏感防火墙规则（如 <code>iptables</code> / <code>TPROXY</code>）的依赖，<code>new_proxy</code> 引入了<strong>完全运行在用户态的混合 L3/L4 代理分流</strong>机制。它摒弃了透明代理拦截的传统做法，改为基于虚拟多队列 TUN 读写，在进程内构建了一套“双轨”数据面：</p>
 
-      <h3>2.1 三大核心技术支柱</h3>
-      
-      <p><strong>第一柱：QUIC 在用户态实现的极速可靠传输</strong><br>
+      <h3>2.1 四大核心技术支柱</h3>
+
+      <p><strong>第一柱：纯用户态的双轨分流面 (Zero-Firewall Dependency)</strong><br>
+      整个网关的数据拦截 and 分发完全在用户态中处理，彻底消除了对系统内核防火墙的依赖：<br>
+      • <strong>用户态三层 (L3) 轨道</strong>：UDP 和 ICMP 报文命中路由后，直接由客户端进程内嵌入的 <code>boringtun</code> 库进行 WireGuard 格式的噪声加密与安全封装，生成外层 UDP 包直接发出。<br>
+      • <strong>用户态四层 (L4) 拦截与卸载</strong>：TCP 报文到达 TUN 设备后，不再经过系统内核协议栈，而是由各工作线程绑定的 <code>smoltcp</code>（Rust 编写的独立用户态网络协议栈）接管，进行本地 NAT 改写，直接将其桥接到 QUIC 池的数据流中。这使得网关无需注入任何 <code>iptables</code> 或 <code>TPROXY</code> 规则即可实现透明流接管，非常有利于无特权容器环境部署。</p>
+
+      <p><strong>第二柱：QUIC 在用户态实现的极速可靠传输</strong><br>
       QUIC 虽然同样运行于 UDP 之上，但它在用户态实现了一套高度优化的<strong>可靠传输与丢包恢复机制</strong>。当物理网络发生随机丢包时：<br>
       • <strong>快速丢包检测</strong>：QUIC 彻底抛弃了 TCP 的字节流序列号，改用单调递增的 Packet Number，这消除了重传歧义。结合精密的丢包检测算法，QUIC 能够在毫秒级感知到数据丢失。<br>
       • <strong>极速重传恢复</strong>：由于协议运行在用户态，<code>new_proxy</code> 无需依赖操作系统内核缓慢的重传定时器，而是在用户态以极高的敏捷度直接对丢失的数据包发起主动重传，极大地降低了物理丢包对上层业务流带来的卡顿感。</p>
